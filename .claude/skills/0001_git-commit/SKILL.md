@@ -31,14 +31,17 @@ allowed-tools: Bash Read Edit
 
 ## 提交流程
 
-1. `git status` 确认变更文件
+**核心规则：禁止自主 commit。只有用户明确说「提交」「commit」「推送」时才执行。**
+
+0. **触发检查**：用户消息中必须含「提交」「commit」「推送」「push」等关键词，否则不执行 commit
+1. `git status` 确认变更文件，列出给用户确认
 2. `git add <指定文件>`（不 add 以下内容）:
    - `data/` `checkpoints/` `outputs/` 下的文件
    - `00_local_task/` 下除 `local_data_guide.md` 外的文件
    - `.env` 等敏感文件
    - 大文件（>10MB）
-3. `git commit`
-4. **不自动 push**（需用户确认）
+3. `git commit` — 仅用户确认后执行
+4. **不自动 push**（需用户再次确认）
 
 ## 推送流程
 
@@ -59,6 +62,7 @@ allowed-tools: Bash Read Edit
 
 ## 禁止事项
 
+- **禁止自主 commit**：用户没明确说「提交」「commit」时，只改代码不提交
 - 不 skip hooks（--no-verify）
 - 不 force push 到 master
 - 不提交 `.env`、credentials、API key

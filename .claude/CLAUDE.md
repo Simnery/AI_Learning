@@ -1,6 +1,62 @@
 # AI Learning Project
 
- AI 模型、算法、技术应用的系统学习工程。
+AI 模型、算法、技术应用的系统学习工程。
+
+## 学习路线
+
+### 当前路线：AI大模型应用开发工程师知识图谱
+
+同一份知识图谱的两个版本：
+
+| 版本 | 路径 | 说明 |
+|------|------|------|
+| 官方原版 | [papers_original/](../papers/papers_original/AI大模型应用开发工程师知识图谱.md) | 知乎来源，暂未开课 |
+| 个人扩展 | [papers_self/](../papers/papers_self/AI大模型应用开发工程师知识图谱.md) | 66 文件、6 章扩展内容 |
+
+### 备用学习路线
+
+早期自设计的 BIOS 类比学习路线，详见 [AI_Learning_Roadmap.md](../backup/AI_Learning_Roadmap.md)。
+
+**四阶段路径**：基础理论 → LLM 原理 → 应用开发 → 项目实战
+
+**项目目标**：
+- 学习 Transformer、GPT、BERT、Diffusion 等主流模型架构
+- 实践模型训练、微调、部署全流程
+- 探索 RAG、Agent、Function Calling 等应用范式
+
+## 技术栈
+
+| 领域 | 工具/框架 |
+|------|-----------|
+| 深度学习 | PyTorch, Transformers, Diffusers |
+| 数据处理 | NumPy, Pandas, Datasets |
+| 实验管理 | Jupyter Notebook |
+| LLM 应用 | LangChain, LlamaIndex, Ollama |
+| 向量检索 | FAISS, Chroma |
+| 包管理 | uv, pip |
+
+## 目录约定
+
+```
+./
+├── .claude/          # Claude Code 配置、Skills、规则
+├── .cursor/          # Cursor 编辑器规则
+├── anki_tool/        # Anki 英语学习卡片工具
+│   ├── cards/        # 6 章卡片数据源 (JSON)
+│   ├── scripts/      # 制卡/编辑/同步脚本
+│   ├── templates/    # 笔记类型模板
+│   └── export/       # 牌组备份 (gitignore)
+├── papers/           # 学习资料
+│   ├── papers_original/  # 官方知识图谱
+│   ├── papers_self/      # 个人扩展内容（66文件，6章）
+│   └── backup_roadmap/   # 备用学习路线（4阶段，6章）
+├── backup/           # 原始脚手架备份
+│   └── AI_Learning_Roadmap.md  # 自设计 BIOS 类比学习路线
+├── 00_local_task/    # 任务数据 (gitignore, 与 Cursor 共用)
+├── data/             # 本地实验数据 (gitignore)
+├── sample/           # 参考文件 (gitignore)
+└── scripts/          # 临时/辅助脚本
+```
 
 ## 协作规则
 
@@ -126,61 +182,3 @@ Bash 命令（字母序）
 ### 5. 经验沉淀机制
 - 每次学习/实验完成后，主动询问用户是否有经验值得沉淀
 - 用户确认后，追加到本文件对应章节
-
----
-
-## 学习路线
-详见 [AI大模型应用开发工程师知识图谱](../papers/AI大模型应用开发工程师知识图谱.md)
-
-### 核心学习路径
-1. **基础理论** → 数学 + ML 基础 + 深度学习基础
-2. **LLM 原理** → Transformer 深入 + 训练/推理/微调
-3. **应用开发** → RAG + Agent + API 部署
-4. **项目实战** → 边学边做
-
-## 项目目标
-- 学习 Transformer、GPT、BERT、Diffusion 等主流模型架构
-- 实践模型训练、微调、部署全流程
-- 探索 RAG、Agent、Function Calling 等应用范式
-
-## 技术栈
-| 领域 | 工具/框架 |
-|------|-----------|
-| 深度学习 | PyTorch, Transformers, Diffusers |
-| 数据处理 | NumPy, Pandas, Datasets |
-| 实验管理 | Jupyter Notebook |
-| LLM 应用 | LangChain, LlamaIndex, Ollama |
-| 向量检索 | FAISS, Chroma |
-| 包管理 | uv, pip |
-
-## 目录约定
-```
-./
-├── .claude/          # Claude Code 配置、Skills、规则
-├── .cursor/          # Cursor 编辑器规则
-├── anki_tool/        # Anki 英语学习卡片工具
-│   ├── cards/        # 6 章卡片数据源 (JSON)
-│   ├── scripts/      # 制卡/编辑/同步脚本
-│   ├── templates/    # 笔记类型模板
-│   └── export/       # 牌组备份 (gitignore)
-├── papers/           # 学习资料
-│   ├── papers_original/  # 官方知识图谱
-│   ├── papers_self/      # 个人扩展内容（66文件，6章）
-│   └── backup_roadmap/   # 备用学习路线（4阶段，6章）
-├── 00_local_task/    # 任务数据 (gitignore, 与 Cursor 共用)
-├── sample/           # 参考文件 (gitignore)
-├── backup/           # 原始脚手架备份
-├── scripts/          # 临时/辅助脚本
-└── data/             # 本地实验数据 (gitignore)
-```
-
-## 编码规范
-- Python 3.10+，使用 type hints
-- 实验脚本需支持命令行参数（argparse/click）
-- 每个实验/项目自述 README
-
-## 常用操作
-- 创建新实验: 在对应 `projects/<domain>/` 下创建项目目录
-- 运行 notebook: `jupyter notebook notebooks/`
-- 安装依赖: `uv sync` 或 `pip install -r requirements.txt`
-- GPU 检查: `nvidia-smi` 或 `python -c "import torch; print(torch.cuda.is_available())"`

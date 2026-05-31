@@ -247,7 +247,7 @@ else:
 | `scripts/anki_fix_acronyms.py` | 批量修复缩写词全称音频 | `cd anki_tool/` |
 | `scripts/anki_model.py` | 查看/管理笔记类型 | `cd anki_tool/` |
 
-**目录结构**：`templates/`(模板) | `cards/`(数据源,git跟踪) | `scripts/`(工具,git跟踪) | `export/`(apkg,gitignore)
+**目录结构**：`templates/`(模板) | `cards/`(数据源,git跟踪) | `scripts/`(工具,git跟踪) | `export/`(apkg,gitignore; zip,git跟踪)
 
 **核心原则**：
 - `cards/chX_cards.json` 是唯一数据源。**禁止**直接改 Anki 里的内容
@@ -364,6 +364,20 @@ else:
 5. 更新 Skill 文档：在本文件中记录新字段
 6. 更新备份：python scripts/anki_model.py "English Word" 确认字段列表
 ```
+
+### 工作流 7：压缩导出文件（便于上传 & git 追踪）
+
+> 触发：apkg 文件生成或更新后，压缩为单个 zip 便于上传和版本管理
+
+```
+1. 检查 apkg 文件：ls -lh anki_tool/export/*.apkg
+2. 压缩（PowerShell）：
+   powershell -Command "Compress-Archive -Path '{项目根}/anki_tool/export/*.apkg' -DestinationPath '{项目根}/anki_tool/export/anki_6chapters_all.apkg.zip' -CompressionLevel Optimal"
+3. 验证压缩包：ls -lh anki_tool/export/anki_6chapters_all.apkg.zip
+4. 提交追踪：git add anki_tool/export/anki_6chapters_all.apkg.zip
+```
+
+> apkg 本身已是 zip 格式，压缩率接近 0%，仅起合并归档作用。
 
 ---
 
