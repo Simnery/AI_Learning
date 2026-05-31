@@ -1,0 +1,182 @@
+[
+  {
+    "Word": "Retrieval-Augmented Generation",
+    "Pronunciation": "/rɪˈtriːvəl ɔːɡˈmentɪd ˌdʒenəˈreɪʃən/",
+    "Audio": "",
+    "Definition": "Retrieval-Augmented Generation（检索增强生成）——LLM生成前先从外部知识库检索相关信息，让模型基于参考资料作答，而非仅依赖训练数据中的记忆。面试考察三层：基础层（架构）、设计层（选型决策）、反思层（局限性）。",
+    "ExampleEN": "Retrieval-Augmented Generation retrieves relevant documents first, then feeds them to the model to generate accurate, grounded answers.",
+    "ExampleCN": "检索增强生成先检索相关文档，再将文档内容提供给模型，生成准确的、有据可依的答案。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导。RAG是AI应用工程师面试高频考点，占面试50%分数。建议先学 §2.1 RAG技术章节正文，再读面试辅导。<br><br><b>面试要点</b><br>三层考察：基础层（RAG是什么、架构图怎么画、核心组件有哪些）→ 设计层（为什么选这个Embedding/向量库/分块策略、做过什么调优）→ 反思层（RAG局限性、什么场景不适用、演进方向）。面试官通过追问判断你处于哪一层。从「我用过RAG」→「我设计过RAG系统」→「我知道什么时候不该用RAG」。架构流程：文档加载→文本解析(MinerU/Docling)→分块→Embedding→向量库(FAISS/LanceDB)→用户提问→向量检索→重排序(Rerank)→拼接上下文→LLM生成。答架构图要能解释每个组件的选型理由而非只画图。<br><br><b>避坑指南</b><br>误区1：只画架构图不讲设计决策。误区2：项目描述太笼统没有量化数字。误区3：不懂的技术硬编——面试官3个追问就露馅。简历模板：搭建企业RAG，Docling解析+M3E+LanceDB，混合检索+RRF，Top-3命中率88%，P95 180ms。<br><br><b>延伸节点</b><br>2.1.1 Embeddings和向量数据库 | 2.1.2 RAG技术与应用 | 2.1.4 RAG调优 | 5.1 企业RAG冠军项目"
+  },
+  {
+    "Word": "Chunking",
+    "Pronunciation": "/tʃʌŋkɪŋ/",
+    "Audio": "",
+    "Definition": "Chunking（文档分块）——将长文档切分为适当大小的片段，是RAG系统索引和检索的前置步骤。chunk过大→检索不精准，chunk过小→丢失上下文。三种策略：固定大小、语义分块、递归分块。",
+    "ExampleEN": "Our chunking strategy uses recursive splitting with chunk_size=400 and overlap=15% to balance retrieval precision and contextual completeness.",
+    "ExampleCN": "我们的分块策略使用递归分割，chunk_size=400、重叠15%，以平衡检索精度和上下文完整性。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 Q2。文档分块是RAG调优第一步。建议先学 §2.1.2 分块章节。<br><br><b>面试要点</b><br>三种策略深度对比：①固定大小——简单可控但可能在句子/段落中间切断语义 ②语义分块——用Embedding相似度在语义转折点切分，效果最好但计算开销大，生产环境不划算 ③递归分块——按分隔符优先级（段落→句子→词）递归切分，折中方案兼顾效果和效率。选择逻辑：chunk_size=300-500字符平衡精确性和上下文完整性，overlap=10-20%防止边界切断。面试追问「怎么确定参数值」要答A/B测试验证——不同参数在测试集上对比检索命中率。中文推荐512-1024字符+overlap 200字符。代码按函数/类边界切分。<br><br><b>避坑指南</b><br>不只说「我用递归分块」——要说对比了三种策略后选递归分块，因为生产性价比最高。展示工程权衡思维。说出三种策略的优缺点对比是基础分，解释为什么选递归是加分项。<br><br><b>延伸节点</b><br>2.1.2 RAG技术与应用 | 2.1.4 RAG调优 | Semantic Chunking | RecursiveCharacterTextSplitter"
+  },
+  {
+    "Word": "Reciprocal Rank Fusion",
+    "Pronunciation": "/rɪˈsɪprəkəl ræŋk ˈfjuːʒən/",
+    "Audio": "",
+    "Definition": "RRF（倒数排序融合）——将多个排序列表合并为统一排序的无监督算法，是混合检索的标准融合方法。公式：score(d)=sum(1/(k+rank_i(d)))，k通常取60。",
+    "ExampleEN": "We applied Reciprocal Rank Fusion to merge results from dense vector retrieval and BM25, eliminating the need to normalize scores from different retrievers.",
+    "ExampleCN": "我们使用倒数排序融合来合并稠密向量检索和BM25的结果，无需归一化不同检索器的分数。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导。RRF是混合检索核心算法。建议先学 §2.1.3 检索融合章节。<br><br><b>面试要点</b><br>RRF三大优势：①无需训练——零样本可用不需标注数据 ②无需调参——k=60是经验最优值无需调整 ③无需归一化——不同检索器score分布不同（向量0-1、BM25无界），RRF只关心排名不关心绝对值，天然归一化。公式：score(d)=sum(1/(k+rank_i(d)))，k=60（Cormack 2009 TREC实验）。rank从1开始，排名越靠前的文档权重越大——第1名权重约为第10名的6倍。面试中能讲出公式和k值含义展示对信息检索经典的深入了解。解释为什么RRF比简单加权好：不同retriever的score不在同一量纲上无法直接加权。<br><br><b>避坑指南</b><br>不只是背公式——要解释为什么RRF比简单加权好，展示对融合数学原理的理解。能说出k值来源（Cormack 2009实验）并在实际中使用60，说明你了解学术和工程的衔接。<br><br><b>延伸节点</b><br>2.1.3 检索策略优化 | 混合检索 | Learning-to-Rank | Cormack 2009 | Elasticsearch RRF"
+  },
+  {
+    "Word": "STAR Method",
+    "Pronunciation": "/stɑːr ˈmeθəd/",
+    "Audio": "",
+    "Definition": "STAR Method（STAR法则）——面试描述项目经历的结构化框架：Situation（业务背景和挑战）、Task（你的任务和目标）、Action（你的设计决策和关键行动，3-5点）、Result（量化效果）。",
+    "ExampleEN": "Using the STAR method, I framed my RAG project with a clear Situation, Task, three key design Actions, and quantifiable Results.",
+    "ExampleCN": "我用STAR法则描述RAG项目：清晰的情境、任务、三个关键设计决策行动和可量化的结果。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 自检题Q2。STAR法则是所有面试项目描述标准框架。建议找朋友或AI做3轮模拟面试录音回放找问题。<br><br><b>面试要点</b><br>四要素可量化详解：①Situation——业务背景用数据说话，如「2万篇文档，人工搜索5分钟，错误率30%」而非「公司需要RAG」②Task——你的职责而非团队职责，如「我负责设计检索策略优化Top-3命中率到85%+」③Action——3-5个技术决策+原因（每个选择跟选型理由和对比方案）④Result——量化数据：效率提升X%、成本降低Y%、准确率Z%、延迟P95 Wms。Action是核心——展示决策过程和技术判断力。面试追问「为什么选这个方案」要能说出对比过什么方案和最终选择的理由。<br><br><b>避坑指南</b><br>误区1：只说做了什么不说为什么。误区2：项目描述太笼统没数字。误区3：把团队成绩当个人成果——面试官追问「你具体负责哪部分」立刻露馅。正确：Situation含挑战规模+Task明确个人职责+Action含对比决策+Result含量化指标经得起追问。<br><br><b>延伸节点</b><br>§6 全部面试辅导课 | 简历撰写 | 模拟面试 | 面试反问技巧"
+  },
+  {
+    "Word": "Faithfulness",
+    "Pronunciation": "/ˈfeɪθfəlnəs/",
+    "Audio": "",
+    "Definition": "Faithfulness（忠实度）——RAG评估核心指标，衡量LLM生成的答案是否忠实于检索到的文档内容。Faithfulness低=模型在编造（幻觉），是RAG系统的核心质量保障指标。",
+    "ExampleEN": "We track Faithfulness weekly using RAGAS; if it drops below 0.85, we investigate whether the model is hallucinating or the retrieval quality has degraded.",
+    "ExampleCN": "我们每周用RAGAS追踪忠实度；若低于0.85，则排查是模型在编造还是检索质量下降。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 Q10。Faithfulness是反幻觉核心指标。建议先学 §2.1.5 RAG评估章节。<br><br><b>面试要点</b><br>计算原理：逐句拆解答案→对每句判断能否在检索文档中找到依据→有依据句数/总句数。低=模型编造文档中没有的信息（幻觉），高=答案严格基于检索文档。面试展示三点：①建立了Faithfulness周监控流水线 ②设定警报阈值<0.85触发排查 ③有实际改进案例——如发现某类问题Faithfulness持续偏低，排查发现对应文档Chunk Size太大，优化后从0.75提升到0.88。与其它指标交叉解读：高Faithfulness+低Answer Relevance=忠于文档但答非所问需优化Prompt；低Faithfulness+高Context Precision=检索准但模型在编造需降温或换模型。<br><br><b>避坑指南</b><br>不要把Faithfulness孤立看待——需要和其他RAGAS指标联合分析才能精准定位问题。展示从指标到改进的完整闭环：发现问题→排查根因→优化→重新评估。<br><br><b>延伸节点</b><br>RAGAS | Hallucination | 2.1.5 RAG评估 | Answer Relevance | Context Precision"
+  },
+  {
+    "Word": "Model Context Protocol",
+    "Pronunciation": "/ˈmɒdəl ˈkɒntekst ˈprəʊtəkɒl/",
+    "Audio": "",
+    "Definition": "MCP（模型上下文协议）——Anthropic提出的标准化Agent工具协议，定义了LLM与外部工具/数据源之间的统一交互接口。核心理念：Tool注册+发现+沙箱执行+结果标准化，类似USB协议之于外设。",
+    "ExampleEN": "The Model Context Protocol standardizes how agents discover and invoke tools across different LLM platforms, making tool implementations portable and reusable.",
+    "ExampleCN": "模型上下文协议标准化了Agent在不同LLM平台上发现和调用工具的方式，使工具实现可移植可复用。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.2 Agent面试辅导 进阶方向 + §6.3 Q9。MCP是Agent工具标准化的前沿协议。<br><br><b>面试要点</b><br>面试中如果能在Claude Code中实现自定义MCP Server是非常亮眼的项目经历。核心理念类比USB协议之于外设。四个环节：Tool注册（name+description+schema+handler）→ Tool发现（Agent按需匹配）→ 沙箱执行（隔离+超时）→ 结果标准化（统一JSON格式）。<br><br><b>延伸节点</b><br>https://modelcontextprotocol.io/ | 2.2.1 Function Calling与MCP"
+  },
+  {
+    "Word": "Memory",
+    "Pronunciation": "/ˈmeməri/",
+    "Audio": "",
+    "Definition": "Memory（记忆管理）——LangChain中管理对话上下文的核心组件。底层机制：每次调用时自动将历史消息注入Prompt的对话历史字段。四种类型：Buffer（全量存储）、Window（滑动窗口保留最近K轮）、Summary（LLM压缩历史到固定长度）、VectorStore（检索相关历史）。",
+    "ExampleEN": "LangChain's Memory component injects conversation history into the prompt on every call, with SummaryMemory using an LLM to compress long histories to a fixed length.",
+    "ExampleCN": "LangChain的Memory组件每次调用时将对话历史注入提示词，SummaryMemory用LLM将长历史压缩为固定长度。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.3 框架面试辅导 Q4 + §6.2 Agent状态管理。Memory是框架面试原理考查重点。建议先学 §3.1 LangChain Memory组件。<br><br><b>面试要点</b><br>不要只答API名称，要解释底层机制：每次调用自动从Memory取出历史消息注入Prompt对话历史字段。四种类型对比：①Buffer——全量存储token无限增长，适合短对话<10轮 ②Window——滑动窗口保留最近K轮固定token但可能丢失早期信息 ③Summary——LLM压缩历史到固定长度保留关键信息但有损，适合长对话 ④VectorStore——检索相关历史而非全量注入，精准但需额外检索。Agent四层记忆设计：短期(当前对话Buffer/Window)、中期(会话摘要SummaryMemory)、长期(LanceDB持久化用户偏好)、工具状态(文件系统/Git状态跨对话可恢复)。关键设计：状态序列化(JSON可恢复)、状态隔离(多用户不干扰)、状态清理(过期自动清除)。<br><br><b>避坑指南</b><br>解释底层机制+区分四种Memory使用场景+展示状态管理工程设计(序列化/隔离/清理)。面试追问：Memory在并发/多用户场景怎么处理？提前准备答案。<br><br><b>延伸节点</b><br>3.1 LangChain Memory | 上下文工程 | Token管理 | 状态管理 | LanceDB"
+  },
+  {
+    "Word": "HuggingFace Pipelines",
+    "Pronunciation": "/ˈhʌɡɪŋfeɪs ˈpaɪplaɪnz/",
+    "Audio": "",
+    "Definition": "HuggingFace Pipelines——HuggingFace提供的高层推理API，支持20+任务类型（文本分类/问答/摘要/NER等），自动匹配模型+Tokenizer，实现零代码模型推理。局限：黑盒不可定制预处理、不支持复杂训练流程、不适合生产级自定义pipeline。",
+    "ExampleEN": "HuggingFace Pipelines enable zero-code inference across 20+ task types by auto-matching models with their tokenizers, ideal for rapid prototyping.",
+    "ExampleCN": "HuggingFace Pipelines通过自动匹配模型和分词器实现20+任务类型的零代码推理，是快速原型验证的利器。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.3 框架面试辅导 Q10。Pipelines是快速原型验证利器。建议先学 §3.4 HuggingFace生态。<br><br><b>面试要点</b><br>优势与局限（面试展示批判性思维——既要讲优势也要讲局限）。三大优势：①零代码推理——一行pipeline即可运行 ②自动匹配Model+Tokenizer——避免手动配对错误导致输出乱码 ③支持20+任务类型覆盖NLP/CV/Audio。三大局限：①黑盒不可定制——无法改分词逻辑/添加自定义前后处理 ②不支持复杂训练流程——Pipelines只用于推理，训练必须用Trainer或手写循环 ③不适合生产级——性能优化/批处理/量化/ONNX需要手写推理。Pipelines vs Transformers关系：Pipelines是Transformers高层封装，快速原型用Pipeline验证想法，生产环境用Transformers手写推理实现性能优化。面试展示你知道边界和适用场景。<br><br><b>避坑指南</b><br>不只说会用pipeline——要能说出局限和使用边界。能对比Pipeline vs 手动推理的性能差异是加分项。展示你知道什么时候该用什么时候不该用。<br><br><b>延伸节点</b><br>3.4 HuggingFace生态 | Transformers库 | AutoTokenizer | AutoModel | Trainer"
+  },
+  {
+    "Word": "Fine-tuning",
+    "Pronunciation": "/faɪn ˈtjuːnɪŋ/",
+    "Audio": "",
+    "Definition": "Fine-tuning（模型微调）——在预训练模型基础上用特定领域数据小幅度更新模型参数，使模型适应特定任务或风格。与预训练的区别：预训练学通用能力（千万级成本），微调学特定技能（百-万元级成本）。是AI应用工程师和AI训练工程师的分水岭。",
+    "ExampleEN": "Fine-tuning updates model parameters on domain-specific data, adapting the model to a specific task without the massive cost of pre-training from scratch.",
+    "ExampleCN": "微调在特定领域数据上更新模型参数，使模型适应特定任务，无需从头预训练的巨大成本。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q1-Q3。微调是区分能力层级的分水岭——能微调模型的工程师远比只会调API的值钱。建议先学 §2.3 模型训练与微调。<br><br><b>面试要点</b><br>三层能力验证：概念层（预训练vs微调vs PEFT vs LoRA定义区别——预训练学通用能力成本千万级，微调学特定技能成本百万元级，PEFT只训练少量参数，LoRA=低秩分解h=Wx+BAx）→ 工程层（显存估算7B LoRA r=16 FP16约14.3GB；数据清洗三层过滤保留率40%；过拟合检测训练PPL降但验证PPL升；loss不下降诊断学习率/数据质量/梯度) → 策略层（何时微调vs RAG：风格固定→微调，知识更新频→RAG，引用溯源→RAG，无算力→RAG。组合：RAG检索知识+微调模型控制风格口吻）。面试官通过显存计算题和故障诊断题判断工程深度。<br><br><b>避坑指南</b><br>误区1：把调过API说成做过微调——只有真实改过模型权重才算。误区2：不准备显存计算题。误区3：数据质量回答太空洞——要说具体过滤流程和保留率。<br><br><b>延伸节点</b><br>2.3 模型训练与微调 | PEFT | LoRA | QLoRA | 数据工程 | 模型评估"
+  },
+  {
+    "Word": "Supervised Fine-Tuning",
+    "Pronunciation": "/ˈsuːpəvaɪzd faɪn ˈtjuːnɪŋ/",
+    "Audio": "",
+    "Definition": "SFT（监督微调/指令微调）——Supervised Fine-Tuning，用标注好的指令-回复对训练模型的微调方法。数据格式为messages数组，含system/user/assistant三个角色，assistant回答是训练目标。",
+    "ExampleEN": "SFT uses labeled instruction-response pairs where the assistant's response is the training target, teaching the model to follow instructions faithfully.",
+    "ExampleCN": "SFT使用标注好的指令-回复对，assistant的回复是训练目标，教会模型忠实地遵循指令。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q8。SFT是最基础最重要的微调阶段。建议先学 §2.3 微调技术SFT。<br><br><b>面试要点</b><br>数据格式：{messages:[{role:system,content:角色行为},{role:user,content:问题},{role:assistant,content:期望回答}]}。三角色含义：system定义全局风格，user清晰具体输入，assistant训练目标模型学习模仿。数据来源建议比例：开源数据集(1):业务数据(3):合成数据(6)。五条质量标准：多样性(覆盖不同场景)、准确性(事实标注无误)、一致性(格式统一答案一致)、代表性(与线上分布一致)、平衡性(各类型比例均衡)。三层过滤：格式校验(JSON合法+必需字段)→ 规则过滤(长度/语言/去重/敏感词)→ LLM评分(1-5分<3分丢弃)，最终保留率约40%。合成数据注意偏差：用强模型生成弱模型学可能学到幻觉或偏见。<br><br><b>避坑指南</b><br>数据质量回答要具体——「高质量数据」等于没说。要说三层过滤流程、关键规则和保留率。面试追问怎么判断数据质量要能答出具体标准。<br><br><b>延伸节点</b><br>2.3 模型训练与微调 | RLHF | DPO | 数据工程 | 合成数据"
+  },
+  {
+    "Word": "BLEU",
+    "Pronunciation": "/bluː/",
+    "Audio": "",
+    "Definition": "BLEU（双语评估替补）——Bilingual Evaluation Understudy，评估文本生成质量的自动化指标。通过n-gram精确匹配度衡量生成文本与参考文本的相似度，侧重精确率。主要用于翻译和文本生成初步评估。",
+    "ExampleEN": "After fine-tuning with 2k cleaned samples, the BLEU score improved by 15% on our domain-specific test set, confirmed by human evaluation.",
+    "ExampleCN": "用2000条清洗样本微调后，领域测试集上的BLEU分数提升了15%，并经人工评估确认。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q9-Q10+简历Bullet。BLEU是经典自动化评估指标。建议先学 §2.3 模型评估。<br><br><b>面试要点</b><br>自动化评估三件套：①BLEU精确率导向——n-gram精确匹配度衡量生成文本与参考文本相似度，侧重生成内容有多少是正确。核心是modified n-gram precision+brevity penalty ②ROUGE召回率导向——参考文本有多少被生成文本覆盖。BLEU和ROUGE互补 ③PPL困惑度——衡量模型预测能力，越低语言越流畅。完整评估流程：自动化做初筛(BLEU/ROUGE/PPL批量跑快速定位差模型，成本低)→ 人工盲评A/B测试做终判(准确性/流畅性/安全性多维度打分，评估者不知哪个是微调版)。仅BLEU不够——可能高分但答非所问，需多指标+人工评估。面试展示你知道自动化指标局限——可能高分但不实用(模型学会刷分)。<br><br><b>避坑指南</b><br>不要说BLEU分数提升了所以效果好——BLEU是参考文本匹配度不能完全反映质量。要结合人工盲评和多指标。展示评估体系完整性。<br><br><b>延伸节点</b><br>2.3 模型评估 | ROUGE | Perplexity | n-gram Precision | 人工评估A/B测试"
+  },
+  {
+    "Word": "ROUGE",
+    "Pronunciation": "/ruːʒ/",
+    "Audio": "",
+    "Definition": "ROUGE（面向召回率的摘要评估替补）——Recall-Oriented Understudy for Gisting Evaluation，侧重衡量召回率（生成文本覆盖了多少参考文本内容），与BLEU侧重精确率互补。常用于摘要任务评估。",
+    "ExampleEN": "We evaluated the fine-tuned model using ROUGE for recall and BLEU for precision, plus human blind A/B testing for the final quality judgment.",
+    "ExampleCN": "我们用ROUGE评估召回率、BLEU评估精确率，再加上人工盲评A/B测试做最终质量判断。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q9-Q10。ROUGE与BLEU互补使用。建议先学 §2.3 模型评估。<br><br><b>面试要点</b><br>ROUGE家族四个变体：①ROUGE-N(n-gram召回率) ②ROUGE-L(LCS最长公共子序列召回率衡量词序) ③ROUGE-W(加权LCS连续匹配权重更高) ④ROUGE-S(skip-bigram允许跳过n词)。最常用ROUGE-1和ROUGE-L。BLEU vs ROUGE核心差异：BLEU侧重精确率(生成中多少正确)，ROUGE侧重召回率(参考中多少被覆盖)。二者互补——高BLEU低ROUGE=生成正确但遗漏大量信息。PPL评估流畅度——低PPL=语言流畅自然，但低PPL不等于好答案(可能流畅但答非所问)。实战：BLEU+ROUGE自动化初筛→PPL监控流畅度→人工盲评A/B做终判。面试展示你知道不同指标衡量不同维度。<br><br><b>避坑指南</b><br>不要孤立看ROUGE——和BLEU是同一枚硬币两面。展示你知道用什么指标衡量什么维度的质量。注意自动指标只是参考不能替代人工——模型可能学会游戏指标(生成很长刷ROUGE分)。<br><br><b>延伸节点</b><br>2.3 微调评估 | BLEU | Perplexity | LCS算法 | 人工评估盲评"
+  },
+  {
+    "Word": "Perplexity",
+    "Pronunciation": "/pəˈpleksɪti/",
+    "Audio": "",
+    "Definition": "Perplexity（困惑度/PPL）——衡量语言模型对文本预测能力的指标，值为交叉熵损失的指数形式。值越低表示模型对文本越「不困惑」，语言越流畅。训练中监控PPL可及早发现过拟合。",
+    "ExampleEN": "A lower perplexity indicates the model finds the text more predictable — we monitor PPL during training to detect when validation PPL starts diverging from training PPL.",
+    "ExampleCN": "困惑度越低表示模型认为文本越可预测——我们在训练中监控PPL以检测验证PPL何时开始偏离训练PPL。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q9-Q10。PPL是训练监控核心指标。建议先学 §2.3 模型评估。<br><br><b>面试要点</b><br>PPL=exp(cross_entropy_loss)，直观理解：模型对下一个token有多少等可能候选——PPL=10=在10个选项中犹豫。三大用途：①训练监控——训练PPL降但验证PPL升→过拟合最早信号，比下游指标更灵敏，需early stop ②横向对比——同测试集上PPL低的模型语言建模更强(需同tokenizer才能比) ③数据质量检测——单条数据PPL异常高可能含噪声或标注错误。三大局限：①低PPL不等于好答案——可能流畅但答非所问(把翻译当续写) ②PPL对格式和重复性敏感——格式完美的低质答案可能PPL更低 ③不能跨词表比较。训练loss不下降排查：学习率→数据噪声→梯度爆炸/消失→优化器配置。能根据loss曲线诊断问题展示工程经验。<br><br><b>避坑指南</b><br>不只说PPL定义——更要说出局限和训练监控实战。loss不下降排查是面试常见故障诊断题。展示能根据loss曲线诊断问题(震荡→学习率过大，不降→学习率过小或数据差)。<br><br><b>延伸节点</b><br>2.3 模型评估 | Cross-Entropy Loss | 过拟合检测 | Early Stopping | 梯度检查"
+  },
+  {
+    "Word": "Model Distillation",
+    "Pronunciation": "/ˈmɒdəl ˌdɪstɪˈleɪʃən/",
+    "Audio": "",
+    "Definition": "Model Distillation（模型蒸馏/知识蒸馏）——Teacher-Student范式：用大模型（Teacher）的输出（软标签/推理过程）训练小模型（Student）。软标签含丰富信息——不只是正确答案，还有各选项的概率分布，让小模型学到Teacher的推理能力。温度参数T控制软标签平滑度。",
+    "ExampleEN": "Model distillation transfers the teacher's reasoning capability through soft labels — the student learns why an answer is correct, not just what the answer is.",
+    "ExampleCN": "模型蒸馏通过软标签传递教师的推理能力——学生学到了答案为什么正确，而不仅仅是答案是什么。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q11+简历Bullet。蒸馏是模型小型化核心技术。建议先学 §2.3 模型优化。<br><br><b>面试要点</b><br>深度回答三要素：①Teacher-Student——大模型Teacher(如7B)用推理能力生成软标签指导小模型Student(如1.8B)学习。Teacher固定不训练，Student模仿Teacher输出分布学习 ②软标签核心价值——不只是正确答案是B，而是A:0.05 B:0.70 C:0.20 D:0.05每个选项都有概率。正确答案0.7分，相似错误答案0.2分。这比硬标签信息量大得多：学生从分布中学到C虽然不对但很接近，学到「为什么对」而不只是「什么是答案」。这是软标签优于硬标签的本质原因 ③温度T控制软标签平滑度——T>1分布更平滑揭示类间关系，T<1更尖锐。训练时Teacher用高T(如T=4)生成软标签。简历模板：蒸馏7B→1.8B，推理成本降60%，效果损失<3%(业务集验证)。<br><br><b>避坑指南</b><br>不说大模型教小模型——要说软标签价值和温度参数作用。展示对蒸馏本质的理解。追问为什么蒸馏效果能接近大模型：软标签信息量远超硬标签。<br><br><b>延伸节点</b><br>2.3 模型优化 | Knowledge Distillation | 模型压缩 | Temperature | 推理成本优化"
+  },
+  {
+    "Word": "Visual Question Answering",
+    "Pronunciation": "/ˈvɪʒuəl ˈkwestʃən ˈɑːnsərɪŋ/",
+    "Audio": "",
+    "Definition": "VQA（视觉问答）——多模态AI任务：输入=图片+自然语言问题，输出=自然语言答案。与传统CV（输出固定类别标签/框/掩码）相比，VQA更通用灵活但精度不如专用CV模型。代表模型：Qwen-VL、GPT-4V。",
+    "ExampleEN": "VQA takes an image and a natural language question as input, producing a free-form text answer — more flexible than traditional CV but less precise on specialized tasks.",
+    "ExampleCN": "VQA以图片和自然语言问题为输入，生成自由文本答案——比传统CV更灵活但在专业任务上精度较低。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q12-Q13。VQA是多模态AI入门任务。建议先学多模态模型章节。<br><br><b>面试要点</b><br>VQA vs 传统CV三维对比：①输入——VQA=图片+自然语言问题(双模态)，传统CV=仅图片(单模态) ②输出——VQA=自然语言答案(自由文本)，传统CV=标签/框/掩码(结构化) ③泛化vs精度——VQA更通用灵活但精度不如专用CV。CV三大任务速记：分类(整图→标签看图说话)、检测(定位+分类画框定位)、分割(逐像素分类像素描边)。代表模型：Qwen-VL(阿里开源中英)、GPT-4V(商用最强)、LLaVA(开源学术)。工业质检VQA应用：上传缺陷图→自动生成质检报告描述缺陷类型+位置+严重程度+建议处理方式。面试展示知道不同方案适用边界——什么时候用YOLO，什么时候用Qwen-VL。<br><br><b>避坑指南</b><br>不只说VQA是什么——要对比传统CV说明为什么需要VQA。展示你知道技术选型的边界判断，这是工程权衡思维的体现。补充三大任务概念。<br><br><b>延伸节点</b><br>多模态模型 | Qwen-VL | GPT-4V | CV三大任务 | 工业质检 | LLaVA"
+  },
+  {
+    "Word": "Fairness in Evaluation",
+    "Pronunciation": "/ˈfeənəs ɪn ɪˌvæljuˈeɪʃən/",
+    "Audio": "",
+    "Definition": "Bias（模型偏见/偏见评估）——面试中指AI模型的公平性评估。面试中强调人工评估使用盲评A/B测试（评估者不知道哪个是微调版，哪个是对比版），避免评估者自身偏见影响结果。",
+    "ExampleEN": "We conduct blind A/B tests where evaluators don't know which model generated which answer, ensuring fairness in human evaluation.",
+    "ExampleCN": "我们进行盲评A/B测试，评估者不知道哪个模型生成哪个答案，确保人工评估的公平性。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.4 微调面试辅导 Q9-Q10。公平评估是模型评估体系重要一环。建议先学 §2.3 模型评估。<br><br><b>面试要点</b><br>人工评估四最佳实践：①盲评A/B测试——评估者不知哪个是微调版哪个baseline，UI随机打乱消除期望偏差(知道是微调版潜意识给高分) ②多维度打分——准确性/流畅性/安全性/完整性，每维独立1-5分不笼统一个总分 ③多人交叉评估——2-3人独立评同一批样本，计算评估者间一致性(Cohen's Kappa)，不一致case讨论达成共识不简单平均 ④统计分析——不看平均分，看分维度分布(方差/四分位数)、一致性。低一致性维度说明标准不清晰需细化。面试展示完整评估设计思维：样本选择→流程→分析→一致性检验。展示你知道评估本身也可能有bias需要方法论消除。<br><br><b>避坑指南</b><br>不简单说我做了人工评估——要说怎么做的(盲评/多维度/多人交叉/一致性检查)。面试追问「评估者意见不一致怎么办」要有流程：讨论分歧→完善标准→必要时第三人裁决。<br><br><b>延伸节点</b><br>2.3 模型评估 | BLEU/ROUGE | A/B Testing | Cohen's Kappa | 实验设计"
+  },
+  {
+    "Word": "A/B Testing",
+    "Pronunciation": "/eɪ biː ˈtestɪŋ/",
+    "Audio": "",
+    "Definition": "A/B Testing（A/B测试/对照实验）——数据驱动的技术决策方法：同时运行两个版本（如新旧Embedding模型/分块策略/微调模型），对比核心指标差异，用数据而非直觉做决策。面试中展示A/B测试说明你有工程度量意识。",
+    "ExampleEN": "We run A/B tests to compare new chunking strategies against the baseline, measuring retrieval accuracy and latency before rolling out changes.",
+    "ExampleCN": "我们用A/B测试对比新分块策略与基线版本，在上线变更前衡量检索准确率和延迟。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 Q9 + §6.4 Q9-Q10。A/B测试贯穿RAG和微调全流程。建议先学项目实战章节实验设计。<br><br><b>面试要点</b><br>RAG场景A/B测试实战：①知识库维护——新旧分块策略并行，对比命中率/无答案率/满意度。p<0.05且提升>5%才全量上线，防随机波动误判 ②Embedding更换——新旧并行对比多维度指标。核心原则：新模型各项不能显著劣于旧(不能引入回归) ③重排序——对比加Rerank效果量化精排收益。模型评估：盲评A/B消除期望偏差。标准A/B四步：①确定核心指标(单一清晰) ②显著性p<0.05 ③样本量统计功效>0.8 ④结果判定：显著提升→灰度→全量；不显著→维持；下降→回退重设计。展示不凭直觉做决策——通过A/B测试验证后上线，这是数据驱动思维。<br><br><b>避坑指南</b><br>说做了A/B测试要跟具体指标+显著性检验结合——只跑A/B没统计检验等于没做。展示统计思维。追问不显著怎么办：样本量不够/差异不大/指标不敏感。<br><br><b>延伸节点</b><br>§6.1 知识库维护 | §6.4 模型评估 | 数据驱动决策 | p值 | 统计功效 | 灰度发布"
+  },
+  {
+    "Word": "Prompt Engineering",
+    "Pronunciation": "/prɒmpt ˌendʒɪˈnɪərɪŋ/",
+    "Audio": "",
+    "Definition": "Prompt Engineering（提示工程）——LLM应用开发三种模式之一（Prompt/RAG/微调），不修改模型，通过设计提示词引导输出。是三种模式中最轻量的入门方式，面试中需说明与RAG和微调的适用场景选择。",
+    "ExampleEN": "Prompt Engineering is the lightest of the three LLM application patterns — it requires no model modification, only careful prompt design.",
+    "ExampleCN": "提示工程是三种LLM应用模式中最轻量的——不需要修改模型，只需要精心设计提示词。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 Q1。三种模式选择是面试基础题。建议先学 §1.1.1 提示工程。<br><br><b>面试要点</b><br>三种模式选择依据（按复杂度递增）：①Prompt工程——最简单，不修改模型，提示词引导输出。适用：简单任务(分类/情感分析)，零数据需求启动快，成本最低(仅API调用)。局限：效果上限低，复杂任务无法仅靠提示 ②RAG——外挂知识库，检索+生成。适用：需要事实准确性(法律/医疗/企业文档)，知识更新频繁(不重训)，需引用溯源。成本中等(向量库+检索+LLM) ③微调——修改模型权重适应特定任务。适用：固定风格格式，领域术语密集(RAG上下文不够)，有足够标注数据。成本最高(GPU+标注)。决策树：数据少→Prompt；需准确性更新→RAG；需固定格式有标注→微调。组合：RAG检索知识+微调控制口吻各管各的。展示不是选最好技术而是选最适合当前场景的技术方案。<br><br><b>避坑指南</b><br>不说微调最好也不是Prompt就够了——每种有适用场景。展示tradeoff理解和适用条件判断。能说三者的互补组合使用(非互斥)是加分项。<br><br><b>延伸节点</b><br>1.1.1 提示工程 | RAG | Fine-tuning | Few-shot Prompting | Chain-of-Thought"
+  },
+  {
+    "Word": "Overlap",
+    "Pronunciation": "/ˈəʊvəlæp/",
+    "Audio": "",
+    "Definition": "Overlap（重叠窗口）——RAG文档分块时相邻chunk间的重叠比例，通常10-20%。防止关键信息恰好落在两个chunk的边界被切断。典型值：chunk_size=300-500，overlap=10-20%。",
+    "ExampleEN": "A 15% overlap between chunks ensures that sentences split across boundaries can be retrieved from either adjacent chunk.",
+    "ExampleCN": "分块之间15%的重叠确保跨边界被切断的句子仍能从相邻任一分块中检索到。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 Q2。Overlap是分块策略关键参数。建议先学 §2.1.2 文档分块。<br><br><b>面试要点</b><br>参数选择工程权衡：「300-500 chunk_size+10-20% overlap是精确性和上下文完整性的平衡。」四点分析：①太大(30%)浪费存储和token——每个chunk额外存储30%重复、向量库膨胀、检索重复率高(同一句出现相邻两chunk需去重) ②太小(5%)丢信息——切分边界穿过关键句，前半句在chunkA后半句在chunkB，无overlap两chunk都检索不到完整信息 ③最佳值通过A/B测试确定——对比5%/10%/15%/20%检索命中率，数据决策非直觉 ④与递归分块配合——递归分块无法保证每个切分点完美语义边界，overlap充当安全网确保即便不完美信息也不丢。中文chunk 512-1024字符+overlap 200字符(约20%)。英文chunk 256-512 tokens+overlap 50-100 tokens。Golden rule：先定chunk_size再取10-20%为overlap。面试追问overlap过大有什么问题：存储膨胀+重复率高+token浪费。<br><br><b>避坑指南</b><br>不简单说设了15%——解释为什么15%不是5%或30%。展示A/B测试确定参数的工程方法论。追问过大问题要能回答三点：存储膨胀、检索重复、token浪费。<br><br><b>延伸节点</b><br>2.1.2 文档分块 | Chunk Size | 递归分块 | A/B测试 | 检索去重"
+  },
+  {
+    "Word": "Semantic Chunking",
+    "Pronunciation": "/sɪˈmæntɪk tʃʌŋkɪŋ/",
+    "Audio": "",
+    "Definition": "Semantic Chunking（语义分块）——RAG文档分块策略之一：按段落/句子/语义边界切分文档，通过Embedding相似度判断断点位置。效果最好（保留完整语义）但实现最复杂（计算开销大）。",
+    "ExampleEN": "Semantic chunking splits documents at natural semantic boundaries using embedding similarity, preserving meaning better than fixed-size chunking at the cost of higher computation.",
+    "ExampleCN": "语义分块通过嵌入相似度在自然语义边界处切分文档，比固定大小分块更好地保留含义，但计算成本更高。",
+    "Notes": "<b>学习路径</b><br>知识图谱 §6.1 RAG面试辅导 Q2。三种分块策略对比是面试基础题。建议先学 §2.1.2 文档分块。<br><br><b>面试要点</b><br>三种策略深度对比(效果+成本二维)：①固定大小——按字符等长切分。优点：简单几行代码，速度快无额外计算，可预测chunk恒定。缺点：无视语义可能在句子/段落中间切断，语义破坏严重 ②语义分块——Embedding算相邻句余弦相似度，相似度低谷切分(语义转折点)。优点：效果最好chunk内部语义连贯。缺点：计算开销大每句跑Embedding，阈值需调参(高=更多小chunk)，生产不适合大规模 ③递归分块——按分隔符优先级(段落→句号→逗号→空格→字符)递归切分。优点：尽可能自然语言边界切分比固定好，比语义省计算。缺点：不保证完美语义。生产首选性价比最高。成熟判断：语义最好但生产不可行，递归是务实折中。展示不追求理论最优而是工程最实用。<br><br><b>避坑指南</b><br>展示工程权衡：纯语义理论上最好但生产不划算，递归+overlap折中兼顾效果效率。体现工程实用主义——知道理论最优也知道工程最实用的选择。<br><br><b>延伸节点</b><br>2.1.2 文档分块 | Chunk Size | 递归分块 | Embedding相似度 | 分块参数调优"
+  }
+]

@@ -1,0 +1,299 @@
+[
+  {
+    "Word": "Spec Coding",
+    "Pronunciation": "/spɛk ˈkoʊdɪŋ/",
+    "Audio": "",
+    "Definition": "Spec Coding（规格驱动编程）——用精准的需求规格（输入/输出/约束）约束 AI 生成代码，用确定性驾驭概率性",
+    "ExampleEN": "Spec Coding turns a vague request into precise constraints with input types, output formats, and boundary conditions, so the AI produces correct code in one shot.",
+    "ExampleCN": "Spec Coding 把模糊的需求变成精确的约束——明确输入类型、输出格式和边界条件，让 AI 一次就生成正确的代码。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.1 核心概念。Spec Coding 三铁律（精准定义边界/分步验证/测试先行）是 AI 编程时代的基础方法论。核心矛盾：LLM 本质是概率系统，同 prompt 可能产出不同代码，但软件工程要求确定性。Spec Coding 就是用约束和流程让概率性 AI 产出确定性结果。<br><br><b>三铁律</b><br>① 精准定义边界：给定具体输入输出类型和约束，而非模糊描述。例：「写一个登录功能」→「写 POST /login，接收 {email, password}，返回 {token, user}，密码 bcrypt 验证，token 用 JWT 有效期 7 天，email 正则验证，错误返回 401 {error: msg}」<br>② 分步验证：每完成一小步立即验证，问题早发现早修正。方法：写接口→验证→写逻辑→验证→写测试→验证→...<br>③ 测试先行：测试用例 = 可执行的确定性约束，实现 = AI 的概率性输出<br><br><b>AI 编程质量公式</b><br>质量 = 需求明确度 × 上下文精准度 × 验证严格度，任何因子为 0 则整体为 0<br><br><b>渐进式复杂度管理三步</b><br>① 建立心像（让 AI 理解系统全貌和当前任务位置）→ ② 小步快跑（每次只实现最小可验证单元，每步验证）→ ③ 层层加固（每完成一层立即加测试/错误处理/文档）<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.1.3 知识飞轮 | 4.2.1 思维跃迁"
+  },
+  {
+    "Word": "Context Engineering",
+    "Pronunciation": "/ˈkɒntekst ˌendʒɪˈnɪərɪŋ/",
+    "Audio": "",
+    "Definition": "Context Engineering（上下文工程）——给 AI 提供恰到好处的背景信息（架构/模块/文件），是决定 AI 输出质量的第一要素",
+    "ExampleEN": "Context engineering involves layering architecture, module, and file-level information so the AI understands the full picture before writing code.",
+    "ExampleCN": "上下文工程将架构层、模块层、文件层信息分层注入，确保 AI 在写代码前理解全貌。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.1 核心概念。三个层次：微观（当前文件+类型定义+调用关系）、中观（模块架构+数据流+编码规范）、宏观（系统架构+业务领域+技术约束）。上下文工程是决定 AI 输出质量的第一要素。<br><br><b>传统 vs AI 编程</b><br>传统: 阅读代码→理解→修改<br>AI: 构建上下文→喂给AI→审查输出→修正上下文→再生成<br><br><b>大型项目策略</b><br>分层注入(架构→模块→文件)/按需检索(RAG 实时拉取相关代码片段)/知识固化(频繁使用的上下文写入 CLAUDE.md 或规则文件)/渐进展开(像读代码一样，从入口文件开始逐层深入)<br><br><b>上下文裁剪原则</b><br>不同 Agent 角色需要不同上下文——Spec Agent 只需 API 规范，Code Agent 需要 Spec+相关代码文件，Review Agent 只需 Diff+编码规范。不裁剪的后果：Token 浪费(成本高)、信息过载(输出质量下降)、可能泄露敏感信息给不该看到的 Agent。<br><br><b>思维跃迁三步</b><br>① 接受「不写代码」的不适感——用「今天做了多少正确架构决策」取代「今天写了多少行代码」<br>② 从关注「How」转向「What+Why」——不再想具体实现，而是想模块边界和设计理由<br>③ 建立「AI 管理」能力——学会拆分任务、构建上下文、验证产出、给予有效反馈<br><br><b>延伸节点</b><br>4.1.1 确定性驾驭概率性 | 4.1.3 知识飞轮 | 2.1.2 RAG技术与应用"
+  },
+  {
+    "Word": "AI Pipeline",
+    "Pronunciation": "/eɪ aɪ ˈpaɪplaɪn/",
+    "Audio": "",
+    "Definition": "AI Pipeline（AI流水线）——把代码编写、测试、审查、部署串联成自动化流程，每个环节由 AI Agent 负责或辅助",
+    "ExampleEN": "An AI pipeline chains Spec Agent, Code Agent, Test Agent, and Review Agent together, with automatic retry loops when tests fail.",
+    "ExampleCN": "AI 流水线把 Spec Agent、Code Agent、Test Agent、Review Agent 串联起来，测试失败时自动回传错误并修复。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.2 核心概念。从「AI 辅助写一段代码」升级到「AI 驱动整个开发流程」。流水线架构: 需求→Spec Agent→Code Agent→Test Agent→Review Agent→Doc Agent→Deploy Agent，全程 Human-in-the-loop。<br><br><b>核心特性：自动回环</b><br>Code Agent 生成→Test Agent 运行→失败→自动回传错误→Code Agent 修复→重新测试，流水线具备自愈能力。关键防护：必须设 max_retries 上限防止死循环，达到上限后人工介入。<br><br><b>多智能体四种协作模式</b><br>① 串行流水线: A→B→C，上游输出是下游输入<br>② 并行分工: 多 Agent 同时工作在不同模块<br>③ 辩论模式: 多 Agent 给出不同方案，人选最佳<br>④ Critic 模式: 一个写，另一个专门挑刺<br><br><b>上下文裁剪必要性</b><br>每个 Agent 角色不同，不裁剪导致: Token 浪费(成本高，流水线 token 消耗是单次对话的 3-10 倍)/信息过载(Agent 被无关信息干扰，输出质量下降)/规则冲突(不同场景的规则可能互相矛盾)/可能泄露敏感信息<br><br><b>落地建议</b><br>① 先从最小流水线(需求→代码→测试)开始，证明可行性② 从低成本模型做低风险环节(GPT-3.5/Claude Haiku)，强模型做核心环节③ 关键环节(部署到生产/修改数据库 schema/安全相关变更)必须保留人工确认<br><br><b>延伸节点</b><br>4.1.1 Spec Coding | 2.2.2 Agent自主规划 | 4.1.4 审查优化闭环"
+  },
+  {
+    "Word": "Multi-Agent Collaboration",
+    "Pronunciation": "/ˈmʌlti ˈeɪdʒənt kəˌlæbəˈreɪʃən/",
+    "Audio": "",
+    "Definition": "Multi-Agent Collaboration（多智能体协作）——多个 AI Agent 分工合作完成复杂任务，有串行、并行、辩论、Critic 四种模式",
+    "ExampleEN": "Multi-agent collaboration uses a Code Agent to generate code and a Review Agent to critique it, iterating until quality is met.",
+    "ExampleCN": "多智能体协作让 Code Agent 生成代码、Review Agent 负责挑刺，反复迭代直到质量达标。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.2 四种协作模式。在 AI 流水线中编排多个 Agent 分工合作，是提升复杂任务质量的关键架构设计。<br><br><b>四种模式</b><br>① 串行流水线: A→B→C，上游输出是下游输入。适用场景：需求→开发→测试，流程固定<br>② 并行分工: 多 Agent 同时工作在不同模块。适用场景：前端/后端/测试同时开发<br>③ 辩论模式: 多 Agent 给出不同方案，人选最佳。适用场景：架构设计、技术选型<br>④ Critic 模式: 一个写，另一个专门挑刺。适用场景：代码审查、安全检查<br><br><b>Code+Review 双 Agent 示例</b><br>Code Agent 生成代码→Review Agent 审查(评分 1-10 + 问题列表)→未通过→Code Agent 带上下文(上轮审查意见)重新生成→审查→通过。可设最低分阈值(min_score=7)和最大迭代次数(max_iterations=3)。<br><br><b>常见坑点</b><br>① 把所有环节给一个 Agent：一个 Agent 的上下文窗口有限，角色混杂导致每个环节都不精。正确做法：每个环节独立 Agent+专门 prompt<br>② 自动修复死循环：AI 反复生成错误代码→反复修复→反复失败。必须设 max_retries 上限<br>③ 忽略上下文裁剪：把全部项目文件传给每个 Agent，Token 浪费且干扰判断<br><br><b>延伸节点</b><br>2.2.1 Function Calling与MCP | 2.2.2 Agent自主规划 | 4.2.3 质量飞轮"
+  },
+  {
+    "Word": "Knowledge Flywheel",
+    "Pronunciation": "/ˈnɒlɪdʒ ˈflaɪwiːl/",
+    "Audio": "",
+    "Definition": "Knowledge Flywheel（知识飞轮）——让团队 AI 协作经验正向循环：积累（记录每次有效产出）→复用（注入新交互）→进化（定期优化规则）",
+    "ExampleEN": "The knowledge flywheel captures every successful prompt and spec, injects them into future AI interactions, and periodically reviews them for relevance.",
+    "ExampleCN": "知识飞轮把每次成功的 prompt 和 Spec 积累下来，注入到后续 AI 交互中，并定期审查保持有效性。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.3 核心概念。解决「每个团队成员都在重复踩同样的坑」的问题。知识飞轮是让团队 AI 协作经验正向循环的机制：每一次和 AI 的交互成果都沉淀下来，让下一次交互更好。<br><br><b>飞轮三阶段</b><br>① 积累(Capture): 记录每次 AI 交互的有效产出——成功的 Spec、高质量 Prompt 模板、编码规则(如「本项目禁止使用 mutable 默认参数」)、验证通过的 AI 生成测试用例<br>② 复用(Reuse): 从知识库检索相关内容，注入新交互——新任务→检索相关 Spec/Prompt/规则→注入当前上下文→AI 交互→产出<br>③ 进化(Evolve): 定期审查——规则是否还有效？有没有更好的写法？合并重复、删除废弃、更新版本号，建议每两周 Review 一次<br><br><b>代码考古难题</b><br>传统方式：接手没有文档、原作者离职的代码→读代码→猜逻辑→看 git log→问同事(可能已离职)→局部理解→再读...需要数天到数周。AI 方式：代码+git 历史+Issue 讨论→喂给 AI→生成代码地图(文件作用+数据流+已知坑点+修改指南)，数小时完成<br><br><b>最小启动清单</b><br>立即：创建 CLAUDE.md 写 5 条基本规则(30分钟)+ 每次交互后花 1 分钟记录好用的 prompt(每天5分钟)。本周：建 Prompt 模板库 3-5 个高频模板(2小时)+ AI 驱动生成架构文档(1小时)。本月：建 Spec 存档库+定 review 机制(每两周30分钟)<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.2.2 AI重构战略 | 2.1.2 RAG技术与应用"
+  },
+  {
+    "Word": "Code Archaeology",
+    "Pronunciation": "/koʊd ˌɑːrkiˈɒlədʒi/",
+    "Audio": "",
+    "Definition": "Code Archaeology（代码考古）——接手没有文档、原作者离职的遗留代码时，需要像考古学家一样慢慢挖掘理解的过程",
+    "ExampleEN": "Code archaeology used to take weeks of reading and guessing, but now AI can analyze the code, git history, and issues to generate a code map in hours.",
+    "ExampleCN": "代码考古过去需要数周阅读和猜测，现在 AI 能分析代码、git 历史和 Issue 讨论，在几小时内生成代码地图。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.3 知识飞轮解决代码考古难题。「代码考古」指接手一段没有文档、没有注释、原作者已离职的代码时，需要像考古学家一样慢慢挖掘理解的过程。这是软件工程中最痛苦的场景之一。<br><br><b>传统方式</b><br>读代码→猜逻辑→看 git log→问同事(可能已离职)→局部理解→再读再猜...需要数天到数周，效率极低且容易遗漏关键逻辑。很多时候旧的业务规则隐藏在代码的条件分支中，不是原作者根本无法理解「为什么要这样写」。<br><br><b>AI 方式</b><br>把代码+git 历史(最近 20 条 commit log + 最近 5 条 commit 的 diff)+Issue 讨论+相关设计文档→喂给 AI→AI 生成「代码地图」:<br>① 这个文件是干什么的(一句话概览)<br>② 核心数据流：数据从哪里来，经过什么处理，到哪里去<br>③ 关键函数/类：每个的作用和依赖关系<br>④ 已知坑点：从 git history 和 diff 看，哪些地方经常出 bug、哪些修改频繁(说明不稳定)<br>⑤ 修改指南：如果要改 XXX 功能，应该从哪里入手，影响范围预估<br>相当于有了一个「知道所有历史和上下文」的资深同事，数小时完成原本数天到数周的理解工作。<br><br><b>延伸节点</b><br>4.2.2 AI重构战略 | 4.2.1 思维跃迁 | 4.1.3 知识飞轮"
+  },
+  {
+    "Word": "Review Loop",
+    "Pronunciation": "/rɪˈvjuː luːp/",
+    "Audio": "",
+    "Definition": "Review Loop（审查-优化闭环）——AI编码时代的质量保障体系，通过「自动审查→修复→再审查」循环确保只有高质量代码上线",
+    "ExampleEN": "A review loop has four layers: static checks, automated tests, AI deep review, and human final approval — the last line of defense.",
+    "ExampleCN": "审查闭环有四层防线：静态检查、自动化测试、AI 深度审查、人工终审——其中人工终审是不可绕过的最后防线。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.4 核心概念。公式: AI速度×审查闭环=可控高质量交付；AI速度×无审查=灾难加速器。AI 编码速度是人手的 10 倍，但产生的 bug 也可能是 10 倍。闭环让你享受 AI 速度同时守住质量底线。<br><br><b>四层防线</b><br>L1 静态检查(Lint/Type/格式化): 用 ruff/mypy/biome，秒级反馈，查语法/类型/格式<br>L2 自动化测试: 用 pytest/vitest，分钟级反馈，查功能正确性<br>L3 AI深度审查: 用 Claude Code/CodeRabbit，分钟级反馈，查安全漏洞/业务逻辑错误/性能问题<br>L4 人工终审: 不可绕过的最后防线，人检查 AI 审查结果+做最终决策，包括架构选型/安全策略/用户体验/技术债务取舍/发布决策<br><br><b>不同项目阶段策略</b><br>原型期: L1+L2必须，L3/L4可选(速度优先)；成长期: 全跑，L4走轻量审批(平衡)；成熟期: 全跑+L4严格审批(稳定性优先)；关键基础设施: 全跑+双人L4+灰度发布(零容忍)<br><br><b>从超级个体到超级团队</b><br>超级个体(危险): 一个人+AI狂写→代码只有自己懂→离职=项目死亡→不可持续。超级团队(健康): 每个人+AI高效产出→审查闭环保证质量统一→知识飞轮保证经验传承→可持续<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.2.3 质量飞轮 | 4.3.1 AI指挥官"
+  },
+  {
+    "Word": "Super Individual",
+    "Pronunciation": "/ˈsuːpər ˌɪndɪˈvɪdʒuəl/",
+    "Audio": "",
+    "Definition": "Super Individual（超级个体）——一个人+AI疯狂输出代码，效率高但质量参差不齐、代码只有自己懂、离职即项目死亡的不可持续模式",
+    "ExampleEN": "The super individual pattern is dangerous: one person plus AI churns out code that only they understand, and the project dies when they leave.",
+    "ExampleCN": "超级个体模式很危险：一个人加 AI 疯狂输出代码，只有自己看得懂，离职时项目就死了。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.4 从超级个体到超级团队的转变。AI 编程时代的一个常见陷阱：一个人+AI 疯狂输出代码，成为「超级个体」——效率高但质量参差不齐、代码只有自己懂、离职即项目死亡，不可持续模式。<br><br><b>超级个体 (危险)</b><br>一个人+AI狂写→代码只有自己懂、他人接不住→离职=项目死亡→知识零沉淀→不可持续<br><br><b>超级团队 (健康)</b><br>每个人+AI在自己领域高效产出→审查闭环保证质量统一(四层防线+人工终审)→知识飞轮保证经验传承(Prompt 共享/Spec 存档/规则库维护)→AI指挥官统筹全局→可持续的高质量交付<br><br><b>关键转变</b><br>AI 编码能力的 10 倍提升，必须配合团队协作能力的同步提升。三个关键习惯：① Show your prompt(分享代码时附带 prompt)② Blame the prompt, not the person(AI 代码出问题改进 prompt/规则而非指责人)③ Celebrate iterations(认可多轮飞轮优化的努力，不只奖励快速完成)<br><br><b>延伸节点</b><br>4.1.3 知识飞轮 | 4.2.3 质量飞轮 | 4.3.4 文化重塑"
+  },
+  {
+    "Word": "Living Documentation",
+    "Pronunciation": "/ˈlɪvɪŋ ˌdɒkjumənˈteɪʃən/",
+    "Audio": "",
+    "Definition": "Living Documentation（活文档）——由 AI 从代码和 git 历史自动生成并持续更新的文档，始终反映代码真实状态，解决「写完即过时」问题",
+    "ExampleEN": "Living documentation is generated by AI from code and git history, so it stays current with every PR merge instead of becoming stale.",
+    "ExampleCN": "活文档由 AI 从代码和 git 历史自动生成，每次 PR 合入后自动更新，不会像传统文档那样过时。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.1 核心概念。传统文档的最大问题是「写完即过时」——人写→过时→不可信任→没人看。AI 改变了这个局面：活文档由 AI 从代码和 git 历史自动生成并持续更新，始终反映代码真实状态。<br><br><b>四种活文档类型</b><br>① 架构文档: 每次 PR 合入后 AI 自动更新，始终反映最新架构<br>② API 文档: 从代码注释+类型定义自动生成，接口变更即文档更新<br>③ 决策记录(ADR): AI 辅助撰写，记录重大技术决策的背景、可选方案和选择理由，永久关联到代码变更<br>④ 知识导航: 问 AI「XX 功能是怎么实现的」，立即得到答案，无需翻阅过时文档<br><br><b>活文档核心原则</b><br>「代码是唯一真相」——文档从代码派生，而非独立维护。AI 收集代码内容+新近 git 变更日志→生成/更新模块文档(概述/核心类/数据流/依赖/注意事项)→每次 PR 合入后自动触发这套流程。与知识飞轮相辅相成：飞轮积累规则和 Spec，活文档输出持续可读的架构知识。<br><br><b>延伸节点</b><br>4.1.3 知识飞轮 | 4.2.1 思维跃迁 | Architecture Decision Record"
+  },
+  {
+    "Word": "Strangler Fig Pattern",
+    "Pronunciation": "/ˈstræŋɡlər fɪɡ ˈpætərn/",
+    "Audio": "",
+    "Definition": "Strangler Fig Pattern（绞杀模式）——新旧系统并存逐步迁移的架构模式：新功能走新系统，旧功能逐一迁移，最终旧系统萎缩消失",
+    "ExampleEN": "The Strangler Fig pattern replaces legacy modules one by one with a proxy layer that verifies old and new outputs match before cutting over.",
+    "ExampleCN": "绞杀模式通过代理层一次替换一个遗留模块，先双跑对比新旧输出，验证通过后再切换，最终让旧系统萎缩消失。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.2 核心概念。一次性重写整个系统=自杀——绞杀模式让你新旧系统并存、逐步迁移：新功能走新系统，旧功能逐一迁移，最终旧系统萎缩消失。这是大型系统重构中最安全的策略。<br><br><b>AI 加速三种方式</b><br>① 自动生成代理层: AI 写路由代码，按配置走新旧实现路由。结构：请求→代理层→(根据配置路由到旧实现 OR 新实现)→返回结果。配置可通过 feature flag 控制。<br>② 自动对比验证: 同时调用新旧实现，对比输出差异，差异超过阈值则报警。相当于免费获得「旧实现的黄金标准」作为测试基准——如果新旧输出不一致，说明新实现有 bug。<br>③ 自动生成迁移测试: 为每个被替换模块生成回归测试，确保新实现行为与旧实现完全一致。这些测试同时作为新实现的「契约」被保留。<br><br><b>三个阶段</b><br>阶段1 双跑验证: 代理层同时调用新旧实现，旧结果返回给用户，后台异步对比差异并日志记录。新代码有完整的保护网。<br>阶段2 切换: 验证通过后，通过 feature flag 将流量切到新实现。旧代码保留但不再被调用，可快速回滚。<br>阶段3 清理: 确认新实现稳定运行一段时间后(至少一个完整发布周期)，删除旧代码和代理层。记录 ADR 说明迁移过程。<br><br><b>延伸节点</b><br>4.2.1 思维跃迁 | 4.2.3 质量飞轮 | 4.1.4 审查闭环"
+  },
+  {
+    "Word": "Brute Force Decomposition",
+    "Pronunciation": "/bruːt fɔːrs ˌdiːkɒmpəˈzɪʃən/",
+    "Audio": "",
+    "Definition": "Brute Force Decomposition（暴力拆解）——AI重构第一步：将复杂遗留代码喂入AI，快速输出结构分析、逻辑拆解、风险评估",
+    "ExampleEN": "Brute force decomposition feeds a 2000-line legacy module to AI and gets back a structured report of classes, call graphs, data flow, and risk areas in minutes.",
+    "ExampleCN": "暴力拆解把 2000 行的遗留模块喂给 AI，几分钟内就能得到类/函数清单、调用关系图、数据流和风险区域的结构化报告。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.2 重构三角第一步。AI 重构战略的核心方法论：「暴力拆解」让 AI 快速分析和理解复杂代码。传统方式理解一个 2000 行的旧模块需要几天，AI 可以几分钟给出结构分析。<br><br><b>三步拆解</b><br>① 结构拆解: 喂入整个模块→AI 输出类/函数清单+调用关系图+数据流。相当于瞬间获得遍历全部代码后生成的结构化报告<br>② 逻辑拆解: 喂入关键函数→AI 输出每个函数的伪代码+副作用+依赖。相当于获得理解核心逻辑的捷径<br>③ 风险拆解: 喂入 git 历史→AI 输出「经常出 bug 的区域」+「修改影响面」。基于历史数据识别高危区域<br><br><b>重构三角</b><br>理解(AI辅助暴力拆解) + 安全(AI生成测试做安全网) + 执行(AI精准缝合生成新代码)。AI 在三个顶点上都有独特优势：理解代码(暴力拆解)、生成新实现(精准缝合)、生成测试(安全保障)。<br><br><b>重构决策矩阵</b><br>清晰代码+有测试: 直接AI重构。清晰+无测试: AI先生成测试再重构。混乱+有测试: AI暴力拆解理解→精准缝合。混乱+无测试: AI暴力拆解→补测试→小步重构<br><br><b>延伸节点</b><br>4.2.3 质量飞轮 | 4.2.1 思维跃迁 | 4.1.1 渐进式复杂度管理"
+  },
+  {
+    "Word": "Precision Stitching",
+    "Pronunciation": "/prɪˈsɪʒən ˈstɪtʃɪŋ/",
+    "Audio": "",
+    "Definition": "Precision Stitching（精准缝合）——AI重构第二步：AI生成新代码替换旧实现，但保持接口完全不变（输入/输出/副作用/异常全部一致）",
+    "ExampleEN": "Precision stitching replaces old implementation with new code while keeping the exact same interface, including input types, output types, side effects, and exceptions.",
+    "ExampleCN": "精准缝合用新代码替换旧实现，同时保持接口完全一致——输入类型、输出类型、副作用、异常全部匹配。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.2 重构三角第二步。暴力拆解后知道了「旧代码在做什么」，下一步是用 AI 生成新代码替换它——关键是接口完全不变。旧接口→新实现，输入A→新逻辑(更清晰/高效/可测试)→输出B，输出B 必须与旧实现完全一致。接口不变意味着依赖方无需任何修改。<br><br><b>缝合检查清单</b><br>① 输入类型是否完全一致？(参数名、类型、默认值、顺序是否变化) ② 输出类型是否完全一致？(返回值类型、结构、字段名是否变化) ③ 副作用是否一致？(DB写入的表和字段、文件操作的路径和内容、缓存更新的 key 和时机、外部API调用的endpoint和payload) ④ 异常类型和错误信息是否兼容？(抛出的异常类型、code、message 格式是否和原来一样) 任何一项不匹配都可能导致依赖方出现回归问题。这是精准缝合的核心——让新代码「像旧代码一样」被外界调用。<br><br><b>与绞杀模式配合</b><br>绞杀模式提供新旧双跑的安全网→暴力拆解提供理解旧代码的透视镜→精准缝合提供逐步替换的执行方案→质量飞轮保证新代码质量达标。四者构成完整的 AI 重构工具体系。精准缝合的代码产出立即进入质量飞轮迭代打磨，先从「功能正确」开始，再逐步打磨「边界处理」「错误处理」「性能」「可读性」。<br><br><b>延伸节点</b><br>4.2.2 绞杀模式 | 4.2.3 质量飞轮 | 4.1.4 审查闭环"
+  },
+  {
+    "Word": "Quality Flywheel",
+    "Pronunciation": "/ˈkwɒləti ˈflaɪwiːl/",
+    "Audio": "",
+    "Definition": "Quality Flywheel（质量飞轮）——开发过程中持续运转的「AI生成→自动验证→AI修正→再验证」循环，把代码从80分提升到95分",
+    "ExampleEN": "The quality flywheel iterates generation, verification, and fixing, turning good-enough AI-generated code into production-ready quality over 3 to 5 rounds.",
+    "ExampleCN": "质量飞轮通过「生成→验证→修正」的 3-5 轮迭代，把 AI 生成的「够用」代码打磨到生产级的优秀水平。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.3 核心概念。与审查闭环(4.1.4)的区别: 飞轮在开发过程中持续运转(函数/模块级, 3-10轮)，闭环在上线前一次性检查(PR级, 1-3轮)。飞轮让「够用」变成「优秀」，闭环阻断坏代码上线。<br><br><b>飞轮三维度验证</b><br>功能验证(单元/集成/E2E测试确保正确性)+质量验证(静态分析+AI审查+覆盖率)+兼容验证(接口兼容+性能回归+行为对比)<br><br><b>五轮迭代分工</b><br>第1轮 功能实现(能跑通)→第2轮 边界处理(处理null/空/超大输入，不崩溃)→第3轮 错误处理(合理异常+错误信息，鲁棒)→第4轮 性能优化(减少不必要的查询/循环，高效)→第5轮 代码美化(命名/注释/结构优化，可维护)<br><br><b>不同代码目标</b><br>一次性脚本 0.5分, 1轮; 内部工具 0.7分, 3轮; 业务API 0.85分, 5轮; 核心库 0.95分, 10轮; 支付/安全 0.98分, 不限轮次+人工把关<br><br><b>三个关键习惯</b><br>① Show your prompt: 分享代码时附带 prompt，让队友能复现和改进<br>② Blame the prompt, not the person: AI 代码出问题改进 prompt/规则，不指责使用者<br>③ Celebrate iterations: 认可多轮飞轮优化的努力，不只是快速完成<br><br><b>延伸节点</b><br>4.1.4 审查闭环 | 4.2.2 AI重构战略 | 第5章 项目实战"
+  },
+  {
+    "Word": "AI Commander",
+    "Pronunciation": "/eɪ aɪ kəˈmændər/",
+    "Audio": "",
+    "Definition": "AI Commander（AI指挥官）——AI编程时代的新角色：不再亲手写代码，而是像指挥官一样制定策略(Spec)、分配任务(给AI)、验收结果、做出AI无法替代的决策",
+    "ExampleEN": "An AI Commander writes specs, assigns tasks to AI agents, reviews their output, and makes the architectural decisions that AI cannot.",
+    "ExampleCN": "AI指挥官写Spec、给AI分配任务、验收产出，并做出AI无法替代的架构决策。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.1 核心概念。从职能专家转型为 AI 指挥官，核心工作从「写代码」变成「保证代码正确」。不再亲自写每一行代码，而是像指挥官一样制定策略(Spec)、分配任务(给 AI)、验收结果、做出 AI 无法替代的决策。<br><br><b>三大职责</b><br>① 定方向(Direction): 写 Spec/设计架构/技术决策——用结构化规格取代模糊需求<br>② 管AI团队(Management): 分配任务/构建上下文/给予反馈——把需求转为 AI 可执行的 Mission，包含 spec+context+验收标准+风险评估<br>③ 守质量(Quality): 设定验收标准/执行审查/最终裁决——在 AI 给不出好方案时自己拍板<br><br><b>AI 不可替代的五种决策</b><br>架构选型(AI 不了解团队能力和长期维护成本)/安全策略(AI 可能忽略特定业务的合规要求)/用户体验(AI 缺乏人类直觉和情感理解)/技术债务取舍(AI 无法判断还债的商业影响)/发布决策(AI 不了解业务压力和风险偏好)<br><br><b>不同团队规模</b><br>1-3人: 每人兼任自己领域的 AI 指挥官；4-10人: 1个AI训练师(兼20%时间)+各自指挥官；10-30人: 1个AI训练师(专职)+1个质量验证师(专职)；30+人: 专职角色矩阵<br><br><b>延伸节点</b><br>4.2.1 思维跃迁 | 4.3.2 流程重构 | 4.3.3 组织进化"
+  },
+  {
+    "Word": "AI Trainer",
+    "Pronunciation": "/eɪ aɪ ˈtreɪnər/",
+    "Audio": "",
+    "Definition": "AI Trainer（AI训练师）——AI原生团队新角色：维护编码规范/规则库、设计Prompt模板、管理知识飞轮运转、评估团队AI使用效果",
+    "ExampleEN": "The AI Trainer maintains the rule library, designs prompt templates for common scenarios, and keeps the knowledge flywheel running.",
+    "ExampleCN": "AI训练师维护规则库、设计高频场景的 prompt 模板、确保知识飞轮持续运转。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.1 新角色。由架构师/DevOps转型。与质量验证师区别: 训练师关注「AI 怎么用」(方法论和规范)，验证师关注「AI 产出对不对」(产出质量)。<br><br><b>五大职责</b><br>① 规则维护: 维护 CLAUDE.md/.cursorrules，定期 review 和更新。规则必须用列表/代码示例/硬约束，不能写成散文，从 5 条核心规则开始逐周增加<br>② Prompt 工程: 为团队高频场景设计标准化 prompt 模板，如 python-api-endpoint、bug-fix、code-review 等，模板支持变量填充，新人也能产出高质量 AI 代码<br>③ 知识管理: 管理 Spec 库和 Prompt 库，确保知识飞轮持续运转——积累→复用→进化，每两周 Review 规则库有效性<br>④ 效果评估: 追踪 AI 产出质量(代码质量分/返工率/首轮通过率)，识别需要改进的规则和 prompt<br>⑤ 新人赋能: 帮助新成员快速上手团队 AI 工作流，第1周观察→第2周跟随→第3周独立→第4周帮助他人<br><br><b>延伸节点</b><br>4.1.3 知识飞轮 | 4.3.3 组织进化 | 4.1.2 AI流水线"
+  },
+  {
+    "Word": "Quality Validator",
+    "Pronunciation": "/ˈkwɒləti ˈvælɪdeɪtər/",
+    "Audio": "",
+    "Definition": "Quality Validator（质量验证师）——AI原生团队新角色：设计AI代码的测试策略、深度审查安全与边界条件、执行探索性测试",
+    "ExampleEN": "The quality validator designs the test pyramid for AI-generated code, audits for security vulnerabilities, and runs exploratory tests that AI would miss.",
+    "ExampleCN": "质量验证师为AI生成代码设计测试金字塔、审计安全漏洞、执行AI会遗漏的探索性测试。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.1 新角色。由测试工程师/安全工程师转型。在 AI 生成代码量暴增的时代，质量验证师是最后的防线——AI 可以写 10 倍的代码，但不能产生 10 倍的漏洞。与 AI 训练师的区别：训练师关注「AI 怎么用」(方法论和规范)，验证师关注「AI 产出对不对」(产出质量)。<br><br><b>五大职责</b><br>① 测试策略设计: 为 AI 生成代码设计测试金字塔——明确哪些必须人测，哪些 AI 自动测。AI 生成代码要求更高测试覆盖率(85% vs 人工 70%)。为每个模块类型定义测试模板<br>② 深度审查: 安全漏洞(SQL注入/XSS/密钥硬编码/路径遍历/命令注入)+性能问题(N+1查询/大循环低效操作/不合理的缓存策略)+边界条件(null/空/超大/负数/并发/时序)<br>③ 探索性测试: AI 最容易遗漏的 5 类场景——异常输入组合/并发时序问题/资源耗尽/极端权限组合/数据一致性问题。这些是 AI 的盲区(AI 默认是单线程思维+正常路径思维)，必须人测<br>④ 质量度量: 追踪 AI 代码的指标——bug 率(上线后发现 vs 审查拦截的)、返工率(打回重写的比例)、首轮通过率(CI 一次通过的 PR 比例)、审查投入比(人审查耗时 vs AI 代码量)<br>⑤ 流程优化: 根据质量数据调整审查闭环的严格度和飞轮的目标分。如果 bug 率升高就收紧 L3/L4 的审查标准<br><br><b>延伸节点</b><br>4.1.4 审查闭环 | 4.2.3 质量飞轮 | 4.3.3 组织进化"
+  },
+  {
+    "Word": "Productive Capital",
+    "Pronunciation": "/prəˈdʌktɪv ˈkæpɪtəl/",
+    "Audio": "",
+    "Definition": "Productive Capital（生产性资本）——团队积累的、能持续产出价值的 AI 协作资产：Spec 库、Prompt 库、规则库、测试模板、架构知识文档",
+    "ExampleEN": "A team's productive capital includes its spec library, prompt templates, coding rules, test templates, and architecture docs — all reusable AI collaboration assets.",
+    "ExampleCN": "团队的生产性资本包括 Spec 库、Prompt 模板、编码规则、测试模板和架构文档——都是可复用的 AI 协作资产。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.2 核心概念。流程重构的目标是积累生产性资本，让 AI 产出质量和团队效率持续提升。生产性资本是团队积累的、能持续产出价值的 AI 协作资产。<br><br><b>五种资产</b><br>① Spec库: 已完成任务的标准化规格，同类任务直接复用，缩短启动时间。如 feature-001.md、feature-002.md 按功能归档<br>② Prompt库: 高频场景模板(新建API/修bug/重构/代码审查)，模板支持变量填充，新人也能产出高质量 AI 代码。按场景命名存档在 .claude/prompts/<br>③ 规则库: 编码规范+架构约束，AI 产出自动符合团队标准。包括 API 设计规范、错误处理约定、测试规范、命名约定等，分文件存放在 .claude/rules/<br>④ 测试模板: 按模块类型的测试框架，新模块自动生成全套测试<br>⑤ 架构知识: AI 可读的系统设计文档(活文档)，让 AI 理解全局而非局部<br><br><b>精准制导三阶段</b><br>① 初始瞄准(给 Spec+上下文)→② 中途修正(给反馈+指正偏差)→③ 末端精确(给微调+细节)。不是一次性提问，而是人像导弹制导系统一样持续引导 AI<br><br><b>延伸节点</b><br>4.1.3 知识飞轮 | 4.3.2 流程重构 | 4.2.2 AI重构战略"
+  },
+  {
+    "Word": "Precision Guidance",
+    "Pronunciation": "/prɪˈsɪʒən ˈɡaɪdəns/",
+    "Audio": "",
+    "Definition": "Precision Guidance（精准制导）——人机协同新模式：人像导弹制导系统一样，在初始瞄准(给Spec)→中途修正(给反馈)→末端精确(给微调)三个阶段持续引导 AI",
+    "ExampleEN": "Precision guidance means continuously steering AI output through three phases: initial aiming with a spec, mid-course correction with feedback, and terminal precision with fine-tuning.",
+    "ExampleCN": "精准制导通过三个阶段持续引导 AI：初始瞄准（给 Spec+上下文）、中途修正（给反馈+指正偏差）、末端精确（给微调+细节）。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.2 核心概念。人机协同新模式——传统模式下人和 AI 是「一问一答」，精准制导模式下人像导弹制导系统一样持续调整 AI 的方向。不是一次性提问，而是持续引导。<br><br><b>三阶段</b><br>① 初始瞄准: 给 Spec+上下文。把模糊需求转化为结构化 Mission(功能描述/输入输出/边界条件/依赖/验收标准)，喂给 AI 足够但不过量的背景信息<br>② 中途修正: 给反馈+指正偏差。发现 AI 产出偏离方向时，给出具体偏差描述和改进指令，而非简单的「不对，重新来」<br>③ 末端精确: 给微调+细节。在基本方向正确的基础上，调整命名、格式、注释、边界处理等细节<br><br><b>流程重构六环节</b><br>需求分析(AI拆解→人确认)→方案设计(AI生成多方案→人选择)→代码实现(AI生成→人审查验收)→测试(AI生成→人补充探索性测试)→审查(AI预审→人终审关键决策)→文档(AI自动生成→人审核准确性)<br><br><b>延伸节点</b><br>4.3.1 AI指挥官 | 4.1.1 Spec Coding | 4.2.1 思维跃迁"
+  },
+  {
+    "Word": "Organization Evolution",
+    "Pronunciation": "/ˌɔːrɡənaɪˈzeɪʃən ˌevəˈluːʃən/",
+    "Audio": "",
+    "Definition": "Organization Evolution（组织进化）——AI编程时代团队结构的根本性调整：从前端/后端/测试职能分工，进化为AI指挥官/AI训练师/质量验证师/领域专家的AI原生结构",
+    "ExampleEN": "Organization evolution transforms teams from traditional frontend/backend/QA silos into AI-native roles: AI Commander, AI Trainer, Quality Validator, and Domain Expert.",
+    "ExampleCN": "组织进化把团队从传统前端/后端/测试的职能分工，转化为AI指挥官、AI训练师、质量验证师、领域专家的AI原生结构。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.3 核心概念。组织结构决定信息流动方式和权力分配——旧结构是为「人海战术」设计的，新结构是为「人+AI军团」设计的。结构不变，流程和文化都难落地。<br><br><b>三阶段进化</b><br>阶段1 AI辅助(初级): 传统角色(前端/后端/测试)各自用 AI 加速自己的一亩三分地，组织形态不变<br>阶段2 AI指挥官(中级): 角色转变为 AI指挥官(前端)+AI指挥官(后端)+质量验证师，开始有跨角色的质量标准<br>阶段3 AI原生(高级): 全新结构——AI指挥官(业务A/B)+AI训练师(全局)+质量验证师(全局)+领域专家+产品经理(AI增强)，训练师和验证师为全局角色服务<br><br><b>人员转型路径</b><br>初级工程师→学会写 Spec→能管3-5个 AI 任务→AI指挥官(初级)→能管全模块→AI指挥官(高级)→架构经验编码为 AI 规则→AI训练师。测试工程师→AI生成测试→制定全局测试策略→质量验证师(高级)。架构师→把架构经验编码成 AI 可理解的规则→AI训练师<br><br><b>四大阻力</b><br>身份危机:「不写代码还算程序员吗？」/权力重构: 训练师和验证师可能被看作「管别人的」/评估困难: 代码量不再是 KPI，怎么考核？/技能缺口: 很少有人同时精通技术和 AI 协作<br><br><b>延伸节点</b><br>4.3.1 AI指挥官 | 4.3.2 流程重构 | 4.3.4 文化重塑"
+  },
+  {
+    "Word": "Culture Transformation",
+    "Pronunciation": "/ˈkʌltʃər ˌtrænsfərˈmeɪʃən/",
+    "Audio": "",
+    "Definition": "Culture Transformation（文化重塑）——AI编程时代最深层的变革：从「写代码=生产力」到「决策质量=生产力」，从「AI是工具」到「AI是团队成员」",
+    "ExampleEN": "Culture transformation shifts the team mindset from measuring output in lines of code to measuring it in correct decisions, and from treating AI as a tool to treating it as a junior team member.",
+    "ExampleCN": "文化重塑把团队心态从「用代码行数衡量产出」转变为「用正确决策衡量产出」，从「AI是工具」转变为「AI是初级团队成员」。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.4 核心概念。最深层的变革——流程可以改、组织可以调，但如果文化不变，一切新制度都会在旧文化的土壤上枯萎。AI 的 10 倍效率需要 10 倍不同的思维模式来承载。<br><br><b>六项转变</b><br>① 代码行数→正确决策+质量：AI 写得比人快，比行数没意义<br>② AI是工具→AI是团队成员：工具不需要 Spec 和管理，团队成员需要<br>③ 人写代码→人审查指挥：角色反转，人做高价值判断<br>④ 追求完美→快速迭代：AI 能 30 秒生成新版，不需要一次到位<br>⑤ 个人英雄→团队飞轮：一个人的 prompt 好不够，全团队的 prompt 都好才行<br>⑥ 怕犯错→怕不迭代：AI 时代最大的错误是不利用 AI，而不是 AI 产出有小问题<br><br><b>三个锚点</b><br>语言(改变话语体系:「AI 帮我写的」→「我指挥 AI 实现的」)/仪式(Prompt Show(每周分享最好用的 prompt)/AI Retro(每月回顾协作问题和改进)/飞轮审计(每季度审查规则库和 Spec 库健康度))/激励(奖励分享高质量 prompt/规则的人，不奖励纯粹堆 AI 代码量完成的功能)<br><br><b>新人融入四阶段</b><br>第1周「看」→第2周「跟」(在指挥官指导下)→第3周「做」(独立完成)→第4周「教」(帮助别人+贡献规则/prompt)<br><br><b>延伸节点</b><br>4.3.2 流程重构 | 4.3.3 组织进化 | 第5章 项目实战"
+  },
+  {
+    "Word": "Incremental Delivery",
+    "Pronunciation": "/ˌɪnkrəˈmɛntəl dɪˈlɪvəri/",
+    "Audio": "",
+    "Definition": "Incremental Delivery（小步快跑）——渐进式复杂度管理第二步：每次只实现最小可验证单元(<50行代码)，每步验证，降低出错概率",
+    "ExampleEN": "Incremental delivery breaks tasks into units under 50 lines of code, verifying each step before moving on, so errors are caught early.",
+    "ExampleCN": "小步快跑把任务拆解到小于 50 行代码的粒度，每步都验证，错误早发现早修正。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.1 渐进式复杂度管理三步中的第二步。核心原则: 一次性让 AI 理解整个复杂系统是不现实的——必须把任务拆解到最小可验证粒度，每一步都验证通过才能进入下一步。<br><br><b>三步管理</b><br>① 建立心像: 让 AI 理解系统全貌和当前任务在全局中的位置。方法：提供架构图、目录结构、相关文件内容<br>② 小步快跑: 每次只实现最小可验证单元(<50行代码)，每步验证。方法：拆解任务到单个函数/接口粒度，写完即测<br>③ 层层加固: 每完成一层立即加测试/错误处理/文档，保证每一步的产出都是可用的<br><br><b>常见坑点</b><br>一次性要求太多：写 500 行的需求文档让 AI 一次实现，正确做法是拆成 10 个 50 行的子任务逐步完成。不测试就信任：AI 代码跑过一遍就当合格，至少覆盖正常/边界/异常三种情况。模糊的需求描述：「写个好用的函数」，正确做法是用精准的输入输出边界条件<br><br><b>与 Spec Coding 配合</b><br>Spec Coding 三铁律之二的「分步验证」就是小步快跑的具体实践——写接口→验证→写逻辑→验证→写测试→验证→...每步验证让错误在最小范围内被发现和修正，避免错误累积<br><br><b>延伸节点</b><br>4.1.1 确定性驾驭概率性 | 4.2.1 思维跃迁 | 4.1.2 AI流水线"
+  },
+  {
+    "Word": "Layer Hardening",
+    "Pronunciation": "/ˈleɪər ˈhɑːrdənɪŋ/",
+    "Audio": "",
+    "Definition": "Layer Hardening（层层加固）——渐进式复杂度管理第三步：每完成一层功能，立即写测试、加错误处理、补充文档注释",
+    "ExampleEN": "Layer hardening adds tests, error handling, and documentation immediately after each functional layer is built, ensuring every step produces usable code.",
+    "ExampleCN": "层层加固在每完成一层功能后立即加测试、加错误处理、补文档注释，保证每一步的产出都是可用的。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.1 渐进式复杂度管理第三步。每完成一层功能，立即写测试、加错误处理、补充文档注释——保证每一步的产出都是可用且健壮的。这是防止「技术债务累积」的关键防线。<br><br><b>加固顺序</b><br>功能代码(先让核心逻辑跑通)→测试代码(为刚完成的功能写测试，覆盖正常/边界/异常)→边界条件(处理 null/空/超大/并发等边缘情况)→文档注释(补 docstring/注释/README 更新)<br><br><b>为什么需要层层加固</b><br>AI 生成代码的默认倾向是「功能优先」——先让代码跑通，然后不管边界和错误处理。如果不层层加固，积累到项目后期会变成巨大的技术债务，修复成本指数级增长。层层加固的原则：每完成一层立即加固，不把问题留到下一层。<br><br><b>实战示例</b><br>用 AI 开发 TodoCLI 的层层加固过程：第1步骨架(定义类和方法签名)→第2步实现 add() 功能→立即加固: 输入验证(non-null/去空格/长度限制)→第3步实现 list()→立即加固: 空列表提示→第4步实现 done()→立即加固: index 越界检查。每步都是可用的代码。<br><br><b>延伸节点</b><br>4.1.1 Spec Coding | 4.2.3 质量飞轮 | 4.1.4 审查闭环"
+  },
+  {
+    "Word": "Verification Pyramid",
+    "Pronunciation": "/ˌverɪfɪˈkeɪʃən ˈpɪrəmɪd/",
+    "Audio": "",
+    "Definition": "Verification Pyramid（验证金字塔）——AI代码的五层验证体系：AI Review→静态分析→单元测试→集成测试→E2E测试，越底层越容易自动修复",
+    "ExampleEN": "The verification pyramid validates AI-generated code from bottom to top: human review, static analysis, unit tests, integration tests, and end-to-end tests.",
+    "ExampleCN": "验证金字塔从底层到顶层依次是：AI生成代码→人工Review、静态分析(Lint/Type)、单元测试、集成测试、E2E测试，越底层问题越容易AI自动修复。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.1 验证金字塔概念。确定性保障的最后一道防线。AI 生成的代码必须经过每层验证，越底层的问题越容易被 AI 自动修复。<br><br><b>五层结构（从底向上）</b><br>L0 人工Review(逻辑审查): AI 生成代码后先过一眼，查明显的逻辑错误<br>L1 静态分析(Lint/Type/格式化): 用 ruff/mypy/biome 扫语法、类型、格式问题。秒级反馈，自动化<br>L2 单元测试(函数正确性): 每个函数独立测试。正常输入/边界条件/异常输入三类必须覆盖<br>L3 集成测试(模块间协同): 多个模块串联，检查接口契约是否正确<br>L4 E2E测试(真实用户操作): 模拟真实用户流程，验证端到端的完整性<br><br><b>核心原则</b><br>越底层越确定（语法错误就是错误），越自动化；越上层越需要人判断。不能直接用 AI 审查代替 L1/L2——AI 不应该被用来检查「少了个分号」。先用 L1/L2 扫掉低级问题，AI 专注安全/逻辑/设计。<br><br><b>延伸节点</b><br>4.1.4 审查闭环 | 4.2.3 质量飞轮 | 4.1.1 Spec Coding"
+  },
+  {
+    "Word": "Context Pruning",
+    "Pronunciation": "/ˈkɒntekst ˈpruːnɪŋ/",
+    "Audio": "",
+    "Definition": "Context Pruning（上下文裁剪）——根据Agent角色按需选择要注入的上下文信息，避免Token浪费和信息过载",
+    "ExampleEN": "Context pruning gives Spec Agent only the API spec, Code Agent the spec plus related files, and Review Agent only the diff and coding rules — matching context to each role.",
+    "ExampleCN": "上下文裁剪根据Agent角色按需注入信息：Spec Agent只需要API规范，Code Agent需要Spec+相关代码文件，Review Agent只需要Diff+编码规范。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.2 流水线中的关键操作。根据 Agent 角色按需选择要注入的上下文信息，避免 Token 浪费和信息过载。是 AI 流水线中上下文传递的核心技巧。<br><br><b>按角色裁剪策略</b><br>Spec Agent: 只需要需求文档+数据模型+API 规范<br>Code Agent: 需要 Spec+相关代码文件+项目配置+参考实现<br>Test Agent: 需要实现代码+测试框架+边界条件列表<br>Review Agent: 只需要 Diff+编码规范+安全规则<br><br><b>不裁剪的后果</b><br>Token 浪费(成本高，流水线 token 消耗是单次的 3-10 倍)/信息过载(Agent 被大量无关规则干扰，输出质量显著下降)/规则冲突(不同场景的规则可能互相矛盾，如「性能优先」和「可读性优先」同时注入)/可能泄露敏感信息给不该看到的 Agent<br><br><b>上下文注入策略</b><br>根据任务类型智能选择：new_feature→注入 Spec 模板+API 规则+测试规则；bug_fix→注入错误处理规则+相关代码+git 历史；refactor→注入代码风格规则+架构文档+测试套件；code_review→注入安全规则+命名约定+性能规则<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.2.1 上下文工程 | 2.1.2 RAG技术与应用"
+  },
+  {
+    "Word": "Auto-fix Loop",
+    "Pronunciation": "/ˈɔːtoʊ fɪks luːp/",
+    "Audio": "",
+    "Definition": "Auto-fix Loop（自动修复回环）——流水线关键特性：测试失败时自动回传错误信息给Code Agent修复，然后重新测试，无需人工介入",
+    "ExampleEN": "An auto-fix loop detects test failures, feeds the error messages back to the Code Agent, and regenerates the code until tests pass, capping retries to avoid infinite loops.",
+    "ExampleCN": "自动修复回环在检测到测试失败后，自动把错误信息回传给 Code Agent 修复代码，重新测试直到通过，必须设置 max_retries 避免死循环。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.2 AI流水线核心特性。流水线的自愈能力来源——测试失败时自动回传错误信息给 Code Agent 修复，然后重新测试，全程无需人工介入。<br><br><b>工作流程</b><br>Code Agent 生成代码→Test Agent 运行→失败(获取错误输出)→自动回传错误信息+原始 Spec 给 Code Agent→Code Agent 基于错误信息和 Spec 修复代码→重新测试→通过则继续，失败则进入下一轮<br><br><b>关键防护</b><br>必须设 max_retries 上限(通常 3 次)防止死循环: AI 反复生成错误代码→反复修复→反复失败，Token 无限消耗。达到上限后: 分析失败模式，将问题分流给人工介入。从低成本 Agent 开始做低风险环节自动修复(代码格式化/测试生成)，用强模型做核心修复<br><br><b>与质量飞轮的配合</b><br>自动修复回环是流水线级别的「快速修复」，目标是把代码从 60 分拉回 80 分(过测试)。质量飞轮是更细粒度的持续打磨，在开发过程中把代码从 80 分提升到 95 分。两者互补：回环保证「不出错」，飞轮保证「够优秀」。<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.2.3 质量飞轮 | 4.1.4 审查闭环"
+  },
+  {
+    "Word": "Human-in-the-loop",
+    "Pronunciation": "/ˈhjuːmən ɪn ðə luːp/",
+    "Audio": "",
+    "Definition": "Human-in-the-loop（人机闭环）——AI流水线的关键设计：全程保留人工确认节点，只在非关键环节自动化，关键决策必须人做最终裁决",
+    "ExampleEN": "Human-in-the-loop ensures that AI pipelines automate routine work but require human confirmation for production deployments and security changes.",
+    "ExampleCN": "Human-in-the-loop 确保 AI 流水线自动化处理常规工作，但生产部署和安全变更必须经过人工确认。",
+    "Notes": "<b>学习路径</b><br>本知识图谱贯穿 §4.1-§4.4 的核心设计原则。AI 流水线的关键设计：全程保留人工确认节点，只在非关键环节自动化，关键决策必须人做最终裁决。部署到生产、修改数据库 schema、安全相关变更必须人工确认。<br><br><b>AI不可替代的判断</b><br>① 架构选型: AI 不了解团队能力和长期维护成本，可能推荐「技术上最优」但团队无法维护的方案<br>② 安全策略: AI 可能忽略特定业务的合规要求，如金融行业的监管条例、医疗行业的数据隐私规定<br>③ 用户体验: AI 缺乏人类直觉和情感理解，无法判断界面是否「好用」<br>④ 技术债务取舍: AI 无法评估「现在还债」还是「以后还」的商业影响，只能做技术判断<br>⑤ 发布决策: AI 不了解业务压力和风险偏好，不知道「这个版本必须本周上」背后的业务背景<br><br><b>不同环节的确认策略</b><br>代码生成: AI 生成→人审查(轻量)。测试: AI 生成测试→人补充探索性测试。审查: AI 预审→人终审关键决策。部署: 开发/测试环境自动→生产环境人工确认。数据库变更: 必须人工确认。安全变更: 必须人工确认+双人审批<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.1.4 审查闭环 | 4.3.1 AI指挥官"
+  },
+  {
+    "Word": "Layered Context",
+    "Pronunciation": "/ˈleɪərd ˈkɒntekst/",
+    "Audio": "",
+    "Definition": "Layered Context（分层上下文注入）——大型项目AI交互的上下文策略：先注入架构层→再模块层→最后文件层，像读代码一样逐层深入",
+    "ExampleEN": "Layered context injection starts with architecture overview, then module-level details, and finally specific file contents — avoiding information overload.",
+    "ExampleCN": "分层上下文注入先加载架构概览，再注入模块级细节，最后给具体文件内容——避免AI被大量信息淹没。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.3/4.2.1 上下文管理策略。大型项目的上下文管理比小项目复杂得多——小项目所有上下文塞给 AI 简单粗暴但有效，大型项目必须精细裁剪否则 AI 被淹没。<br><br><b>三种策略</b><br>① Layered(分层注入): 先注入架构层(项目整体架构+技术栈+历史决策)→再注入模块层(模块 README+公开 API)→最后注入文件层(目标文件+最多3个相关文件)。像读代码一样从入口文件逐层深入<br>② RAG-based(按需检索): 用向量检索实时拉取相关代码片段，而非全部塞入。生产环境用 embedding+向量数据库做语义检索<br>③ Rule-based(知识固化): 把频繁使用的上下文写入 CLAUDE.md 或规则文件(.claude/rules/)，相当于 AI 的「持久记忆」<br><br><b>LayeredContext 类实现</b><br>load_architecture_context()→load_module_context(module)→load_file_context(file_path)→build(task, module, files)。每次对话开始时注入一次架构层(CLAUDE.md+architecture.md)，涉及新模块时注入模块层，操作具体文件时注入文件层<br><br><b>延伸节点</b><br>4.2.1 上下文工程 | 2.1.2 RAG技术与应用 | 4.1.3 知识飞轮"
+  },
+  {
+    "Word": "Refactor Decision Matrix",
+    "Pronunciation": "/riːˈfæktər dɪˈsɪʒən ˈmeɪtrɪks/",
+    "Audio": "",
+    "Definition": "Refactor Decision Matrix（重构决策矩阵）——根据代码状态(清晰/混乱)和测试覆盖率(有/无)选择不同的AI重构策略的决策表",
+    "ExampleEN": "The refactor decision matrix says: clear code with tests gets direct AI refactoring; messy code without tests needs brute-force decomposition first, then tests, then small-step refactoring.",
+    "ExampleCN": "重构决策矩阵的规则是：清晰代码+有测试→直接AI重构；混乱代码+无测试→先暴力拆解理解，再补测试，最后小步重构。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.2 重构决策矩阵。根据代码状态(清晰/混乱)和测试覆盖率(有/无)选择不同 AI 重构策略的决策表。核心原则：不能一刀切地直接让 AI 重构——混乱且无测试的代码直接重构是最危险的，无异于盲拆炸弹。<br><br><b>四种策略</b><br>✅ 清晰+有测试: 直接AI重构+现有测试兜底。最理想状态。AI 重构代码→运行现有测试→通过则完成。重点是保持接口不变(精准缝合)。<br>⚠️ 清晰+无测试: AI先生成全套测试(覆盖关键路径和边界)→确认测试有效→再AI重构。先建安全网，再动刀。重构后跑新生成的测试验证。<br>⚠️ 混乱+有测试: AI暴力拆解理解(结构+逻辑+风险三步拆解)→精准缝合新实现(保持接口不变)→跑现有测试做回归验证。测试是你唯一的保护。<br>🔴 混乱+无测试: 最危险象限，绝对不能直接重构。正确流程：AI暴力拆解理解代码→生成全套测试(先建安全网)→严格按绞杀模式逐步替换(一次一个模块)→每步都跑测试验证。预计工作量最大但风险最低。<br><br><b>延伸节点</b><br>4.2.2 AI重构战略 | 4.2.3 质量飞轮 | 4.1.4 审查闭环"
+  },
+  {
+    "Word": "Prompt Share",
+    "Pronunciation": "/prɒmpt ʃɛr/",
+    "Audio": "",
+    "Definition": "Prompt Share（Prompt共享）——团队文化习惯：分享代码时必须附带所用的prompt，让队友能复现和改进，是质量飞轮在团队层面的关键行为",
+    "ExampleEN": "Prompt share requires every team member to include their prompt when sharing AI-generated code, so others can reproduce and improve the result.",
+    "ExampleCN": "Prompt Share 要求每个成员分享 AI 生成的代码时必须附上所用的 prompt，让队友能复现和改进。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.3/4.3.4 超级团队的三个关键习惯之一。从「超级个体」到「超级团队」的工程文化核心行为：分享代码时必须附带所用的 prompt，让队友能复现和改进。<br><br><b>三个关键习惯</b><br>① Show your prompt: 分享 AI 生成的代码时，必须在 PR 描述或注释中附带所用的完整 prompt。让队友了解「这段代码是怎么生成的」，能复现、能改进、能排查问题。工具支持：PromptShare 类支持 save/search/get，按质量评分排序<br>② Blame the prompt, not the person: AI 代码出问题时，改进 prompt/规则/上下文，而不是指责使用者。这消除了「用 AI 写代码会被看不起」的心理障碍<br>③ Celebrate iterations: 认可「经过 5 轮飞轮优化」的努力，而不只是「快速完成」。在 Code Review 中关注迭代过程的改进亮点，奖励分享高质量 prompt/规则的人<br><br><b>Prompt 资产化管理</b><br>保存在 .claude/prompts/，支持版本化：模板名+作者+质量评分+日期。按场景分类：python-api-endpoint、bug-fix、code-review、refactor 等。查找时按关键词或标签匹配，按使用次数和质量评分排序<br><br><b>延伸节点</b><br>4.2.3 质量飞轮 | 4.3.4 文化重塑 | 4.1.3 知识飞轮"
+  },
+  {
+    "Word": "Exploratory Testing",
+    "Pronunciation": "/ɪkˈsplɒrətɔːri ˈtɛstɪŋ/",
+    "Audio": "",
+    "Definition": "Exploratory Testing（探索性测试）——质量验证师的核心工作：执行AI容易遗漏的异常测试场景（并发/时序/资源耗尽/权限边界/数据一致性）",
+    "ExampleEN": "Exploratory testing covers scenarios that AI typically misses: concurrent race conditions, resource exhaustion, edge-case permission combinations, and data consistency problems.",
+    "ExampleCN": "探索性测试覆盖 AI 通常会遗漏的场景：并发竞争条件、资源耗尽、极端权限组合、数据一致性问题。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.3.1 质量验证师的五大职责之一。执行 AI 容易遗漏的异常测试场景——这些是 AI 的盲区，因为 AI 通常从「正常使用」的角度生成测试，对异常组合、并发、资源边界的安全性缺乏直觉。<br><br><b>AI 容易遗漏的场景</b><br>异常输入组合: 多种非法输入同时出现的情况（如 email 为空+age 为负+缺失必填字段同时发生）<br>并发时序问题: 多线程同时操作共享数据导致的竞态条件——AI 生成的代码默认是单线程思维<br>资源耗尽: 内存泄漏、连接池耗尽、磁盘满——AI 很少考虑到「资源不足」的情况<br>极端权限组合: 多种角色+多种资源+多种操作的排列组合中，最小权限原则的破坏<br>数据一致性问题: 分布式事务、缓存与数据库不一致、部分失败的 rollback 处理——AI 通常假设所有操作都成功<br><br><b>与AI自动测试的关系</b><br>AI 自动生成测试覆盖「正常路径+基本边界」，质量验证师的探索性测试覆盖「AI 想不到的异常场景」。两者互补构成完整的测试覆盖面。探索性测试结果应反馈给知识飞轮，更新 AI 的规则库和安全检查清单。<br><br><b>延伸节点</b><br>4.3.1 AI指挥官 | 4.1.4 审查闭环 | 4.2.3 质量飞轮"
+  },
+  {
+    "Word": "Architecture Decision Record",
+    "Pronunciation": "/ˈɑːrkɪtektʃər dɪˈsɪʒən ˈrɛkɔːrd/",
+    "Audio": "",
+    "Definition": "ADR（架构决策记录）——记录重大技术决策的背景、选择、后果的文档，AI辅助撰写并永久关联到代码变更",
+    "ExampleEN": "Architecture Decision Records capture the context, options considered, and rationale for major technical decisions, ideally generated by AI and linked to code changes.",
+    "ExampleCN": "ADR 记录重大技术决策的背景、可选方案和选择理由，最好由 AI 辅助撰写并关联到代码变更。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.2.1 活文档的组成部分。ADR(架构决策记录)是记录重大技术决策的背景、可选方案、选择理由和后果的文档，最好由 AI 辅助撰写并永久关联到代码变更。<br><br><b>活文档组成</b><br>① 架构文档: 每次 PR 合入后 AI 自动更新，始终反映最新架构全景<br>② API 文档: 从代码注释+类型定义自动生成，接口变更即文档更新<br>③ ADR(架构决策记录): AI 辅助撰写——记录决策标题、背景(为什么需要做决策)、考虑的方案(优缺点对比)、选定的方案和理由、后果(正面和负面的影响)。永久关联到相关代码变更<br>④ 知识导航: 问 AI「XX 功能是怎么实现的」立即得到答案<br><br><b>ADR 价值</b><br>传统项目中最容易丢失的资产就是「当初为什么选这个方案」的上下文。新成员接手时只能看到结果看不到过程，容易重复评估已否定的方案。ADR 让决策上下文可传承，AI 在未来的开发中也能读取 ADR 了解历史背景<br><br><b>延伸节点</b><br>4.2.1 活文档 | 4.1.3 知识飞轮 | 4.2.1 上下文工程"
+  },
+  {
+    "Word": "Test-First Development",
+    "Pronunciation": "/tɛst fɜːrst dɪˈvɛləpmənt/",
+    "Audio": "",
+    "Definition": "Test-First Development（测试先行）——Spec Coding 三铁律之三：先让 AI 写测试用例(可执行的确定性约束)，再写实现(概率性输出)，用确定性约束驾驭概率性",
+    "ExampleEN": "Test-first development with AI means writing test cases first as executable deterministic constraints, then having AI generate the implementation to satisfy them.",
+    "ExampleCN": "AI 编程的测试先行意味着先写好测试用例作为可执行的确定性约束，再让 AI 生成实现来满足它们。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.1 Spec Coding三铁律之三。测试=可执行的确定性约束，实现=AI的概率性输出。用确定性约束驾驭概率性，先让 AI 写测试用例(或人手写测试)，再写实现。<br><br><b>核心理念</b><br>传统 TDD: 人写测试→人写实现→人重构。AI 编程 TDD: 人(或 AI)写测试用例→AI 生成实现→自动验证→通过则完成，失败则自动修复回环(回传错误+Spec→AI 修复)。测试是「可执行的确定性约束」——虽然 AI 的代码生成是概率性的，但测试的输出(pass/fail)是确定性的。<br><br><b>实战示例</b><br>开发 Markdown 标题提取器：Step1 先写测试(test_extracts_h1/test_extracts_multiple_levels/test_ignores_non_headers/test_empty_input)，覆盖正常/多层级/边缘/空输入4种场景。Step2 给 AI 看测试+Spec「extract_headers(md: str) -> list[dict]，用正则提取所有 # 开头的行，返回 [{'level': N, 'text': '...'}]」。Step3 运行 pytest 验证 AI 产出。全部通过即完成<br><br><b>延伸节点</b><br>4.1.1 Spec Coding | 4.2.3 质量飞轮 | 4.1.4 审查闭环"
+  },
+  {
+    "Word": "CI/CD Pipeline",
+    "Pronunciation": "/siː aɪ siː diː ˈpaɪplaɪn/",
+    "Audio": "",
+    "Definition": "CI/CD Pipeline（持续集成/持续部署流水线）——自动构建、测试、部署的工程基础设施，在AI时代与AI审查/测试/文档融合成智能化流水线",
+    "ExampleEN": "A CI/CD pipeline in the AI era includes automated AI code review, AI-generated test coverage analysis, and AI review reports posted directly to pull requests.",
+    "ExampleCN": "AI时代的CI/CD流水线包含自动AI代码审查、AI生成的测试覆盖率分析、以及直接发布到PR的AI审查报告。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §4.1.2 示例3展示了 GitHub Actions 风格的 AI CI/CD 流水线。将 AI 能力融入传统 DevOps 流程，把持续集成/部署从「自动构建测试部署」升级为「AI 智能代码审查+智能测试生成+智能覆盖率分析」。<br><br><b>AI 流水线 CI/CD 五大环节</b><br>① AI代码审查: 获取 PR changed files→对每个文件调用 AI 审查(安全漏洞/逻辑错误/性能问题/命名清晰度/不必要复杂度)→输出 Markdown 格式审查报告(含严重级别/文件路径/行号/问题描述/修复建议)<br>② AI生成测试: 根据变更文件自动生成补充测试用例，确保变更测试覆盖<br>③ 运行所有测试: pytest --cov 完整测试套件<br>④ AI分析覆盖率: 检查测试覆盖率是否达 AI 代码阈值(85%，高于人工代码的 70%)<br>⑤ 发布审查报告到PR: AI 审查报告自动发布为 PR Comment，供人工终审参考<br><br><b>与传统 CI/CD 的区别</b><br>传统: 自动 lint→build→test→deploy，全部是确定性规则。AI 增强: 在每个环节前增加了 AI 智能分析层——AI 代码审查(代替人逐行阅读 PR diff)、AI 生成测试(补充自动生成覆盖)、AI 覆盖率分析(判断测试质量而非只看百分比)。人只在最终审查报告上做关键决策<br><br><b>延伸节点</b><br>4.1.2 AI流水线 | 4.3.2 流程重构 | 4.1.4 审查闭环"
+  }
+]

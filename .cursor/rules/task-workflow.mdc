@@ -1,0 +1,61 @@
+---
+description: 任务追踪（与 .claude/settings.json 中 Task* 及 CLAUDE.md §3 对齐；数据仅 00_local_task）
+alwaysApply: true
+---
+
+# 任务工作流（Cursor · 与 Claude 对齐）
+
+**权威规则**（冲突时以之为准）：
+- `.claude/memory/tasks/task_tracking_rules.md`
+- `.claude/memory/tasks/_template.md`
+- `00_local_task/local_data_guide.md`
+
+**任务数据唯一目录**：`00_local_task/tasks/{任务ID}/{任务ID}.md`（禁止第二份进度副本）
+
+---
+
+## 创建多步骤任务（与 Claude `0002_task-create` 相同）
+
+触发：≥3 步、多文件操作、跨会话、用户称「项目/任务/实验」→ 先询问是否创建任务记录。
+
+1. 创建 `00_local_task/tasks/{任务ID}/{任务ID}.md`（模板：`.claude/memory/tasks/_template.md`）
+2. 初始化/更新 `00_local_task/task_index.md`（模板：`.claude/memory/tasks/task_index.template.md`）
+3. 索引字段：`id | status | owner | last_update | task_file`（`status` 仅 `active`/`paused`/`done`）
+
+## 进度更新（强制执行，与 Claude 相同）
+
+每完成子步骤，**先更新主文档 6 处再继续**：
+
+1. `> **更新时间**`
+2. `## TL;DR`
+3. `## 进度表`
+4. `## 当前操作`
+5. `## 已完成操作`
+6. `## 进度日志`（追加一行）
+
+不更新不往下走；进度表为唯一状态来源。
+
+## 恢复（与 Claude 相同逻辑）
+
+用户：`继续 {任务ID}` 或 `@00_local_task/tasks/{任务ID}/{任务ID}.md`
+
+1. 读主文档 TL;DR、当前操作、进度日志最新 3 行
+2. 立即继续，不翻旧对话、不重复询问是否建任务
+
+## 任务 done 前
+
+- 更新索引为 `done`
+- 询问是否沉淀经验到 `CLAUDE.md` / `memory/rules`
+
+---
+
+## 与 Claude Code 的差异（仅此节可不同）
+
+| 项目 | Claude Code | Cursor |
+|------|-------------|--------|
+| 规则入口 | Skill `0002_task-create` | 本 `.mdc` + 上述权威 md |
+| 恢复 | `/clear` 后 `继续 {任务ID}` | 新对话 + `继续 {任务ID}` 或 `@` 主任务路径 |
+| `.claude/` 权限区 | 写配置可能弹窗；业务数据不放 `.claude/` | 无此限制；仍只写 `00_local_task/` |
+| 审计 4.1（特定学习任务） | Skill 内按任务类型执行 | 仅当主任务文档已写明审计表时执行，不默认套用 |
+
+除上表外，路径、模板、索引、6 处更新、done 检查清单与 Claude **不得有区别**。

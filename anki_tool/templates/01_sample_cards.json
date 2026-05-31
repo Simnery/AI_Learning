@@ -1,0 +1,47 @@
+[
+  {
+    "Word": "Prompt Engineering",
+    "Pronunciation": "/prɒmpt ˌendʒɪˈnɪərɪŋ/",
+    "Audio": "",
+    "Definition": "Prompt Engineering（提示工程）——通过精心设计输入文本，引导大语言模型产生高质量输出的技术",
+    "ExampleEN": "Good prompt engineering gives the model clear role, format, constraints, and examples to follow.",
+    "ExampleCN": "好的提示工程会给模型明确的角色、格式、约束条件和示例来遵循。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 从提示工程到RAG 的核心起点。提示工程是 LLM 应用开发三种模式之一（Prompt / RAG / 微调），也是最轻量的入门方式。<br><br><b>三个层次</b><br>① 基础提示：简单问答，不加约束<br>② 结构化提示：角色+任务+格式，如「你是技术博主，用500字介绍Transformer，分三点，每点有例子」<br>③ 上下文工程：System Prompt + Few-shot 范例 + 对话历史管理 + 工具调用指令<br><br><b>工程实践</b><br>写好 prompt 三原则：角色设定要具体、输出格式要有约束、负面示例比正面示例更有效<br>常见陷阱：prompt 太长导致模型忽略关键约束、给模型编造了不存在的 API<br><br><b>延伸节点</b><br>1.1.2 Agent可控性与自反思 | 2.1.2 RAG技术与应用 | 4.1.1 确定性驾驭概率性"
+  },
+  {
+    "Word": "RAG",
+    "Pronunciation": "/ræɡ/",
+    "Audio": "",
+    "Definition": "Retrieval-Augmented Generation（检索增强生成）——LLM 生成前先从外部知识库检索相关信息，让模型基于参考资料作答，而非仅依赖训练数据中的记忆。",
+    "ExampleEN": "RAG retrieves relevant documents first, then feeds them to the model to generate accurate answers.",
+    "ExampleCN": "RAG 先检索相关文档，再将文档内容提供给模型，以生成准确的答案。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 后半部分 + §2.1 全部（RAG 理论知识+案例详解+实操）。RAG 是当前 LLM 应用最成熟的落地范式，覆盖从文档解析到生成评估的全链路。<br><br><b>四步工作流</b><br>① 检索(Retrieve)：用户问题 → embedding向量 → 向量库搜索 Top-K 相关文档片段<br>② 增强(Augment)：检索结果 + 原始问题 → 拼接成增强 prompt<br>③ 生成(Generate)：增强后的 prompt 喂给 LLM 生成答案<br>④ 验证(Validate)：检查答案是否忠实于检索到的文档，是否出现幻觉<br><br><b>vs 纯 LLM</b><br>纯 LLM：知识静态（训练截止日期），会编造答案。RAG：知识动态（更新向量库即可），输出受检索结果约束。<br><br><b>延伸节点</b><br>2.1.1 Embeddings和向量数据库 | 2.1.4 RAG调优 | 5.1 企业RAG冠军项目"
+  },
+  {
+    "Word": "Hallucination",
+    "Pronunciation": "/həˌluːsɪˈneɪʃən/",
+    "Audio": "",
+    "Definition": "Hallucination（幻觉）——LLM 编造不存在但看上去合理的事实",
+    "ExampleEN": "The model hallucinated a convincing but entirely fictional research paper with fake citations.",
+    "ExampleCN": "模型虚构了一篇看似可信但完全不存在的研究论文，并编造了虚假的引用。",
+    "Notes": "<b>学习路径</b><br>贯穿知识图谱的核心概念。§1.1.1 首提，§2.1.2 详解缓解方案，§2.2.3 Agent中再次出现。<br><br><b>三层成因</b><br>① 数据层：训练数据本身包含错误或矛盾信息<br>② 模型层：基于概率生成，低概率区间倾向于「编造」而非承认不知道<br>③ 推理层：缺少外部知识约束，自由发挥导致虚构<br><br><b>缓解方案（四阶梯）</b><br>① RAG：检索外部知识库约束输出（最有效）<br>② Self-Reflection：让 LLM 自问「这条信息的依据是什么」<br>③ 强制引用：要求每次断言都附带来源<br>④ Temperature=0：降低随机性，减少编造<br><br><b>延伸节点</b><br>1.1.2 Agent自反思 | 2.1.4 RAG调优 | 2.2.3 Agent评估"
+  },
+  {
+    "Word": "Context Engineering",
+    "Pronunciation": "/ˈkɒntekst ˌendʒɪˈnɪərɪŋ/",
+    "Audio": "",
+    "Definition": "Context Engineering（上下文工程）——管理整个对话上下文: System Prompt、Few-shot示例、对话历史、工具调用指令",
+    "ExampleEN": "Context engineering carefully manages the entire conversation window with system prompts and few shot examples.",
+    "ExampleCN": "上下文工程通过系统提示词和少样本示例来精细管理整个对话窗口。",
+    "Notes": "<b>学习路径</b><br>提示工程的进阶范式。§1.1.1 中作为第三层提出，§4.1.1 确定性驾驭概率性 中深化为工程方法论。<br><br><b>四大元素</b><br>① System Prompt：定义模型角色边界（「你是XX领域专家」）<br>② Few-shot Examples：给 2-3 个输入→输出范例，比用文字描述更有效<br>③ 对话历史管理：超长对话时摘要/滑窗/选择性丢弃，防止模型遗忘<br>④ 工具调用指令：告诉模型何时、如何调用外部工具（Function Calling 协议）<br><br><b>工程思维</b><br>本质是把整个对话上下文当成「资源」来管理——token 预算有限，需要精心分配。类比：编辑电影而不是直播。<br><br><b>延伸节点</b><br>4.1.1 确定性驾驭概率性 | 4.1.2 AI流水线 | 2.2.1 Function Calling与MCP"
+  },
+  {
+    "Word": "System Prompt",
+    "Pronunciation": "/ˈsɪstəm prɒmpt/",
+    "Audio": "",
+    "Definition": "System Prompt（系统提示词）——定义模型角色、行为和格式的顶层指令",
+    "ExampleEN": "A well written system prompt sets the role, tone, and boundaries for the entire conversation.",
+    "ExampleCN": "一个精心编写的系统提示词为整个对话设定了角色、语气和行为边界。",
+    "Notes": "<b>学习路径</b><br>上下文工程中最奠基的元素。§1.1.1 上下文工程中首次出现，贯穿所有 Agent/应用开发节点。<br><br><b>设计原则</b><br>① 角色要具体：不说「你是助手」，说「你是10年经验的Python后端架构师」<br>② 边界要清晰：「只基于提供的文档回答，不确定时请说不知道」<br>③ 格式要约束：「输出 JSON，包含 answer / citations / confidence 三个字段」<br>④ 禁止比允许更有效：「不要编造 API，不要猜测版本号」<br>应控制在 200-500 token，把最重要的约束放最前面（primacy effect）。<br><br><b>延伸节点</b><br>2.2.1 Function Calling与MCP | 4.1.4 审查优化闭环 | 5.4 Hermes长期记忆"
+  }
+]

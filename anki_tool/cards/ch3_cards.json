@@ -1,0 +1,767 @@
+[
+  {
+    "Word": "LCEL",
+    "Pronunciation": "/ˌel siː iː ˈel/",
+    "Audio": "",
+    "Definition": "LangChain Expression Language（LangChain表达式语言）——用管道符|串联组件的声明式语法，底层自动处理回调、流式输出、异步",
+    "ExampleEN": "With LCEL, you can build a chain as simply as chain = prompt | model | output_parser.",
+    "ExampleCN": "使用LCEL，你可以简单地构建链：chain = prompt | model | output_parser。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发<br><br><b>核心概念</b><br>LCEL（LangChain Expression Language）是LangChain首创的声明式语法，用Python管道符|将Prompt模板、LLM调用和输出解析器串联成一条执行链。它不是简单的语法糖——底层自动处理了同步/异步兼容（invoke/ainvoke自动适配）、流式输出（stream将每个组件的输出流式传递到下一个）、并行执行（RunnableParallel自动并发调用）、回调追踪（所有组件的输入输出自动触发回调以集成LangSmith）以及错误传播（链中任一组件的异常自动包装堆栈信息，精准定位出错环节）。<br><br><b>关键要点</b><br>chain = prompt | model | output_parser 这一行代码背后隐藏了大量工程细节，使得开发者无需手动处理协程、Stream、日志追踪。简单场景用LCEL就够了，复杂条件分支和循环才需要LangGraph或Agent。<br><br><b>延伸节点</b><br>§3.2 AI框架设计与选型 | §2.2.1 Function Calling与MCP"
+  },
+  {
+    "Word": "Chain",
+    "Pronunciation": "/tʃeɪn/",
+    "Audio": "",
+    "Definition": "Chain（链）——LangChain中将多个组件按固定顺序串联成执行流程的核心抽象",
+    "ExampleEN": "A chain connects prompts, models, and output parsers into a fixed execution pipeline.",
+    "ExampleCN": "链将提示模板、模型和输出解析器连接成固定的执行流水线。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发<br><br><b>核心概念</b><br>Chain是LangChain最核心的编排机制——它将多个组件按固定顺序串联成一个执行流水线。最简单的Chain = Prompt模板填充变量 → LLM调用 → Output Parser解析输出。LangChain支持多种Chain类型：SequentialChain（按顺序串联多个Prompt+LLM步骤）、ConditionalChain（根据条件选择不同分支）、RunnableParallel（并行调用多个Chain后合并结果）。使用LCEL管道符|是定义Chain的标准方式。<br><br><b>关键要点</b><br>Chain适用于流程固定的场景（如RAG问答：检索→拼接上下文→LLM生成答案）。但当需要条件分支、循环、动态决策时，Chain的表达力不足——此时应切换到Agent（让LLM自主决策）或LangGraph（状态图驱动工作流）。简单的一问一答不需要Chain，直接调API即可。<br><br><b>延伸节点</b><br>§3.2 AI框架设计与选型 | §2.1.2 RAG技术与应用"
+  },
+  {
+    "Word": "AgentExecutor",
+    "Pronunciation": "/ˈeɪdʒənt ɪɡˈzekjʊtər/",
+    "Audio": "",
+    "Definition": "AgentExecutor（代理执行器）——LangChain中封装Agent运行循环的组件，管理工具调用和迭代控制",
+    "ExampleEN": "AgentExecutor wraps the agent with tool management and iteration control.",
+    "ExampleCN": "AgentExecutor用工具管理和迭代控制封装代理的运行。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发<br><br><b>核心概念</b><br>AgentExecutor是LangChain中封装Agent运行循环的执行器组件，它将Agent（决策器）和Tools（工具集）绑定在一起，负责驱动ReAct循环的完整生命周期：接收用户输入→传给Agent→Agent决定调用工具→AgentExecutor执行工具调用→将结果返回给Agent→重复循环→返回最终输出。它像一个\"操作系统\"管理Agent与外部世界的交互。<br><br><b>关键要点</b><br>关键配置参数：max_iterations限制Agent的最大执行步数（默认10，防止无限循环），verbose=True打印每一步的Thought/Action/Observation用于调试。如果Agent反复调用同一个工具得不到结果，检查工具的描述是否清晰、返回值是否包含Agent需要的信息。AgentExecutor还负责安全边界——你可以在其中限制Agent可调用的工具集合。<br><br><b>延伸节点</b><br>§3.2 AI框架设计与选型 | §2.2 Agent理论知识"
+  },
+  {
+    "Word": "ConversationBufferMemory",
+    "Pronunciation": "/ˌkɒnvərˈseɪʃən ˈbʌfər ˈmeməri/",
+    "Audio": "",
+    "Definition": "ConversationBufferMemory（对话缓冲记忆）——存储全部对话历史，历史随对话增长不设上限",
+    "ExampleEN": "ConversationBufferMemory stores the entire conversation history, which grows unbounded.",
+    "ExampleCN": "对话缓冲记忆存储全部对话历史，随对话增长不设上限。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发<br><br><b>核心概念</b><br>Memory是LangChain六大核心组件之一，让模型\"记住\"之前的对话历史。ConversationBufferMemory是最简单直接的类型——它存储全部对话历史到一个缓冲区中，不设上限。每轮对话都追加到历史末尾，LLM每次调用都能看到完整上下文。但这种简单有代价：对话越长Token消耗越大，上下文窗口（128K tokens对于GPT-4，但很多模型只有4K-8K）被历史对话占满后就无法处理新问题了。<br><br><b>关键要点</b><br>LangChain提供四种记忆类型应对不同场景：ConversationBufferMemory（存全部，简单但冗余/适合短对话）、ConversationSummaryMemory（用LLM自动摘要压缩历史/长对话首选）、ConversationBufferWindowMemory（只保留最近K轮/Token敏感场景）、VectorStoreRetrieverMemory（语义检索历史/海量历史场景）。实际项目中通常用SummaryMemory或WindowMemory而不是BufferMemory。<br><br><b>延伸节点</b><br>§4.1.1 确定性驾驭概率性 | §2.1.1 Embeddings与向量数据库"
+  },
+  {
+    "Word": "RecursiveCharacterTextSplitter",
+    "Pronunciation": "/rɪˈkɜːrsɪv ˈkærɪktər tekst ˈsplɪtər/",
+    "Audio": "",
+    "Definition": "RecursiveCharacterTextSplitter（递归字符文本切分器）——按分隔符优先级递归切分文本的文档切分工具",
+    "ExampleEN": "RecursiveCharacterTextSplitter splits documents by character separators with recursive fallback to ensure consistent chunk sizes.",
+    "ExampleCN": "递归字符文本切分器按分隔符优先级递归切分文档，确保块大小一致。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发<br><br><b>核心概念</b><br>RecursiveCharacterTextSplitter是LangChain RAG管线中文档切分的标准工具。它按分隔符优先级递归切分文本：先尝试按段落（\\n\\n）切分，如果段块仍然大于chunk_size则降级为按句号/换行切分，直到最细粒度的按字符切分。这种递归降级策略确保了切分尽可能保留语义完整性——不会在句子中间把意思切断。<br><br><b>关键要点</b><br>两个核心参数：chunk_size（每块的目标字符数，一般从200-500起步测试）和chunk_overlap（相邻块的字符重叠量，保留上下文连续性）。chunk_size太小导致每个块信息不完整，LLM回答不出来；太大则检索返回的块太大包含过多无关信息，降低答案精度。重叠量一般设为chunk_size的10-20%，确保跨块的关键信息不会丢失。<br><br><b>延伸节点</b><br>§2.1.2 RAG技术与应用 | §3.2 LlamaIndex数据框架"
+  },
+  {
+    "Word": "LangGraph",
+    "Pronunciation": "/læŋ græf/",
+    "Audio": "",
+    "Definition": "LangGraph（LangGraph工作流引擎）——LangChain生态中基于状态图驱动的Agent工作流引擎，解决Chain无法表达的条件分支、循环、并行等复杂逻辑",
+    "ExampleEN": "LangGraph models agent workflows as state graphs, supporting branching, loops, and parallel execution.",
+    "ExampleCN": "LangGraph将Agent工作流建模为状态图，支持分支、循环和并行执行。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发 进阶方向<br><br><b>核心概念</b><br>LangGraph是LangChain生态中面向复杂Agent工作流的状态图引擎。当Chain无法表达条件分支和循环，Agent又因其随机性太不可控时，LangGraph提供了中间方案——用有向状态图精确定义Agent的执行逻辑。核心概念：State（状态对象，在节点间传递的共享数据）、Node（处理节点，每个节点是一个可运行的函数/LangChain组件）、Edge（固定流转边，从一个节点到另一个节点）、Conditional Edge（条件分支边，根据State的值动态决定下一个节点）。<br><br><b>关键要点</b><br>使用LangGraph的场景：需要多步推理且每步的切换规则明确（如先检索、再判断、检索不够则重新检索、够了则生成答案）、需要并行执行多个子任务并合并结果、需要人工审批节点（Human-in-the-loop）。LangGraph将Agent行为从\"LLM自由决策\"变成\"工程师可控的状态图\"，既保持了Agent的智能性又提高了可预测性。<br><br><b>延伸节点</b><br>§3.2 AI框架设计与选型 | §2.2 Agent理论知识"
+  },
+  {
+    "Word": "LangSmith",
+    "Pronunciation": "/læŋ smɪθ/",
+    "Audio": "",
+    "Definition": "LangSmith（LangSmith调试监控平台）——LangChain生态的LLM应用调试、追踪和监控平台，用于生产环境可观测性",
+    "ExampleEN": "LangSmith traces every step in your LLM pipeline so you can debug agent behavior in production.",
+    "ExampleCN": "LangSmith追踪LLM流水线中每一步，让你能在生产环境中调试Agent行为。",
+    "Notes": "<b>学习路径</b><br>§3.1 LangChain多任务应用开发 进阶方向<br><br><b>核心概念</b><br>LangSmith是LangChain生态的LLM应用调试、追踪和监控平台，类比于微服务中的分布式链路追踪（如Jaeger/Zipkin），但专为LLM应用设计。Agent行为具有随机性——相同的输入可能产生不同的执行路径，没有追踪工具就无法排查生产问题。LangSmith记录每一步：LLM的输入输出、Tool调用的参数和返回值、Chain中每个节点的延迟和Token消耗。<br><br><b>关键要点</b><br>生产环境必须开启LangSmith追踪。核心功能包括：执行链路追踪（trace，可视化每一步的完整调用树）、输入输出日志（自动记录所有组件的原始数据）、延迟统计（每个环节的耗时分布）、Token消耗统计（成本监控）、数据集管理与回归测试（保存历史请求为测试集，每次修改后跑回归）。LangSmith的追踪数据也是Fine-tuning的优质数据源——你知道了Agent在哪一步犯错。<br><br><b>延伸节点</b><br>§4.1.4 审查优化闭环 | §2.3.1 LLM微调原理"
+  },
+  {
+    "Word": "AutoGen",
+    "Pronunciation": "/ˈɔːtoʊ dʒen/",
+    "Audio": "",
+    "Definition": "AutoGen（AutoGen多智能体框架）——微软开源的多智能体对话框架，Agent通过对话完成自主协作，无需显式定义链或图",
+    "ExampleEN": "In AutoGen, agents collaborate by conversing with each other, with no explicit workflow definition needed.",
+    "ExampleCN": "在AutoGen中，代理通过相互对话来协作，无需显式定义工作流。",
+    "Notes": "<b>学习路径</b><br>§3.2 AI框架设计与选型<br><br><b>核心概念</b><br>AutoGen是微软开源的多智能体对话框架，核心思想是\"Agent对话即工作流\"——多个Agent通过自然语言对话完成自主协作，无需工程师显式定义Chain或Graph。两个核心角色：AssistantAgent（负责规划和生成内容，相当于\"智囊\"）和UserProxyAgent（负责执行代码和提供反馈，相当于\"执行者\"）。整个协作过程是Agent之间的对话交流，人类可以选择性地参与审批。<br><br><b>关键要点</b><br>AutoGen的典型工作流程：UserProxy发起任务→AssistantAgent分析并生成解决方案（通常是代码）→UserProxy自动执行代码→结果返回AssistantAgent→分析结果后决定是继续还是输出最终答案。最大代价：多Agent对话开销大，Token消耗约为单Agent的3-5倍。适用场景：需要代码生成+执行验证的任务（数据分析、自动编程）、多个专业Agent分工协作的复杂任务。<br><br><b>延伸节点</b><br>§2.2 Agent理论知识 | §3.1 LangChain | §2.2.1 Function Calling与MCP"
+  },
+  {
+    "Word": "Data Ingestion",
+    "Pronunciation": "/ˈdeɪtə ɪnˈdʒestʃən/",
+    "Audio": "",
+    "Definition": "Data Ingestion（数据摄入）——将各种格式的原始数据加载并解析为统一节点格式的过程",
+    "ExampleEN": "LlamaIndex supports data ingestion from over 100 sources including PDFs, databases, and APIs.",
+    "ExampleCN": "LlamaIndex支持从超过100种数据源进行数据摄入，包括PDF、数据库和API。",
+    "Notes": "<b>学习路径</b><br>§3.2 AI框架设计与选型<br><br><b>核心概念</b><br>Data Ingestion（数据摄入）是LlamaIndex RAG管线的最上游步骤，将各种格式的原始数据加载并解析为统一的Node格式。三步流程：Loaders（加载原始数据/Python读取文件从PDF到SQL、从API到Notion共100+种数据源）→ Parsers（解析结构/提取文本内容与元数据）→ Nodes（标准化节点/每个Node含文本+元数据+对应的嵌入向量，是索引和检索的基本单元）。<br><br><b>关键要点</b><br>LlamaIndex的数据连接器是其最大的竞争力之一：SimpleDirectoryReader可自动识别文件夹下的txt/pdf/md/word等多种格式并加载为Documents。Nodes设计有两个关键元数据字段：source（来源文件路径）和doc_id（文档唯一标识），用于溯源和增量更新。数据摄入后调用index = VectorStoreIndex.from_documents(documents)一键构建向量索引，底层自动完成分块、向量化、存储全过程。<br><br><b>延伸节点</b><br>§2.1.2 RAG技术与应用 | §3.1 LangChain的Indexes组件"
+  },
+  {
+    "Word": "Query Engine",
+    "Pronunciation": "/ˈkwɪəri ˈendʒɪn/",
+    "Audio": "",
+    "Definition": "Query Engine（查询引擎）——LlamaIndex中接收自然语言查询、从索引检索并生成回答的统一接口",
+    "ExampleEN": "The query engine combines retrieval from the index with LLM generation to produce answers.",
+    "ExampleCN": "查询引擎把从索引检索的结果与LLM生成相结合来产生答案。",
+    "Notes": "<b>学习路径</b><br>§3.2 AI框架设计与选型<br><br><b>核心概念</b><br>Query Engine（查询引擎）是LlamaIndex中面向用户的统一查询接口，封装了从索引检索到LLM生成答案的完整流程。调用index.as_query_engine()一行代码即可创建，用户只需传入自然语言问题，引擎自动完成：问题理解→向量检索（找到最相关的Nodes）→拼接上下文→发送给LLM→返回答案。与LangChain需要手动搭建RAG链不同，LlamaIndex将这一切封装在Query Engine内部。<br><br><b>关键要点</b><br>三种响应模式：compact（将所有检索结果拼接成一段文本传给LLM/适合结果较少的场景）、tree_summarize（将多段结果各自生成摘要再汇总/适合检索出大量文档的场景）、refine（逐段用LLM精炼答案\"根据之前的答案和新检索到的信息，更新你的回答\"/精度最高但调用LLM次数最多）。similarity_top_k控制检索返回的Node数量（默认2，建议3-5）。<br><br><b>延伸节点</b><br>§2.1.2 RAG技术与应用 | §3.1 LangChain的RAG实现"
+  },
+  {
+    "Word": "HuggingFace",
+    "Pronunciation": "/ˈhʌɡɪŋ feɪs/",
+    "Audio": "",
+    "Definition": "HuggingFace（HF开源AI平台）——NLP/CV/多模态领域的模型与数据集共享平台，提供Transformers/Datasets/Tokenizers工具链",
+    "ExampleEN": "HuggingFace hosts over one million pretrained models and provides a unified API to load and use them.",
+    "ExampleCN": "HuggingFace托管了超过100万个预训练模型，并提供统一API加载和使用它们。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>HuggingFace（HF）是NLP/CV/多模态领域的\"GitHub + Docker Hub\"——它既是模型和数据集的共享平台（100万+预训练模型、10万+数据集），也提供了一整套工具链让模型调用和训练变得极其简单。生态分层结构：Model Hub/Dataset Hub（模型与数据仓库）→ Transformers（推理层/统一API加载任意预训练模型）→ Trainer/PEFT/TRL（训练与微调层/标准化全量微调+参数高效微调+强化学习对齐）→ Datasets/Tokenizers（数据处理层/高效加载处理缓存+Rust实现超快分词）。<br><br><b>关键要点</b><br>没有HuggingFace之前，用GPT/BERT/Llama需要自己找代码、下载权重、写推理逻辑。现在几行代码搞定。三核心库配合使用：Transformers（模型加载推理）、Datasets（数据管理）、Tokenizers（分词）。国内使用痛点：Model Hub默认从huggingface.co下载，国内常超时——设置HF_ENDPOINT=https://hf-mirror.com解决。模型微调也从\"炼丹\"变成标准化工序。<br><br><b>延伸节点</b><br>§3.1 LangChain | §3.5 PyTorch | §2.3.1 LLM微调原理"
+  },
+  {
+    "Word": "Pipeline",
+    "Pronunciation": "/ˈpaɪplaɪn/",
+    "Audio": "",
+    "Definition": "Pipeline（推理管道）——HuggingFace零代码推理入口，自动完成模型推荐、下载、推理全流程",
+    "ExampleEN": "pipeline('sentiment-analysis') handles model selection, tokenizer loading, and inference in a single line.",
+    "ExampleCN": "pipeline('sentiment-analysis')一行代码自动完成模型选择、分词器加载和推理。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>Pipeline是HuggingFace的零代码推理入口，为初学者和快速验证场景设计。调用pipeline('任务名')，底层自动完成三件事：(1)根据任务类型匹配推荐最优预训练模型（如情感分析默认用distilbert-base-uncased-finetuned-sst-2-english）；(2)自动下载模型权重和对应的Tokenizer；(3)构建完整的推理流程（分词→模型前向→结果解析）。一行代码实现以前几十行代码才能完成的工作。<br><br><b>关键要点</b><br>Pipeline支持20+种任务类型：text-classification（文本分类）、text-generation（文本生成）、translation（翻译）、summarization（摘要）、image-classification（图像分类）、automatic-speech-recognition（语音识别）等。指定自定义模型：pipeline('text-generation', model='gpt2')。Pipeline是快速验证的最佳入口，但生产环境建议用AutoModel+AutoTokenizer手动加载以获得更多控制。<br><br><b>延伸节点</b><br>§3.5 PyTorch | §1.2.1 AI基本原理及API使用"
+  },
+  {
+    "Word": "Tokenizer",
+    "Pronunciation": "/ˈtoʊkənaɪzər/",
+    "Audio": "",
+    "Definition": "Tokenizer（分词器）——将文本转换为模型可处理的数字ID序列的组件",
+    "ExampleEN": "Always load the tokenizer with AutoTokenizer.from_pretrained(model_name) to match the model's vocabulary.",
+    "ExampleCN": "始终用AutoTokenizer.from_pretrained(model_name)加载分词器以匹配模型的词表。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>Tokenizer（分词器）是将自然语言文本转换为模型可处理的数字ID序列的桥梁组件。它的工作流程分为三步：(1)Tokenize：将输入文本切分为子词单元（WordPiece/BPE/SentencePiece），每个子词对应词表中的一个ID；(2)convert_tokens_to_ids：将子词序列映射为整数ID序列；(3)padding/truncation：将所有序列统一到相同长度（填充或截断），并生成attention_mask（标记哪些位置是真实的，哪些是填充的）。<br><br><b>关键要点</b><br>Tokenizer不匹配是导致模型输出乱码/性能极差的最常见原因。每个预训练模型有自己的词表（vocabulary），必须用对应的Tokenizer才能正确编码。永远用AutoTokenizer.from_pretrained(model_name)配对加载。关键参数：max_length（最大长度）、padding=True（自动填充到批次内最长）、truncation=True（超长自动截断）、return_tensors='pt'（返回PyTorch张量）。Tokenizer内部还处理特殊token：CLS/BOS/SEP/EOS/PAD。<br><br><b>延伸节点</b><br>§1.2.1 AI基本原理及API使用 | §2.3.1 LLM微调原理"
+  },
+  {
+    "Word": "Adapter",
+    "Pronunciation": "/əˈdæptər/",
+    "Audio": "",
+    "Definition": "Adapter（适配器模块）——插入预训练模型层间的小型可训练模块，冻结原参数只训练新增模块的高效微调方法",
+    "ExampleEN": "Adapter modules are small trainable layers inserted between frozen pretrained layers.",
+    "ExampleCN": "适配器模块是插入冻结预训练层之间的小型可训练层。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>Adapter（适配器模块）是PEFT家族中与LoRA同类的参数高效微调方法。工作原理：在预训练模型的各层之间插入小型可训练模块（通常是一个简单的两层前馈网络：降维→激活→升维），冻结原模型所有参数只训练新增的Adapter模块。每个任务可以训练不同的Adapter，共享同一个基础模型——切换任务只需替换Adapter权重（几MB），无需加载多个完整模型。<br><br><b>关键要点</b><br>Adapter与LoRA的区别：(1)Adapter插入在层间作为独立子层，LoRA在层内旁路；(2)Adapter推理时增加额外计算步骤（降维+激活+升维），LoRA可merge回原权重消除开销；(3)Adapter的multi-task共享更直观（每个任务一个Adapter），LoRA在LLM领域更受欢迎因为推理时可merge。两种方法可以组合使用（同时使用Adapter和LoRA）。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §3.3 PEFT库"
+  },
+  {
+    "Word": "PEFT",
+    "Pronunciation": "/peft/",
+    "Audio": "",
+    "Definition": "Parameter-Efficient Fine-Tuning（参数高效微调）——只训练模型的一小部分参数而冻结其他参数的方法总称",
+    "ExampleEN": "PEFT methods like LoRA and adapters enable fine-tuning large models with limited GPU memory.",
+    "ExampleCN": "PEFT方法如LoRA和Adapter使得在有限GPU内存下微调大模型成为可能。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>PEFT（Parameter-Efficient Fine-Tuning，参数高效微调）是一系列只训练模型一小部分参数而冻结其他参数的方法总称。目标：用1%甚至更少的可训练参数量达到接近全量微调的效果。HuggingFace的peft库提供了这些方法的统一实现，支持LoRA、QLoRA、Adapter、Prefix Tuning、Prompt Tuning、IA3等。核心优势：极低的显存需求和存储成本（几MB vs 几十GB的完整模型），使得大模型微调平民化。<br><br><b>关键要点</b><br>方法对比：LoRA（低秩矩阵旁路/最主流/文本任务首选）、QLoRA（量化的LoRA/消费级显卡微调大模型）、Prefix Tuning（在输入前添加可训练的前缀向量）、Prompt Tuning（自动学习软提示向量）。推理时可用merge_and_unload()将LoRA权重合并回原模型以消除额外的矩阵乘法开销。PEFT的主要局限：对一些复杂任务（需要大量新知识的领域适配），参数量太少可能表达力不足。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §1.3.1 企业级AI部署 | §3.3 Trainer API"
+  },
+  {
+    "Word": "TRL",
+    "Pronunciation": "/ˌtiː ɑːr ˈel/",
+    "Audio": "",
+    "Definition": "Transformer Reinforcement Learning（TRL强化学习训练库）——HuggingFace生态中基于强化学习进行人类偏好对齐的训练库",
+    "ExampleEN": "TRL provides SFTTrainer for supervised fine-tuning and DPOTrainer for direct preference optimization.",
+    "ExampleCN": "TRL提供SFTTrainer用于监督微调和DPOTrainer用于直接偏好优化。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>TRL（Transformer Reinforcement Learning）是HuggingFace生态中基于强化学习进行人类偏好对齐的训练库。它的核心训练流水线：先在高质量指令数据上做SFT（监督微调，用SFTTrainer）让模型学会遵循指令→训练Reward Model学习人类偏好（好坏判断）→用PPO或DPO优化策略使模型输出更符合人类期望。TRL包含了整个对齐流程所需的全部训练器。<br><br><b>关键要点</b><br>TRL核心组件：SFTTrainer（监督微调/在指令数据上训练模型遵循格式）、RewardTrainer（训练奖励模型/学习从人类偏好中判断好坏）、PPOTrainer（PPO强化学习优化/经典但训练不稳定）、DPOTrainer（直接偏好优化/简化版RLHF/不需要Reward Model/更稳定更简单）。DPO是目前推荐的入门方案——直接用好/坏回答对做对比损失训练，避免了训练Reward Model的不稳定性和复杂性。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §3.3 LoRA/QLoRA"
+  },
+  {
+    "Word": "PPO",
+    "Pronunciation": "/ˌpiː piː ˈoʊ/",
+    "Audio": "",
+    "Definition": "Proximal Policy Optimization（近端策略优化）——RLHF中用于优化语言模型的强化学习算法，通过约束策略更新幅度保证训练稳定",
+    "ExampleEN": "PPO stabilizes RL training by clipping policy updates to prevent destructive large changes.",
+    "ExampleCN": "PPO通过裁剪策略更新幅度来稳定强化学习训练，防止破坏性的大步更新。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>PPO（Proximal Policy Optimization，近端策略优化）是RLHF中用于优化语言模型的强化学习算法。它的核心创新：在每次策略更新时，对更新幅度做clipping（裁剪），防止一次更新太大导致模型能力崩溃（catastrophic forgetting）。在RLHF场景中，PPO接收Reward Model的分数作为奖励信号，目标是最大化期望奖励，同时用KL散度约束不让模型偏离参考模型太远。<br><br><b>关键要点</b><br>PPO在RLHF中的挑战：(1)需要同时维护4个模型（Policy、Old Policy、Reward Model、Reference SFT Model）→显存压力大；(2)训练超参数多且敏感（学习率、clip范围、KL penalty系数、value function loss系数等）；(3)样本效率低——每次策略更新后需要用新策略重新采样。这就是DPO正逐渐取代PPO的原因。但PPO仍然是通用强化学习的基石算法。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §3.3 TRL训练库"
+  },
+  {
+    "Word": "Trainer",
+    "Pronunciation": "/ˈtreɪnər/",
+    "Audio": "",
+    "Definition": "Trainer API（训练器API）——HuggingFace提供的封装训练循环的高级API，自动处理优化、评估、日志、checkpoint",
+    "ExampleEN": "The Trainer API encapsulates the full training loop: optimization, evaluation, logging, and checkpointing.",
+    "ExampleCN": "Trainer API封装了完整的训练循环：优化、评估、日志记录和检查点保存。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心要点</b><br>完整微调流程：load model+tokenizer → 预处理数据集 → 配置TrainingArguments → 创建Trainer → trainer.train()。TrainingArguments包含：num_train_epochs、per_device_train_batch_size、learning_rate、eval_strategy、save_strategy。局限性：对GAN/RL/多任务切换等非标准训练不够灵活。<br><br><b>延伸节点</b><br>§3.4 TensorFlow实战 | §3.5.1 PyTorch核心概念"
+  },
+  {
+    "Word": "Data Collator",
+    "Pronunciation": "/ˈdeɪtə kəˈleɪtər/",
+    "Audio": "",
+    "Definition": "DataCollatorWithPadding（数据整理器）——将不同长度的样本动态补齐到同一批次最长长度，提升训练效率",
+    "ExampleEN": "DataCollatorWithPadding dynamically pads each batch to its longest sequence rather than a fixed length.",
+    "ExampleCN": "DataCollatorWithPadding动态将每个批次补齐到其最长序列长度，而非固定长度。",
+    "Notes": "<b>学习路径</b><br>§3.3 HuggingFace生态实战<br><br><b>核心概念</b><br>DataCollatorWithPadding（动态填充数据整理器）是HuggingFace Trainer中处理变长序列批次的关键组件。自然语言文本长度不一，但GPU处理张量必须形状统一。DataCollator将同一个batch内不同长度的序列动态填充到该batch的最长长度（而非全局的max_length），避免了对短序列的无效填充，显著节省计算量。填充位置在序列末尾，同时生成对应的attention_mask标记哪些位置是真实token、哪些是填充。<br><br><b>关键要点</b><br>动态填充 vs 固定填充：固定填充将所有样本填充到max_length（如512），如果大多数样本只有100 token就浪费了大量计算；动态填充每批独立填充，批次最长样本300 token就只填到300。在Trainer中通过data_collator=DataCollatorWithPadding(tokenizer=tokenizer)参数指定。注意：动态填充要求每个batch内的问题类型或长度不要太分散（否则最长的那个会拖慢整体）。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念（DataLoader） | §3.3 Trainer API"
+  },
+  {
+    "Word": "Neuron",
+    "Pronunciation": "/ˈnʊrɒn/",
+    "Audio": "",
+    "Definition": "Neuron（神经元）——神经网络的基本计算单元，对输入加权求和后通过激活函数输出",
+    "ExampleEN": "A neuron computes a weighted sum of inputs plus a bias, then applies an activation function.",
+    "ExampleCN": "一个神经元计算输入的加权和加偏置，然后应用激活函数。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Neuron（神经元）是神经网络的最小计算单元，模拟生物神经元的工作模式：接收多个输入信号（x₁, x₂, ...），分别乘以各自的权重（w₁, w₂, ...），求和后加上偏置b，再通过激活函数σ产生输出。数学表达：y = σ(w₁x₁ + w₂x₂ + b)。其中权重代表每个输入的重要性，偏置控制激活阈值，激活函数引入非线性。一个神经元本质上是一个简单的\"是/否\"决策单元。<br><br><b>关键要点</b><br>多个神经元并行组成一个Layer（层），多层层叠组成Neural Network（神经网络）。神经网络六大核心组件：神经元（基本计算单元）→ 层（多个神经元并行/提取不同级别的特征）→ 激活函数（引入非线性/没有它多层等价于单层）→ 损失函数（量化预测差距/指引优化方向）→ 优化器（根据梯度更新参数/决定往哪走）→ 反向传播（链式法则分配误差责任/让每个参数知道自己错多少）。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 激活函数详解"
+  },
+  {
+    "Word": "Activation Function",
+    "Pronunciation": "/ˌæktɪˈveɪʃən ˈfʌŋkʃən/",
+    "Audio": "",
+    "Definition": "Activation Function（激活函数）——神经网络中引入非线性的函数，使多层网络能学习复杂模式",
+    "ExampleEN": "Without activation functions, a multi-layer network collapses to a single linear transformation.",
+    "ExampleCN": "没有激活函数，多层网络等价于单层线性变换。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Activation Function（激活函数）是神经网络中引入非线性的关键组件。为什么必须有非线性：如果所有层的激活函数都是线性的（如f(x)=x），那多层网络的组合只是多个线性变换的乘积Wₙ·...·W₂·W₁x = W_new·x，等价于一个单层线性变换——深度失去意义。激活函数赋予网络学习任意复杂非线性函数的能力。四种主流激活函数各有适用场景。<br><br><b>关键要点</b><br>ReLU=max(0,x)：简单高效/缓解梯度消失/隐藏层首选/但负半区梯度为0导致Dead ReLU。Sigmoid=1/(1+e⁻ˣ)：输出(0,1)自然解释为概率/二分类输出层专用/但梯度饱和且非零中心。Tanh：输出(-1,1)零中心/梯度比Sigmoid大/RNN/LSTM门控中常用。GELU=x·Φ(x)：ReLU的平滑版/负半区不完全归零/Transformer（BERT/GPT/LLaMA）标配。选择原则：隐藏层默认ReLU，Transformer用GELU，二分类输出用Sigmoid，多分类用Softmax。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §1.1.1 Transformer基础"
+  },
+  {
+    "Word": "ReLU",
+    "Pronunciation": "/ˈreluː/",
+    "Audio": "",
+    "Definition": "Rectified Linear Unit（修正线性单元）——输出max(0,x)的激活函数，简单高效，隐藏层首选",
+    "ExampleEN": "ReLU is the default activation for hidden layers because it is simple, fast, and alleviates vanishing gradients.",
+    "ExampleCN": "ReLU是隐藏层默认激活函数，因为它简单、快速且能缓解梯度消失。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>ReLU（Rectified Linear Unit，修正线性单元）是深度学习中隐藏层默认的激活函数。公式极其简单：ReLU(x) = max(0, x)。x>0时导数恒为1（梯度不衰减，彻底解决Sigmoid/Tanh的梯度消失问题），x≤0时输出为0（产生稀疏激活，只有约50%神经元处于活跃状态）。这种简单性使得ReLU网络更容易训练、收敛更快。<br><br><b>关键要点</b><br>Dead ReLU问题：当大量输入落入负半区，梯度为0，该神经元权重不再更新，永久失效。触发原因：学习率太大一次性把权重推到大幅负值、偏置过大。解决方案：Leaky ReLU（x<0时输出αx/保留小梯度/缓解Dead ReLU）、Parametric ReLU（α可学习）、ELU（负半区指数衰减）。初始化策略（He初始化）也可以降低Dead ReLU概率。虽然有此缺陷，ReLU因简单高效仍是绝大多数隐藏层的首选。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 GELU激活函数"
+  },
+  {
+    "Word": "GELU",
+    "Pronunciation": "/ˈdʒiluː/",
+    "Audio": "",
+    "Definition": "Gaussian Error Linear Unit（高斯误差线性单元）——ReLU的平滑版，x乘以标准正态分布的累积分布函数，Transformer标配激活函数",
+    "ExampleEN": "GELU is the standard activation function in Transformers because its smoothness improves training stability.",
+    "ExampleCN": "GELU是Transformers的标准激活函数，因为其平滑性提高了训练稳定性。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>GELU（Gaussian Error Linear Unit，高斯误差线性单元）是ReLU的平滑升级版，Transformer模型（BERT/GPT/LLaMA等）的标准激活函数。公式：GELU(x) = x · Φ(x)，其中Φ是标准正态分布N(0,1)的累积分布函数。x>0时行为接近ReLU，但x<0时输出不是直接归零而是按概率衰减（输出接近0但非严格0），使得梯度始终存在，训练更稳定。这种\"概率性归零\"让GELU兼具非线性表达力和梯度流动平滑性。<br><br><b>关键要点</b><br>与ReLU核心区别：ReLU在x<0时完全切断梯度（Dead ReLU风险），GELU在负半区保留微小梯度和输出，使优化更平滑。为什么Transformer需要光滑激活函数：自注意力机制对数值精度敏感，梯度不光滑会导致注意力分布剧烈波动。GELU的近似计算公式（Tanh近似）在实际实现中常用：GELU(x) ≈ 0.5x(1 + tanh(√(2/π)(x + 0.044715x³)))，速度比精确的erf函数快。<br><br><b>延伸节点</b><br>§1.1.1 Transformer基础 | §3.4 ReLU激活函数"
+  },
+  {
+    "Word": "Sigmoid",
+    "Pronunciation": "/ˈsɪɡmɔɪd/",
+    "Audio": "",
+    "Definition": "Sigmoid（S型激活函数）——输出(0,1)区间的激活函数，两端梯度趋近于零，常用于二分类输出层",
+    "ExampleEN": "Sigmoid squashes any input to the range (0, 1), making it ideal for binary classification outputs.",
+    "ExampleCN": "Sigmoid将任意输入压缩到(0,1)范围，使其成为二分类输出的理想选择。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Sigmoid（S型激活函数）是神经网络最早使用的激活函数之一，公式σ(x) = 1/(1+e⁻ˣ)。它把任意实数压缩到(0,1)区间——输入很大→趋近1，输入很小→趋近0。这个输出范围天然可以解释为概率，因此在二分类任务的输出层中不可或缺。但在隐藏层中，Sigmoid已被ReLU和GELU取代，因为有两个致命问题。<br><br><b>关键要点</b><br>Sigmoid两大缺陷：(1)梯度饱和——|x|较大时（|x|>5），sigmoid的导数σ'(x)=σ(x)(1-σ(x))趋近于0，深层网络中梯度经过多层衰减后消失无法学习；(2)非零中心——sigmoid输出恒为正（均值约0.5），导致后一层神经元的输入全是正数，梯度更新方向一致（都正或都负），形成zigzag震荡减缓收敛。现代网络中sigmoid仅在二分类输出层使用，配合BCELoss做概率预测。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 损失函数（BCELoss）"
+  },
+  {
+    "Word": "Tanh",
+    "Pronunciation": "/tænʃ/",
+    "Audio": "",
+    "Definition": "Hyperbolic Tangent（双曲正切）——输出(-1,1)区间的零中心激活函数，在RNN中常用",
+    "ExampleEN": "Tanh is zero-centered and outputs values in (-1, 1), commonly used in RNNs.",
+    "ExampleCN": "Tanh是零中心的，输出在(-1,1)区间，常用于RNN中。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Tanh（双曲正切函数）是Sigmoid的\"零中心\"版本，公式tanh(x) = (eˣ-e⁻ˣ)/(eˣ+e⁻ˣ)，输出范围(-1, 1)，均值为0。零中心意味着后一层神经元的输入有正有负（均值≈0），梯度更新不会出现全正或全负的zigzag震荡，收敛比Sigmoid更快。梯度值范围(0, 1]，最大值是Sigmoid梯度的4倍（1 vs 0.25）——在浅层网络中梯度衰减更慢。<br><br><b>关键要点</b><br>Tanh在RNN/LSTM/GRU中广泛应用——LSTM/GRU的门控机制（遗忘门、输入门、输出门）用Sigmoid控制信息流动（0到1的开关），而候选状态生成和输出状态用Tanh提供-1到1的对称表示。但和Sigmoid一样，Tanh也存在梯度饱和问题（|x|很大时导数趋近0），在深层网络中逐渐被ReLU取代。现代网络中，隐藏层默认选ReLU/GELU，Tanh主要留在RNN家族中。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §1.1.3 RNN/LSTM基础"
+  },
+  {
+    "Word": "Forward Propagation",
+    "Pronunciation": "/ˈfɔːrwərd ˌprɒpəˈɡeɪʃən/",
+    "Audio": "",
+    "Definition": "Forward Propagation（前向传播）——输入数据从输入层逐层计算到输出层，生成预测值",
+    "ExampleEN": "During forward propagation, input data flows through the network layers to produce predictions.",
+    "ExampleCN": "前向传播期间，输入数据流经网络各层产生预测值。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Forward Propagation（前向传播）是神经网络从输入到输出的计算过程。输入数据x从第一层开始，经过矩阵乘法（加权求和）+ 偏置 + 激活函数，得到该层的输出；该输出作为下一层的输入，逐层推进直到输出层产生预测值y_pred。数学上：a₁ = σ(W₁x + b₁), a₂ = σ(W₂a₁ + b₂), ..., y_pred = σ(Wₙaₙ₋₁ + bₙ)。每层存储中间结果（激活值）用于后续的反向传播计算。<br><br><b>关键要点</b><br>前向传播是训练循环四步中的第一步：前向传播（产生预测值）→ 计算损失（预测值与真实值的差距）→ 反向传播（计算每个参数的梯度）→ 更新参数（用梯度调整权重）。在PyTorch中前向传播通过model(x)或model.forward(x)触发，框架自动构建计算图记录每一步运算。inference（推理）时只做前向传播不做后三步。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念（nn.Module.forward） | §3.4 反向传播"
+  },
+  {
+    "Word": "Backpropagation",
+    "Pronunciation": "/ˌbækprɒpəˈɡeɪʃən/",
+    "Audio": "",
+    "Definition": "Backpropagation（反向传播）——从输出层损失出发，用链式法则逐层计算每个参数对损失的梯度，将误差责任分配到每个参数",
+    "ExampleEN": "Backpropagation applies the chain rule to compute how much each parameter contributed to the final error.",
+    "ExampleCN": "反向传播应用链式法则计算每个参数对最终错误的贡献量。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Backpropagation（反向传播）是神经网络学习的核心算法，将输出层的误差逐层分配回前面的参数。核心依赖微积分链式法则：∂L/∂W₁ = ∂L/∂a₂ · ∂a₂/∂z₂ · ∂z₂/∂a₁ · ∂a₁/∂z₁ · ∂z₁/∂W₁。即，要知道第一层权重W₁对最终损失L的影响，需要沿网络反向计算每一步的偏导数并相乘。在PyTorch中这个过程由loss.backward()自动完成，梯度存储在每个参数的.grad属性中。<br><br><b>关键要点</b><br>梯度计算的关键概念：每个参数得到的梯度代表\"这个参数增加一点点，损失会增加/减少多少\"。梯度为正→增加该参数会增加损失→应该减小该参数；梯度为负→反之。参数更新公式：w_new = w_old - learning_rate × gradient。PyTorch的Autograd引擎在每次前向传播时构建计算图，backward()时沿图反向遍历计算梯度，之后图被释放——这就是每次batch开始前必须手动zero_grad()的原因。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch Autograd | §3.4 优化器"
+  },
+  {
+    "Word": "Loss Function",
+    "Pronunciation": "/lɒs ˈfʌŋkʃən/",
+    "Audio": "",
+    "Definition": "Loss Function（损失函数）——衡量模型预测值与真实值之间差距的量化指标，训练的目标就是最小化它",
+    "ExampleEN": "The loss function quantifies the gap between predictions and ground truth, guiding the optimizer.",
+    "ExampleCN": "损失函数量化预测值与真实值的差距，指引优化器的方向。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Loss Function（损失函数）是量化模型预测值与真实值之间差距的指标，是整个训练过程的\"指南针\"——模型通过最小化损失来学习。不同任务需要不同的损失函数：回归预测连续值用MSE（均方误差）或MAE（平均绝对误差）；分类任务用CrossEntropyLoss（交叉熵）或BCELoss（二分类交叉熵）；序列预测用CTC Loss；生成任务用负对数似然。损失函数的选择直接影响模型学什么和学得多好。<br><br><b>关键要点</b><br>选择原则速记：分类用交叉熵（CrossEntropyLoss，内部自动做LogSoftmax+NLL）、回归用MSE=1/n·Σ(y_pred-y_true)²（对大误差惩罚更重，适合异常值敏感场景）或MAE=1/n·Σ|y_pred-y_true|（对大误差不那么敏感，更鲁棒）、二分类用BCELoss（配合Sigmoid输出层使用）。工业缺陷检测中用FocalLoss解决正负样本不均衡问题——降低易分类样本的权重让模型聚焦困难样本。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.5.3 缺陷检测中的FocalLoss"
+  },
+  {
+    "Word": "CrossEntropyLoss",
+    "Pronunciation": "/krɒs ˈentrəpi lɒs/",
+    "Audio": "",
+    "Definition": "Cross Entropy Loss（交叉熵损失）——多分类任务最常用的损失函数，衡量预测分布与真实分布的差异",
+    "ExampleEN": "CrossEntropyLoss combines log softmax and negative log-likelihood into a single loss function.",
+    "ExampleCN": "CrossEntropyLoss将log softmax和负对数似然合并为一个损失函数。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战 / §3.5.1 PyTorch基础<br><br><b>核心概念</b><br>CrossEntropyLoss（交叉熵损失）是多分类任务最常用的损失函数，衡量两个概率分布之间的差异——模型的预测分布P与真实的one-hot分布Q之间的\"距离\"。公式：L = -Σᵢ yᵢ·log(pᵢ)，其中yᵢ是真实标签（one-hot，正确类别为1其余为0），pᵢ是模型预测该类别的概率。当模型给正确类别高概率时，log(p)接近0，损失小；给低概率时，log(p)很负，取反后损失大。<br><br><b>关键要点</b><br>PyTorch中的特殊行为：nn.CrossEntropyLoss()内部自动先做log_softmax再算NLLLoss——这意味着模型最后一层不需要手动加Softmax（这是初学者最容易犯的错误之一）。输入形状要求：(batch_size, num_classes)的logits（未归一化的原始分数），标签形状：(batch_size,)的整数索引（不是one-hot向量）。label_smoothing参数（如0.1）可以防止模型过度自信，提高泛化能力。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 Softmax函数"
+  },
+  {
+    "Word": "Optimizer",
+    "Pronunciation": "/ˈɒptɪmaɪzər/",
+    "Audio": "",
+    "Definition": "Optimizer（优化器）——根据损失函数计算的梯度更新模型参数的算法",
+    "ExampleEN": "The optimizer updates model parameters using gradients to minimize the loss function.",
+    "ExampleCN": "优化器使用梯度更新模型参数来最小化损失函数。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Optimizer（优化器）是根据损失函数计算的梯度来决定如何更新模型参数的算法。基本更新公式：w_new = w_old - lr × gradient。优化器决定了\"往哪个方向走\"和\"走多大步\"。优化器的演进历史反映了深度学习的发展历程：SGD（最基础的梯度下降）→ SGD+Momentum（加惯性滚过局部最优点）→ Adam（自适应学习率+动量/深度学习默认选择）→ AdamW（Adam+权重衰减解耦/Transformer微调标配）。<br><br><b>关键要点</b><br>Adam为什么是默认首选：三个核心机制——(1)自适应学习率（每个参数独立的学习率/频繁更新的参数学习率自动减小/稀疏参数学习率自动增大）；(2)一阶动量（梯度指数移动平均/像滚雪球积累历史梯度方向/加速收敛）；(3)二阶矩估计（梯度方差归一化/稳定大幅波动）。AdamW改进：经典Adam将L2正则化与自适应学习率耦合在一起导致效果不佳，AdamW将权重衰减单独处理得到更好的泛化效果。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.3 HuggingFace Trainer"
+  },
+  {
+    "Word": "Adam",
+    "Pronunciation": "/ˈædəm/",
+    "Audio": "",
+    "Definition": "Adam（自适应矩估计优化器）——结合自适应学习率和动量的梯度下降优化器，深度学习的默认首选",
+    "ExampleEN": "Adam adapts the learning rate for each parameter and accumulates past gradients for faster convergence.",
+    "ExampleCN": "Adam为每个参数自适应调整学习率并累积历史梯度以加速收敛。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Adam（Adaptive Moment Estimation，自适应矩估计）是深度学习的默认优化器，结合了Momentum（惯性/一阶矩）和RMSProp（自适应学习率/二阶矩）的优点。每个参数拥有独立的学习率——通过一阶矩估计m追踪梯度的移动平均（积累历史方向），通过二阶矩估计v追踪梯度平方的移动平均（衡量梯度波动大小），然后用m和v动态调整每个参数的学习率：lr_effective = lr · m̂ / (√v̂ + ε)。<br><br><b>关键要点</b><br>关键超参数：learning_rate（默认0.001/大多数任务的起点/太大不收敛太小训练太慢）、betas=(0.9, 0.999)（一阶和二阶矩的衰减率/控制历史信息保留多少）和epsilon=1e-8（防止除以0的平滑项）。Adam的局限性：虽然收敛快但可能泛化不如SGD（在某些图像任务上），且对权重衰减处理不完美（这也是AdamW出现的原因）。实践中，Transformer/NLP任务用AdamW，CV任务有时SGD+Momentum仍然更好。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 AdamW优化器"
+  },
+  {
+    "Word": "AdamW",
+    "Pronunciation": "/ˈædəm ˈdʌbəljuː/",
+    "Audio": "",
+    "Definition": "Adam with Weight Decay（AdamW优化器）——将权重衰减与自适应学习率解耦的Adam改进版，Transformer微调标配",
+    "ExampleEN": "AdamW decouples weight decay from the gradient-based update, which is critical for Transformer fine-tuning.",
+    "ExampleCN": "AdamW将权重衰减从基于梯度的更新中解耦，这对Transformer微调至关重要。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战 / §3.5.1 PyTorch基础<br><br><b>核心概念</b><br>AdamW（Adam with decoupled Weight Decay）是Adam的改进版，将权重衰减（L2正则化）从梯度更新中解耦出来单独处理。经典Adam中L2正则化与自适应学习率耦合——将正则化项直接加到梯度里，导致\"需要大学习率的参数\"同时被正则化削弱，效果打折扣。AdamW将这两步分开：第一步用Adam正常更新参数（基于梯度），第二步对参数施加独立的权重衰减（w = w - lr·λ·w）。<br><br><b>关键要点</b><br>AdamW = Adam + 解耦权重衰减。这在Transformer微调中至关重要——解耦后的正则化对不同学习率的参数作用公平，泛化效果更好。推荐超参数：learning_rate=0.001（继承Adam的默认值）、weight_decay=0.01（一般任务）、betas=(0.9, 0.999)。AdamW现在已取代Adam成为HuggingFace Trainer和大多数LLM微调的默认优化器。PyTorch中直接使用torch.optim.AdamW。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §3.3 HuggingFace Trainer"
+  },
+  {
+    "Word": "Dropout",
+    "Pronunciation": "/ˈdrɒpaʊt/",
+    "Audio": "",
+    "Definition": "Dropout（随机失活）——训练时随机关闭一定比例神经元，防止过拟合的正则化技术",
+    "ExampleEN": "Dropout randomly deactivates neurons during training to prevent co-adaptation and reduce overfitting.",
+    "ExampleCN": "Dropout在训练期间随机关闭神经元，防止共适应并减少过拟合。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Dropout（随机失活）是防止神经网络过拟合的核心正则化技术。训练时每个batch以概率p随机将一部分神经元的输出置为0（相当于暂时\"关闭\"该神经元）。这样做有两重效果：(1)防止共适应——神经元不能过度依赖其他神经元的存在，必须学会从其他神经元的任何组合中提取有用特征；(2)相当于每次训练的是不同子网络（隐式集成学习），推理时等价于多个子网络的平均。<br><br><b>关键要点</b><br>训练时以概率p随机置零（p=0.2-0.5），推理时不置零但输出乘以(1-p)以补偿训练时的期望偏移。在PyTorch中nn.Dropout(p)自动处理训练/推理模式切换——model.train()时生效，model.eval()时不生效。防过拟合三件套：Dropout（随机失活/防共适应）+ BatchNormalization（稳定分布/加速收敛）+ EarlyStopping（监控验证集/适时停止）。Dropout在现代Transformer中用量逐渐减少（大模型+大数据的组合天然抗过拟合），但仍是小规模训练的关键技术。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 BatchNormalization + EarlyStopping"
+  },
+  {
+    "Word": "BatchNormalization",
+    "Pronunciation": "/bætʃ ˌnɔːrməlaɪˈzeɪʃən/",
+    "Audio": "",
+    "Definition": "Batch Normalization（批归一化）——对每层输入进行归一化使其均值为0方差为1，稳定训练、加速收敛、允许更大的学习率",
+    "ExampleEN": "Batch Normalization normalizes layer inputs to have zero mean and unit variance, stabilizing and accelerating training.",
+    "ExampleCN": "批归一化将各层输入归一化为零均值单位方差，稳定并加速训练。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Batch Normalization（批归一化）将神经网络每层的输入归一化为均值0、方差1的标准分布。四个参数：γ（缩放/可学习）、β（平移/可学习）、μ（batch均值/统计量）、σ²（batch方差/统计量）。输出公式：y = γ · (x-μ)/√(σ²+ε) + β。γ和β是两个可训练参数，让网络可以学习\"恢复\"归一化前的表达能力（需要时可以学出γ=σ, β=μ来还原原始分布）。<br><br><b>关键要点</b><br>BN的三大收益：训练更稳定（输入分布固定/不用追着变化的分布调整）、收敛更快（允许使用更大的学习率）、轻微正则化效果（batch统计量的随机性引入噪声）。最重要注意点：训练和推理时BN行为不同——训练时用当前batch的μ和σ，推理时用训练过程中累积的全局running_mean/running_std。所以推理前必须model.eval()切换到推理模式，否则结果会因使用单样本的统计量而完全错误。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念（model.eval） | §3.4 过拟合三件套"
+  },
+  {
+    "Word": "Early Stopping",
+    "Pronunciation": "/ˈɜːrli ˈstɒpɪŋ/",
+    "Audio": "",
+    "Definition": "Early Stopping（早停）——当验证集指标不再改善时自动终止训练，防止过拟合",
+    "ExampleEN": "EarlyStopping monitors validation loss and stops training when it stops improving for a specified number of epochs.",
+    "ExampleCN": "EarlyStopping监控验证损失，当其在指定轮数内不再改善时停止训练。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Early Stopping（早停）是通过监控验证集性能来自动终止训练的正则化技术。训练不断进行时，训练集loss持续下降，但验证集loss往往先降后升——这个\"拐点\"就是过拟合的开始（模型开始记忆训练集的噪声而丧失泛化能力）。EarlyStopping在验证集指标（val_loss或val_accuracy）连续patience个epoch不改善时自动停止训练。<br><br><b>关键要点</b><br>关键参数：monitor（监控指标/通常是val_loss）、patience（容忍多少个epoch不改善才停止/一般5-20）、min_delta（被视为\"改善\"的最小变化量/避免微小波动误触发）、restore_best_weights=True（停止时自动回滚到整个训练过程中监控指标最好的权重/这是Keras的默认行为）。与Dropout和BatchNormalization组成防过拟合三件套。Keras中作为Callback使用：tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10)。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 Dropout + BN"
+  },
+  {
+    "Word": "Gradient Descent",
+    "Pronunciation": "/ˈɡreɪdiənt dɪˈsent/",
+    "Audio": "",
+    "Definition": "Gradient Descent（梯度下降）——沿损失函数的负梯度方向小步更新参数以最小化损失的优化算法",
+    "ExampleEN": "Gradient descent updates parameters by moving in the direction of the negative gradient of the loss.",
+    "ExampleCN": "梯度下降沿损失函数的负梯度方向移动来更新参数。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Gradient Descent（梯度下降）是神经网络训练的最基本优化算法。核心思想：损失函数L(w)关于参数w的梯度∇L(w)指向\"损失上升最快的方向\"，我们要往反方向走（-∇L(w)）以最小化损失。更新公式：w_new = w_old - lr × ∇L(w)。这是所有高级优化器（Adam/AdamW/SGD+Momentum）的底层基础。<br><br><b>关键要点</b><br>三种变体：Batch GD（用全部训练数据计算梯度/每一步最准确但计算量巨大/不实用）；SGD（每次随机用一个样本计算梯度/极快但噪声大/收敛不稳定）；Mini-batch SGD（用一个小batch（如32-256个样本）计算梯度/速度和准确性的最佳折中/现代深度学习的标准做法）。学习率lr是最关键的调参项——太大：越过最优点震荡甚至发散（NaN），太小：收敛极慢训练不动。学习率调度策略（如余弦退火、warmup）可以动态调整。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 优化器（Adam/SGD）"
+  },
+  {
+    "Word": "TensorFlow",
+    "Pronunciation": "/ˈtensər floʊ/",
+    "Audio": "",
+    "Definition": "TensorFlow（Google深度学习框架）——Google开源的深度学习框架，Keras是其高层API，在生产部署（TensorFlow Serving + K8s）上有一席之地",
+    "ExampleEN": "TensorFlow provides both high-level Keras APIs for quick prototyping and low-level GradientTape for custom training loops.",
+    "ExampleCN": "TensorFlow提供高级Keras API用于快速原型开发，也提供底层GradientTape用于自定义训练循环。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>TensorFlow是Google开源的深度学习框架，Keras是其高层API。TF提供两种开发方式：(1)Keras Sequential/Functional API——像搭积木一样快速搭建和训练模型，适合快速原型和标准任务；(2)tf.GradientTape底层API——手动控制前向传播、损失计算、梯度记录和参数更新，适合需要自定义训练逻辑的场景。TF 1.x时代使用静态计算图（先定义完整图再执行），TF 2.x引入Eager Execution变为动态图（定义即执行），向PyTorch靠拢。<br><br><b>关键要点</b><br>TensorFlow vs PyTorch：TF生产部署成熟（TF Serving + Docker + K8s是工业级方案），且支持多平台部署（移动端的TF Lite、浏览器的TF.js）；PyTorch学术界和LLM社区主流（动态图更灵活、调试更方便）。TF Serving的核心优势：支持模型热更新、请求批处理（合并多个请求提高GPU利用率）、版本管理。建议：入门学习用PyTorch（生态更好），生产部署可以考虑TF Serving。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §1.3.1 企业级AI部署"
+  },
+  {
+    "Word": "Keras",
+    "Pronunciation": "/ˈkerəs/",
+    "Audio": "",
+    "Definition": "Keras（高级神经网络API）——TensorFlow的高层API，以Sequential/Functional API用几行代码搭建和训练神经网络",
+    "ExampleEN": "Keras lets you build neural networks with the Sequential API like stacking building blocks.",
+    "ExampleCN": "Keras让你像搭积木一样用Sequential API构建神经网络。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Keras是TensorFlow的高层API，以API简洁闻名，让神经网络搭建像搭积木。三步核心流程：构建模型（Sequential或Functional API）→ 编译模型（model.compile/指定optimizer+loss+metrics）→ 训练模型（model.fit/指定epochs+batch_size+验证数据）。Sequential适用于简单的线性堆叠网络（单输入单输出），Functional API支持多输入多输出、共享层、残差连接等复杂结构。<br><br><b>关键要点</b><br>Keras内置了大量便利设施：tf.keras.callbacks.EarlyStopping（早停防过拟合）、tf.keras.callbacks.ModelCheckpoint（保存最佳模型）、tf.keras.callbacks.ReduceLROnPlateau（学习率自动衰减）。缺点：封装太好导致底层理解不够深（不知道zero_grad、loss.backward、optimizer.step具体做了什么），且对非标准训练流程（GAN对抗训练、RL策略迭代、多任务切换）不够灵活。此时需要用tf.GradientTape写自定义训练循环。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch nn.Module | §3.4 TensorFlow GradientTape"
+  },
+  {
+    "Word": "Sequential Model",
+    "Pronunciation": "/sɪˈkwenʃəl ˈmɒdl/",
+    "Audio": "",
+    "Definition": "Sequential Model（顺序模型）——Keras中按层叠积木方式构建神经网络的API，每层恰好一个输入一个输出",
+    "ExampleEN": "The Sequential model stacks layers one by one, each taking input from the previous layer.",
+    "ExampleCN": "Sequential模型逐层堆叠，每层从前一层接收输入。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>Sequential Model（顺序模型）是Keras/PyTorch中最简单的模型构建方式——像叠积木一样逐层堆叠，每一层恰好接收上一层的输出作为输入，数据单向流动无分支。在Keras中：model = tf.keras.Sequential([Dense(64, activation='relu'), Dense(32, activation='relu'), Dense(1)]) —— 只要把层按顺序放入列表即可。PyTorch对应的是nn.Sequential。<br><br><b>关键要点</b><br>Sequential的局限性：只能表示\"一串线\"——无法处理多输入（如Siamese网络需要两个输入）、多输出（如多任务学习同时输出分类和回归）、跳跃连接（如ResNet的残差连接需要跨层跳跃）、共享层（如视觉Transformer中多个输入共享同一个网络）。遇到这些场景需要用Keras Functional API（多输入多输出）或自定义Model类。建议：初学时用Sequential快速上手，进阶后用Functional API。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch nn.Sequential | §3.4 Keras Functional API"
+  },
+  {
+    "Word": "StandardScaler",
+    "Pronunciation": "/ˈstændərd ˈskeɪlər/",
+    "Audio": "",
+    "Definition": "StandardScaler（标准缩放器）——将特征缩放为均值为0、标准差为1的归一化工具，解决特征数值范围差异大导致的梯度不稳定",
+    "ExampleEN": "Without StandardScaler, features with vastly different scales can cause unstable gradients during training.",
+    "ExampleCN": "没有StandardScaler，数值范围差异大的特征会导致训练期间梯度不稳定。",
+    "Notes": "<b>学习路径</b><br>§3.4 神经网络基础与TensorFlow实战<br><br><b>核心概念</b><br>StandardScaler（Z-score标准化）是将特征缩放为均值0、标准差1的归一化工具：x_scaled = (x - mean) / std。为什么神经网络训练必须归一化：(1)特征数值范围差异大会导致梯度不稳定——如果\"年份\"是2005-2024而\"里程\"是5000-200000，梯度更新方向会被大数值特征主导，小数值特征的影响被淹没；(2)激活函数（Sigmoid/Tanh）对输入范围敏感，大输入落入饱和区导数趋近0。<br><br><b>关键要点</b><br>常见踩坑：训练集和测试集必须用同一个scaler（用训练集的均值和标准差归一化测试集），不能用测试集自己的统计量——因为这相当于\"泄露\"了测试集的信息。两种主流归一化：StandardScaler（Z-score/均值为0标准差为1/适合大多数场景）、MinMaxScaler（缩放到[0,1]/适合有明确上下界的特征如图像像素值）。在sklearn中：scaler.fit(X_train)计算统计量，scaler.transform(X_test)应用。注意数据泄露：fit永远只在训练集上做。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.4 Batch Normalization"
+  },
+  {
+    "Word": "PyTorch",
+    "Pronunciation": "/paɪ tɔːrtʃ/",
+    "Audio": "",
+    "Definition": "PyTorch（Meta开源深度学习框架）——以动态计算图和Pythonic API著称的深度学习框架，学术界和LLM社区的事实标准",
+    "ExampleEN": "PyTorch is the de facto standard in deep learning research, known for its dynamic computation graph and Pythonic API.",
+    "ExampleCN": "PyTorch是深度学习研究的事实标准，以其动态计算图和Python式API著称。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>PyTorch是Meta开源的深度学习框架，以动态计算图和Pythonic API著称，现在是学术界和LLM社区的事实标准。核心三件套：Tensor（多维数组+GPU支持+自动求导/类比NumPy ndarray的GPU版本）、Autograd（自动求导引擎/记录每一步运算构建计算图/backward()时自动按链式法则计算所有梯度）、nn.Module（所有神经网络的基类/自动管理参数收集、设备迁移（model.to('cuda')）和保存加载（state_dict）。<br><br><b>关键要点</b><br>PyTorch vs TensorFlow核心差异：PyTorch采用动态计算图（定义即执行/可以随时print tensor、pdb断点调试/灵活支持变长输入和条件分支），TF采用静态图（先定义完整图再编译执行/更适合生产优化但开发体验差）。PyTorch 2.0的torch.compile正在弥补性能差距（将动态图编译为优化后的静态图）。建议：入门用PyTorch（生态更好/文档更丰富/LLM社区统一标准），生产部署可考虑TF Serving。<br><br><b>延伸节点</b><br>§3.4 TensorFlow | §3.5.2 分布式训练 | §3.3 HuggingFace生态"
+  },
+  {
+    "Word": "Tensor",
+    "Pronunciation": "/ˈtensər/",
+    "Audio": "",
+    "Definition": "Tensor（张量）——PyTorch中可在GPU上运算的多维数组，类比NumPy的ndarray+GPU支持+自动求导",
+    "ExampleEN": "torch.tensor is like NumPy's ndarray but runs on GPUs and supports automatic differentiation.",
+    "ExampleCN": "torch.tensor就像NumPy的ndarray，但能在GPU上运行并支持自动微分。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>Tensor（张量）是PyTorch中最基本的数据结构——一个可在GPU上运行的多维数组，类似NumPy的ndarray加上GPU支持和自动微分能力。维度命名：0维=标量（一个数）、1维=向量（一列数）、2维=矩阵（行×列）、3维=立方体（深度×行×列/如彩色图像(C×H×W)）、4维=批次（B×C×H×W/批量图片）、更高维=超立方体。<br><br><b>关键要点</b><br>关键属性：shape（张量各维度大小）、dtype（数据类型/fp32/fp16/int64/bool）、device（所在设备/cpu或cuda:0等）、requires_grad（是否需要梯度/训练时设为True让Autograd记录运算）。创建方式：torch.tensor()（从列表创建）、torch.zeros/ones（全0/全1）、torch.randn（标准正态分布随机初始化）、torch.from_numpy（numpy转tensor/共享内存）、torch.arange（等差数列）。GPU迁移：tensor.to('cuda')或tensor.cuda()。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.1 Autograd自动求导"
+  },
+  {
+    "Word": "Autograd",
+    "Pronunciation": "/ˈɔːtoʊ ɡræd/",
+    "Audio": "",
+    "Definition": "Autograd（自动求导引擎）——PyTorch内部记录每个Tensor运算构建计算图，调用backward()时自动按链式法则计算梯度",
+    "ExampleEN": "PyTorch's autograd silently records the computation graph so that backward() can compute all gradients.",
+    "ExampleCN": "PyTorch的autograd默默记录计算图，使得backward()能计算所有梯度。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>Autograd是PyTorch的自动求导引擎，是深度学习中最重要的基础设施之一。它的工作原理：在每次前向传播时，PyTorch会静默地记录每个Tensor运算（记录为一个计算图的节点），构建从输入到输出的有向无环图（DAG）。当调用loss.backward()时，引擎从loss节点出发，沿计算图反向遍历，对每条边应用链式法则自动计算每个节点的梯度，并将结果存储在对应Tensor的.grad属性中。<br><br><b>关键要点</b><br>三个关键操作：(1)requires_grad=True标记需要追踪的张量（默认False/模型参数自动设为True）；(2)loss.backward()触发反向传播自动计算所有requires_grad=True的张量的梯度；(3)optimizer.zero_grad()清空梯度（PyTorch梯度默认累加——这是特性不是bug，可用于模拟大batch的gradient accumulation）。推理/评估时必须用torch.no_grad()或model.eval()禁用autograd——不构建计算图省显存加速。<br><br><b>延伸节点</b><br>§3.4 反向传播 | §3.5.1 标准训练五步法"
+  },
+  {
+    "Word": "nn.Module",
+    "Pronunciation": "/ˌen en ˈmɒdʒuːl/",
+    "Audio": "",
+    "Definition": "nn.Module（神经网络模块基类）——PyTorch所有神经网络的基类，自动管理参数收集、设备迁移、保存/加载",
+    "ExampleEN": "Every PyTorch model inherits from nn.Module, which handles parameter management and device placement.",
+    "ExampleCN": "每个PyTorch模型都继承自nn.Module，它自动管理参数和设备的放置。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>nn.Module是PyTorch中所有神经网络的基类，所有自定义模型都必须继承它。核心结构：__init__()中定义网络的层（nn.Linear、nn.Conv2d、nn.BatchNorm2d等，这些层自动注册为模型参数），forward(self, x)中定义前向传播逻辑（从输入x经过各层产生输出）。nn.Module自动管理三大功能：参数收集（model.parameters()返回所有可训练参数）、设备迁移（model.to('cuda')一键将所有参数搬上GPU）、保存加载（model.state_dict()和load_state_dict()）。<br><br><b>关键要点</b><br>nn.Module的力量在于递归管理：model.parameters()会自动递归收集所有子模块（如self.net内部的各层）的参数。保存模型推荐用state_dict而非torch.save(model)：(1)只存参数文件小；(2)跨Python版本兼容（不依赖类的pickle序列化）；(3)可以灵活地部分加载（如预训练模型改分类头后只加载backbone参数）。标准用法：torch.save(model.state_dict(), 'model.pth')保存，model.load_state_dict(torch.load('model.pth'))加载。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.1 训练循环模板"
+  },
+  {
+    "Word": "DataLoader",
+    "Pronunciation": "/ˈdeɪtə ˈloʊdər/",
+    "Audio": "",
+    "Definition": "DataLoader（数据加载器）——PyTorch中封装数据集批量加载、shuffle、多进程预取的迭代器",
+    "ExampleEN": "DataLoader handles batching, shuffling, and multi-process data loading for efficient training.",
+    "ExampleCN": "DataLoader处理批量加载、洗牌和多进程数据预取以实现高效训练。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>DataLoader是PyTorch中封装数据集批量加载、乱序、多进程预取的迭代器，是连接Dataset和训练循环的桥梁。核心工作流程：从Dataset中按索引获取样本→按batch_size组装→可选shuffle打乱顺序→可选多进程预取（num_workers）→可选pin_memory锁页内存加速GPU传输→输出(x, y)批次。DataLoader让你无需手动管理数据加载的繁琐细节。<br><br><b>关键要点</b><br>关键参数：batch_size（批次大小/GPU显存决定上限）、shuffle=True（每个epoch随机打乱/训练时必须开）、num_workers（多进程预取/设为4-8加速数据IO但不要超过CPU核心数）、pin_memory=True（锁页内存/加速CPU到GPU的数据传输/约5-10%提速）、drop_last=True（丢弃最后不完整的batch/避免batch_size不一致导致的BN异常）。自定义数据集需继承torch.utils.data.Dataset并实现__len__和__getitem__两个方法。<br><br><b>延伸节点</b><br>§3.5.2 分布式采样器 | §3.5.1 Dataset类"
+  },
+  {
+    "Word": "Dataset",
+    "Pronunciation": "/ˈdeɪtəset/",
+    "Audio": "",
+    "Definition": "Dataset（数据集类）——PyTorch数据集抽象基类，继承后实现__len__和__getitem__即可与DataLoader配合使用",
+    "ExampleEN": "Custom datasets must implement __len__ and __getitem__ to work with PyTorch's DataLoader.",
+    "ExampleCN": "自定义数据集必须实现__len__和__getitem__才能与PyTorch的DataLoader配合使用。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>Dataset是PyTorch数据加载的抽象基类，定义了按索引取样本的标准接口。用户自定义数据集必须实现两个方法：(1)__len__(self)：返回数据集总样本数；(2)__getitem__(self, idx)：返回索引idx对应的单个样本，通常是一个(input, label)元组。Map-style Dataset（标准方式/每个样本可通过索引随机访问）适合大多数场景，IterableDataset（流式数据/无法随机访问/适合数据量大到无法全部加载到内存的场景）。<br><br><b>关键要点</b><br>__getitem__中通常做数据预处理和数据增强——这就是为什么数据增强在训练循环的\"数据加载\"阶段而非存储阶段：每次取样本时实时应用随机变换（翻转/旋转/颜色抖动），相当于无限扩大了数据集。TensorDataset是最简单的Dataset实现——将多个tensor包装为(input, label)对。PyTorch的torchvision.datasets提供了CIFAR-10、ImageNet、MNIST等标准数据集的下载和加载。<br><br><b>延伸节点</b><br>§3.5.2 分布式采样器 | §3.5.1 DataLoader"
+  },
+  {
+    "Word": "Dynamic Computation Graph",
+    "Pronunciation": "/daɪˈnæmɪk ˌkɒmpjʊˈteɪʃən ɡræf/",
+    "Audio": "",
+    "Definition": "Dynamic Computation Graph（动态计算图）——PyTorch的核心机制：每次前向传播重新构建计算图，定义即执行，支持变长输入和条件分支",
+    "ExampleEN": "PyTorch's dynamic computation graph rebuilds on every forward pass, enabling variable-length sequences and conditional logic.",
+    "ExampleCN": "PyTorch的动态计算图在每次前向传播时重新构建，支持变长序列和条件逻辑。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>Dynamic Computation Graph（动态计算图）是PyTorch区别于TensorFlow 1.x的最核心特性。PyTorch在每次前向传播时根据当前执行的Python代码动态地即时构建计算图，不需要预先定义完整结构。这意味着图的形状和结构可以随每次迭代变化——支持变长序列、条件分支（if/else在forward中）、循环（for/while）。相比之下，TF 1.x的静态图需要在执行前完整构建无法更改的计算图。<br><br><b>关键要点</b><br>动态图的三大优势：(1)调试友好——可以随时print(tensor.shape)、pdb.set_trace()打断点查看中间结果，因为代码是按Python原生方式顺序执行的；(2)灵活性——支持变长输入、条件分支、动态循环，这对于NLP的变长序列和Transformer的动态padding至关重要；(3)Pythonic——写PyTorch代码不需要学习\"框架的语言\"，和写普通Python几乎一样。静态图的优势在于编译时能做更多优化，但PyTorch 2.0的torch.compile正在缩小性能差距。<br><br><b>延伸节点</b><br>§3.4 TensorFlow对比 | §3.5.1 Autograd自动求导"
+  },
+  {
+    "Word": "DistributedDataParallel",
+    "Pronunciation": "/dɪˈstrɪbjuːtɪd ˈdeɪtə ˈpærəlel/",
+    "Audio": "",
+    "Definition": "DistributedDataParallel (DDP)（分布式数据并行）——PyTorch的多GPU训练方案，每进程一个GPU，通过AllReduce同步梯度，生产环境首选",
+    "ExampleEN": "DDP spawns one process per GPU and synchronizes gradients with AllReduce, making it the production standard.",
+    "ExampleCN": "DDP为每个GPU生成一个进程，用AllReduce同步梯度，是生产环境的标准方案。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>DDP（DistributedDataParallel）是PyTorch多GPU训练的生产环境标准方案。它的核心设计：每个GPU一个独立进程，每个进程拥有完整的模型副本，但处理不同的数据子集。训练流程：各卡拿到不同的数据块→各自独立前向+反向计算→通过AllReduce通信原语将所有卡的梯度求平均→每张卡用平均梯度更新自己的参数（最终所有卡参数保持一致）。<br><br><b>关键要点</b><br>与DP对比：DP是单进程多线程（一个GPU当master聚合其他卡的梯度/主卡负载不均衡/Python GIL限制多线程效率），DDP是多进程（每卡一个独立进程/各卡负载均衡/真正并行）。关键配置：必须用DistributedSampler确保每卡数据不重复（不同卡看到不同数据），每个epoch调用sampler.set_epoch(epoch)改变shuffle种子（避免模型过拟合于固定数据顺序）。启动方式：torchrun --nproc_per_node=N train.py 或 torch.multiprocessing.spawn。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §1.3.1 企业级AI部署"
+  },
+  {
+    "Word": "FSDP",
+    "Pronunciation": "/ˌef es diː ˈpiː/",
+    "Audio": "",
+    "Definition": "Fully Sharded Data Parallel（完全分片数据并行）——PyTorch的大模型训练方案，将模型参数/梯度/优化器状态切分到各卡，训练超大模型专用",
+    "ExampleEN": "FSDP partitions model parameters, gradients, and optimizer states across GPUs to train models larger than single-GPU memory.",
+    "ExampleCN": "FSDP将模型参数、梯度和优化器状态切分到各GPU，以训练超过单卡显存的大模型。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>FSDP（Fully Sharded Data Parallel，完全分片数据并行）是PyTorch原生支持的大模型分布式训练方案。DDP的问题是每张卡要存储完整的模型副本——当模型>单卡显存时DDP无法运行。FSDP的解决方案：将模型参数、梯度和优化器状态切分到所有GPU上，每张卡只存储1/N的模型（N=GPU数）。前向/反向时按需动态all-gather所需的参数分片，计算完成后释放。<br><br><b>关键要点</b><br>显存效率对比：4卡×24GB场景，DDP可训练最大模型≈24GB（每卡完整模型），FSDP可训练最大模型≈96GB（4卡参数分片）。代价：FSDP的通信开销比DDP大——参数需要在前向/反向时动态all-gather和release，增加了额外通信。配置：ShardingStrategy.FULL_SHARD（全分片/显存最优）、ShardingStrategy.SHARD_GRAD_OP（仅分片梯度和优化器/折中方案）。7B以下模型推荐DDP（通信开销少），7B+推荐FSDP或DeepSpeed ZeRO。<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §3.5.2 DeepSpeed"
+  },
+  {
+    "Word": "DataParallel",
+    "Pronunciation": "/ˈdeɪtə ˈpærəlel/",
+    "Audio": "",
+    "Definition": "DataParallel (DP)（数据并行）——PyTorch的单机多GPU简单方案，主卡聚合梯度，瓶颈明显，不推荐",
+    "ExampleEN": "DataParallel is a simple but slow multi-GPU approach due to the master GPU aggregation bottleneck.",
+    "ExampleCN": "DataParallel是一种简单但慢的多GPU方案，因为主卡聚合梯度存在瓶颈。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>DataParallel（DP）是PyTorch最早的多GPU训练方案，用model = nn.DataParallel(model)一行代码即可开启。工作原理：前向传播时主GPU（通常GPU 0）将数据均匀分配到各GPU→各GPU独立前向计算→梯度在主GPU聚合（scatter计算后gather梯度）→主GPU更新参数→广播参数到其他GPU。这种主卡负责聚合的设计导致了严重的负载不均衡。<br><br><b>关键要点</b><br>DP三大致命缺陷：(1)主卡负载不均衡——GPU 0既要参与前向计算又要聚合其他卡的梯度，实际利用率远低于其他卡；(2)Python GIL限制——DP使用多线程而非多进程，Python全局解释器锁限制了真正的并行效率；(3)只能单机——不支持跨机器分布式训练。结论：DataParallel仅适用于快速demo验证，生产环境必须用DDP替代。DDP多进程+AllReduce方案完全解决了这些问题。<br><br><b>延伸节点</b><br>§3.5.2 DDP对比 | §3.5.2 AllReduce"
+  },
+  {
+    "Word": "AllReduce",
+    "Pronunciation": "/ɔːl rɪˈduːs/",
+    "Audio": "",
+    "Definition": "AllReduce（全归约通信原语）——分布式训练中在各GPU之间同步梯度的集合通信操作，把每张卡的梯度求和/平均后广播回所有卡",
+    "ExampleEN": "AllReduce aggregates gradients from all GPUs and broadcasts the result back to every GPU.",
+    "ExampleCN": "AllReduce从所有GPU聚合梯度并将结果广播回每个GPU。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>AllReduce是分布式训练中同步梯度的核心集合通信原语。操作流程：每个GPU贡献自己的梯度gᵢ→所有GPU的梯度被聚合（通常求和）→聚合结果被广播回所有GPU（每张卡拿到相同的平均梯度）。在DDP中，AllReduce保证了每张GPU使用完全相同的梯度更新参数，从而所有卡的模型参数保持一致。底层实现通常采用Ring-AllReduce算法。<br><br><b>关键要点</b><br>Ring-AllReduce算法原理：GPU按环状排列，数据在各节点间环形传递——每张卡先scatter-reduce自己的数据段到环中，然后all-gather接收所有其他卡的数据段。这种设计的核心优势：通信量不随GPU数量增长（每张卡通信量≈2×(N-1)/N×(总数据量)，趋近于2倍数据量），而不是随N线性增长。常见后端：NCCL（NVIDIA GPU/最快/生产推荐）、Gloo（跨平台/CPU+GPU/通用）、MPI（高性能计算/传统科学计算集群）。<br><br><b>延伸节点</b><br>§3.5.2 DDP | §3.5.2 NCCL"
+  },
+  {
+    "Word": "DistributedSampler",
+    "Pronunciation": "/dɪˈstrɪbjuːtɪd ˈsæmplər/",
+    "Audio": "",
+    "Definition": "DistributedSampler（分布式采样器）——DDP训练中确保每张卡拿到不同且不重复数据子集的采样器",
+    "ExampleEN": "DistributedSampler ensures each GPU receives a distinct, non-overlapping subset of the dataset.",
+    "ExampleCN": "DistributedSampler确保每张GPU收到一个独特且不重叠的数据子集。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>DistributedSampler是DDP训练中确保数据分配正确的关键组件。在DDP多进程架构中，每个GPU运行一个独立进程，必须确保不同进程从数据集中取到不重叠的数据子集。DistributedSampler通过进程编号rank和总进程数world_size将数据集均匀切分——GPU[i]取索引 i, i+world_size, i+2·world_size, ... 的样本，保证每个样本只被一张卡处理。<br><br><b>关键要点</b><br>关键方法sampler.set_epoch(epoch)：每个epoch开始时调用，为shuffle提供不同的随机种子。如果不调用这个方法，每个epoch的数据shuffle顺序完全一样——模型会过拟合于固定的数据顺序（epoch 1的第50个batch和epoch 2的第50个batch数据完全一样），损害泛化能力。DataLoader中通过sampler=DistributedSampler(dataset, num_replicas=world_size, rank=rank, shuffle=True)配置。<br><br><b>延伸节点</b><br>§3.5.2 DDP | §3.5.1 DataLoader"
+  },
+  {
+    "Word": "NCCL",
+    "Pronunciation": "/ˌen siː siː ˈel/",
+    "Audio": "",
+    "Definition": "NVIDIA Collective Communications Library（NVIDIA集合通信库）——NVIDIA的多GPU通信后端，DDP推荐使用",
+    "ExampleEN": "NCCL is the recommended communication backend for DDP on NVIDIA GPUs.",
+    "ExampleCN": "NCCL是NVIDIA GPU上DDP的推荐通信后端。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>NCCL（NVIDIA Collective Communications Library）是NVIDIA专为多GPU通信优化的集合通信库，是PyTorch DDP在NVIDIA GPU上的推荐后端。它实现了AllReduce、AllGather、Broadcast、Reduce、ReduceScatter等集合通信原语，针对NVIDIA GPU的拓扑结构（PCIe/NVLink/NVSwitch）做了深度优化，支持单机多卡（PCIe/NVLink）和多机跨节点（InfiniBand/RoCE网络）。<br><br><b>关键要点</b><br>三种后端性能对比：NCCL（NVIDIA GPU/特化优化NVLink拓扑/速度最快/强烈推荐）、Gloo（跨平台（CPU+GPU）/通用/功能全面但速度不如NCCL/CPU训练或反向兼容时使用）、MPI（经典高性能计算后端/适用于大规模科学计算集群）。常见死锁原因：不同进程间的输入数据batch数量不一致（数据加载最终轮可能部分进程还有数据部分没有）→AllReduce永远等不到→程序hang住。解决方案：drop_last=True丢弃最后不完整的batch。<br><br><b>延伸节点</b><br>§3.5.2 DDP | §3.5.2 AllReduce"
+  },
+  {
+    "Word": "Mixed Precision Training",
+    "Pronunciation": "/mɪkst prɪˈsɪʒən ˈtreɪnɪŋ/",
+    "Audio": "",
+    "Definition": "Mixed Precision Training（混合精度训练）——同时使用float16和float32计算，几乎无代价提速2x+并节省显存",
+    "ExampleEN": "Mixed precision training uses float16 for most operations while keeping critical computations in float32.",
+    "ExampleCN": "混合精度训练使用float16进行大部分运算，同时保持关键计算在float32。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念 / §3.5.2 分布式训练<br><br><b>核心概念</b><br>Mixed Precision Training（混合精度训练）是同时使用float16和float32进行训练的技术，几乎无代价实现2x+训练提速和大量显存节省。原理：大部分运算（矩阵乘法）在float16下完成（更快/更省显存），但关键操作（参数更新、BatchNorm统计量）保留float32精度（防止数值不稳定）。因为现代GPU（V100/A100/H100）的fp16吞吐量是fp32的2-8倍，且fp16张量占用一半显存。<br><br><b>关键要点</b><br>两个核心组件：(1)autocast上下文——自动决定每个操作用float16还是float32（矩阵乘法→fp16快速计算，softmax/loss→fp32保持数值精度）；(2)GradScaler——float16梯度数值范围太小，某些过小梯度会下溢为0。GradScaler在前向时放大损失、反向时梯度被同步放大、优化器更新前缩小回正常尺度。在PyTorch Lightning中只需precision='16-mixed'一行代码即可启用全部机制。<br><br><b>延伸节点</b><br>§3.3 HuggingFace微调训练 | §3.5.2 PyTorch Lightning"
+  },
+  {
+    "Word": "PyTorch Lightning",
+    "Pronunciation": "/paɪ tɔːrtʃ ˈlaɪtnɪŋ/",
+    "Audio": "",
+    "Definition": "PyTorch Lightning（Lightning训练框架）——标准化PyTorch训练循环的高层框架，自动处理DDP/日志/checkpoint/混合精度",
+    "ExampleEN": "PyTorch Lightning automates DDP, logging, checkpointing, and mixed precision, reducing boilerplate from 300 to 50 lines.",
+    "ExampleCN": "PyTorch Lightning自动化DDP、日志、checkpoint和混合精度，将样板代码从300行减少到50行。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练<br><br><b>核心概念</b><br>PyTorch Lightning是标准化PyTorch训练循环的高层框架。它将训练模板代码（训练/验证/测试循环、日志记录、Checkpoint保存、DDP启动、混合精度）全部封装，开发者只需定义模型（继承LightningModule）和数据（DataLoader），其余自动处理。代码量从纯PyTorch的~300行减少到~50行，是测试想法和快速迭代的最佳工具。<br><br><b>关键要点</b><br>自动处理的事项：多GPU启动（accelerator='gpu', devices='auto', strategy='ddp'一行开启DDP）、日志+进度条（self.log自动记录到TensorBoard/WandB/MLFlow）、Checkpoint自动保存和恢复（训练中断后从上次checkpoint继续）、混合精度（precision='16-mixed'一行）、早停+LR Scheduler（配置Callback即可）、梯度裁剪。局限性：需要定制分布式通信逻辑（如模型并行、通信调度）时仍需回到纯PyTorch+DDP手动实现。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.5.2 DDP"
+  },
+  {
+    "Word": "DeepSpeed",
+    "Pronunciation": "/diːp spiːd/",
+    "Audio": "",
+    "Definition": "DeepSpeed（微软分布式训练优化库）——微软开源的分布式训练优化库，ZeRO优化器比FSDP更成熟，广泛用于大模型训练",
+    "ExampleEN": "DeepSpeed with ZeRO-3 optimizes memory usage by partitioning states across GPUs, enabling 100B+ model training.",
+    "ExampleCN": "DeepSpeed的ZeRO-3通过跨GPU切分状态优化显存使用，使得千亿参数级模型训练成为可能。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练 进阶方向<br><br><b>核心概念</b><br>DeepSpeed是微软开源的大规模分布式训练优化库，其核心ZeRO（零冗余优化器）通过跨GPU切分模型状态来消除显存冗余。ZeRO三阶段递进：Stage1切分优化器状态（省4x显存/对speed影响最小）、Stage2切分梯度+优化器状态（省8x）、Stage3切分参数+梯度+优化器状态（省N倍/N=GPU数/与PyTorch FSDP类似）。搭配ZeRO-Offload可将部分计算和状态卸载到CPU内存。<br><br><b>关键要点</b><br>DeepSpeed vs FSDP：DeepSpeed更成熟（出现更早/生态更丰富/与HuggingFace集成更紧密），但需要独立安装配置；FSDP是PyTorch原生方案（无需额外依赖/与PyTorch生态无缝集成）。训练7B模型推荐ZeRO-2（DDP+优化器梯度分片），70B+模型推荐ZeRO-3（全参数分片）。DeepSpeed的配置文件(json)可精细控制各模块的并行策略、通信和显存优化。与HuggingFace集成：在TrainingArguments中指定deepspeed=config.json即可启用。<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §3.5.2 FSDP"
+  },
+  {
+    "Word": "ZeRO",
+    "Pronunciation": "/ˈzɪəroʊ/",
+    "Audio": "",
+    "Definition": "Zero Redundancy Optimizer（零冗余优化器）——DeepSpeed的核心技术，三阶段逐步切分优化器/梯度/参数以消除冗余显存占用",
+    "ExampleEN": "ZeRO eliminates memory redundancy by partitioning optimizer states, gradients, and parameters across GPUs.",
+    "ExampleCN": "ZeRO通过跨GPU切分优化器状态、梯度和参数来消除显存冗余。",
+    "Notes": "<b>学习路径</b><br>§3.5.2 PyTorch分布式训练 进阶方向<br><br><b>核心概念</b><br>ZeRO（Zero Redundancy Optimizer，零冗余优化器）是DeepSpeed的核心技术，其核心洞察：标准分布式训练中，每张GPU存储了完整冗余的模型状态（优化器状态×4 bytes、梯度×2 bytes、参数×2 bytes = 每次存储约8 bytes/参数），而实际上每张卡只需要它自己的那部分数据。ZeRO通过三级逐步消除这些冗余：切分优化器状态→切分梯度→切分参数。<br><br><b>关键要点</b><br>各级别显存占用（以7B模型/4卡为例）：无分片≈56GB（不可行）→ ZeRO-1（切分优化器/每次卡≈28GB/省4x）→ ZeRO-2（+切分梯度/每次卡≈14GB/省8x）→ ZeRO-3（+切分参数/每次卡≈3.5GB/省16x）。通信代价递增：ZeRO-1≈1x基准→ZeRO-2≈1.5x→ZeRO-3≈2x。选型建议：7B模型用ZeRO-2（通信代价适中）、70B+模型用ZeRO-3（必须全分片才能训练/通信慢就接受）。<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §3.5.2 DeepSpeed"
+  },
+  {
+    "Word": "CNN",
+    "Pronunciation": "/ˌsiː en ˈen/",
+    "Audio": "",
+    "Definition": "Convolutional Neural Network（卷积神经网络）——使用卷积层提取局部特征的神经网络，计算机视觉的基础架构",
+    "ExampleEN": "CNNs use convolution filters that slide across the image to detect local patterns like edges and textures.",
+    "ExampleCN": "CNN使用卷积滤波器在图像上滑动来检测局部模式，如边缘和纹理。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>CNN（Convolutional Neural Network，卷积神经网络）是计算机视觉的基础架构，核心操作是卷积——用一个小窗口（3×3/5×5的滤波器）在输入图像上滑动提取局部特征。CNN核心四层：卷积层（提取局部特征/边缘纹理等/参数共享）、批归一化BN（稳定各层输入分布/加速收敛）、ReLU激活（引入非线性/缓解梯度消失）、池化层（下采样缩小尺寸/降低计算量/增大感受野）。这种组合从低级特征（边缘）逐步提取到高级特征（物体部件）。<br><br><b>关键要点</b><br>CNN的局限：感受野有限——每层卷积只能看到局部区域（3×3每次看9个像素），虽然通过多层堆叠感受野会指数增长（两层3×3卷积等效感受野5×5，三层等效7×7），但对于大范围依赖关系仍需非常深网络。这也是Vision Transformer（ViT）在大图上优势明显的原因——Self-Attention天然全局建模。但CNN在小数据上的泛化能力仍然优于ViT（CNN有归纳偏置：局部性、平移等变性）。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.4 YOLO模型 | §3.5.3 Vision Transformer"
+  },
+  {
+    "Word": "Convolutional Layer",
+    "Pronunciation": "/ˌkɒnvəˈluːʃənl ˈleɪər/",
+    "Audio": "",
+    "Definition": "Convolutional Layer（卷积层）——用小窗口(3×3/5×5)在输入特征图上滑动提取局部特征，CNN的核心操作",
+    "ExampleEN": "A 3x3 convolution filter slides across the input to detect local patterns like edges and textures.",
+    "ExampleCN": "3x3卷积滤波器在输入上滑动来检测局部模式，如边缘和纹理。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Convolutional Layer（卷积层）是CNN的核心操作——一个小滤波器（kernel）在输入特征图上滑动，每个位置计算滤波器参数与对应输入区域的点积，产生输出特征图的一个像素。核心参数：kernel_size（滤波器大小/常用3×3/决定每次能\"看\"多大范围）、stride（滑动步长/默认1，设为2可下采样替代池化）、padding（边缘补零/设为1可保持尺寸不变（same padding））、in_channels/out_channels（输入/输出通道数/控制特征丰富度）。<br><br><b>关键要点</b><br>卷积层两大核心特性：(1)参数共享——同一个滤波器在整个图上复用，无论物体在图片哪个位置，3×3参数完全相同。这大大减少了参数量（3×3×64×64=32K vs 全连接层64×64×64×64=16M），并赋予了平移等变性（物体移动→特征图相应移动）；(2)局部连接——每个输出像素只依赖输入的一个小区域，先提取局部特征再通过多层堆叠扩大感受野。现代CNN设计模式：3×3卷积+padding=1保持尺寸不变，stride=2替代池化做下采样。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.3 池化层"
+  },
+  {
+    "Word": "Pooling Layer",
+    "Pronunciation": "/ˈpuːlɪŋ ˈleɪər/",
+    "Audio": "",
+    "Definition": "Pooling Layer（池化层）——下采样缩小特征图尺寸，降低计算量和参数数量，增大感受野",
+    "ExampleEN": "MaxPooling2d(2) halves the spatial dimensions by taking the maximum value in each 2x2 window.",
+    "ExampleCN": "MaxPooling2d(2)通过取每个2x2窗口的最大值将空间维度减半。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Pooling Layer（池化层）是CNN中做下采样的层，用于缩小特征图的空间尺寸。两种主流方式：Max Pooling（取窗口内的最大值/保留最强的激活信号/最常用）和Average Pooling（取窗口内的平均值/信息更平滑）。典型配置nn.MaxPool2d(2)将特征图宽高各减半（面积变成1/4），大幅降低后续层的计算量、参数量和显存占用。<br><br><b>关键要点</b><br>池化层三重收益：(1)降低计算量——后续卷积层处理的像素数指数减少；(2)增大感受野——池化后下一层卷积能\"看到\"原始图像更大的区域（每次2x池化感受野扩大一倍）；(3)提供平移不变性——小范围平移不影响池化输出（最大值位置变化但值不变）。注意池化层没有可训练参数。特殊用法：AdaptiveAvgPool2d(1)——无论输入尺寸多大都压缩为1×1，常用于分类模型最后一层（不必关心特征图具体大小）。现代网络趋势：用stride=2卷积替代池化做下采样。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.3 卷积层"
+  },
+  {
+    "Word": "MaxPooling",
+    "Pronunciation": "/mæks ˈpuːlɪŋ/",
+    "Audio": "",
+    "Definition": "Max Pooling（最大池化）——取窗口内最大值的池化操作，最常用的下采样方法",
+    "ExampleEN": "Max pooling retains the strongest activation in each region, preserving the most salient features.",
+    "ExampleCN": "最大池化保留每个区域中最大的激活值，保留最显著的特征。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Max Pooling（最大池化）是最常用的池化操作——在输入特征图的每个滑动窗口内取最大值。例如nn.MaxPool2d(2)将特征图的每个2×2区域压缩为单个像素（取4个值中最大的那个）。这保留了最强的激活信号——如果某个区域检测到\"边缘\"特征，最大值反映了最强边缘的响应。Max Pooling比Average Pooling更常用因为它保留了最显著的特征（而非最平滑的特征）。<br><br><b>关键要点</b><br>Max Pooling的关键参数：kernel_size（窗口大小/2最常见）、stride（滑动步长/默认等于kernel_size）、padding（边缘填充）。最大池化在反向传播时只对最大值位置传递梯度（其他位置梯度为0）——这实现了某种稀疏性。注意：池化操作没有可学习参数（不像卷积层有weights），它是一个固定的下采样操作。在CNN分类模型中，通常在每个卷积block后加一个MaxPooling(2)将尺寸减半，逐步将空间信息压缩为语义信息。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.3 池化层对比"
+  },
+  {
+    "Word": "Grad-CAM",
+    "Pronunciation": "/ɡræd kæm/",
+    "Audio": "",
+    "Definition": "Gradient-weighted Class Activation Mapping（梯度加权类激活映射）——用梯度和激活图生成热力图叠加到原图，可视化CNN关注的区域",
+    "ExampleEN": "Grad-CAM produces a heatmap showing which image regions the CNN focused on for its decision.",
+    "ExampleCN": "Grad-CAM生成热力图展示CNN在决策时关注的图像区域。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Grad-CAM（Gradient-weighted Class Activation Mapping，梯度加权类激活映射）是将CNN的\"黑盒\"决策可视化为热力图的经典技术。不需要修改网络结构或重新训练，只需一次前向+一次反向传播即可生成热力图，告诉你模型在做分类决策时最关注图像的哪个区域。这对于模型可解释性、误判原因分析和工业缺陷检测验证至关重要。<br><br><b>关键要点</b><br>生成流程：前向传播得到目标类的分数→对目标类反向传播→获取最后一层卷积层的梯度和激活图→对梯度做全局平均池化（GAP）得到每个通道的重要性权重→加权求和所有通道的激活图→ReLU只保留正贡献（即对\"属于该类\"有正向推动的特征）→归一化到[0,1]得到热力图→Resize到原图大小并叠加显示。梯度越大=该通道对决策贡献越大。热力图高亮区域=模型做决策的依据。<br><br><b>延伸节点</b><br>§3.5.4 YOLO模型 | §3.5.3 卷积网络可视化"
+  },
+  {
+    "Word": "CIFAR-10",
+    "Pronunciation": "/sɪˈfɑːr ten/",
+    "Audio": "",
+    "Definition": "CIFAR-10（彩色图像分类数据集）——10类32×32小彩色图像的经典计算机视觉基准数据集",
+    "ExampleEN": "CIFAR-10 contains 60,000 tiny color images across 10 classes, a standard benchmark for image classification.",
+    "ExampleCN": "CIFAR-10包含10个类别的6万张小彩色图片，是图像分类的标准基准测试。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>CIFAR-10是计算机视觉领域的入门级基准数据集，包含10个类别的60000张32×32像素的彩色自然图像（50000训练+10000测试）。10个类别：飞机、汽车、鸟、猫、鹿、狗、青蛙、马、船、卡车。每个样本是32×32×3的RGB图像。虽然图片很小（只有1024个像素），但它包含了丰富的纹理、颜色和形状特征，是测试CNN分类模型的标准入门数据集。<br><br><b>关键要点</b><br>CIFAR-10的归一化统计量：均值(0.4914, 0.4822, 0.4465)、标准差(0.247, 0.243, 0.261)（RGB三通道）。在PyTorch中直接加载：torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=...)。CIFAR-10上的典型CNN能达到90-95%准确率。学习建议：CIFAR-10是验证CNN概念和训练流程的最佳数据集——足够小可以几分钟训练一个epoch，又足够难需要合理设计网络和数据增强才能取得好结果。<br><br><b>延伸节点</b><br>§3.5.1 PyTorch核心概念 | §3.5.3 CNN图像分类实战"
+  },
+  {
+    "Word": "Data Augmentation",
+    "Pronunciation": "/ˈdeɪtə ˌɔːɡmenˈteɪʃən/",
+    "Audio": "",
+    "Definition": "Data Augmentation（数据增强）——对训练样本应用随机变换（旋转、翻转、裁剪、颜色抖动等）增加数据多样性，防止过拟合",
+    "ExampleEN": "Random flips, rotations, and color jitter create diverse training samples without collecting new data.",
+    "ExampleCN": "随机翻转、旋转和颜色抖动无需收集新数据就能创建多样化的训练样本。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Data Augmentation（数据增强）是在不收集新数据的前提下，通过对现有训练样本施加随机变换来增加数据多样性的技术。核心思想：对同一张图片做随机翻转、旋转、裁剪、颜色抖动等变换，让模型看到更多\"变体\"，学习到对位置/方向/光照变化鲁棒的特征。数据增强是CV模型防过拟合的必备手段——没有充足的数据增强，CNN在小数据集上很容易过拟合。<br><br><b>关键要点</b><br>常用增强操作：RandomHorizontalFlip（水平翻转/最常用/自然场景下物体左右镜像仍为同类）、RandomRotation（随机旋转/±15度以内）、RandomCrop（随机裁切/模拟不同视角）、ColorJitter（颜色抖动/亮度对比度饱和度变化/模拟不同光照）、RandomNoise（随机噪声/模拟低质量拍摄环境）。工业缺陷检测尤其需要数据增强（拍摄环境变化大、光照不均、物体角度不一）。YOLO内置Mosaic（4图拼接）、MixUp（2图混合）、HSV空间变换等高级增强。<br><br><b>延伸节点</b><br>§3.5.4 YOLO模型 | §3.5.3 过拟合防止"
+  },
+  {
+    "Word": "Defect Detection",
+    "Pronunciation": "/ˈdiːfekt dɪˈtekʃən/",
+    "Audio": "",
+    "Definition": "Defect Detection（缺陷检测）——工业场景的图像识别应用，自动找出产品表面的划痕、裂纹、污点等异常",
+    "ExampleEN": "Industrial defect detection uses computer vision to automatically find scratches, cracks, and stains on product surfaces.",
+    "ExampleCN": "工业缺陷检测使用计算机视觉自动找出产品表面的划痕、裂纹和污点。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Defect Detection（缺陷检测）是工业场景的图像识别应用——自动找出产品表面的划痕、裂纹、污点、凹坑等异常。是深度学习最早大规模落地的工业应用之一，每年帮制造业节省数十亿质检人工成本。三种技术方案：分类法（整图→良品/缺陷二分类/最简单快速但不定位）、检测法（框出缺陷位置和类型/需要标注框/最实用）、分割法（逐像素标记缺陷区域/最精细但标注成本最高/适合精密零件检测）。<br><br><b>关键要点</b><br>工业场景关键原则：(1)数据质量 > 模型复杂度——高质量的标注和全面的缺陷覆盖比fancy的模型架构重要10倍；(2)正负样本均衡——缺陷通常占<5%，造成严重不均衡。解决方案：Focal Loss（降低易分类样本权重让模型聚焦难样本）、过采样（多复制缺陷样本）、类别加权；(3)数据增强必做——旋转、翻转、亮度/对比度变化模拟不同拍摄环境。工业检测的终极挑战：从一个产线学到的缺陷检测模型迁移到另一个产线效果很差（domain shift）。<br><br><b>延伸节点</b><br>§3.5.4 YOLO目标检测 | §3.5.3 FocalLoss"
+  },
+  {
+    "Word": "Anchor Box",
+    "Pronunciation": "/ˈæŋkər bɒks/",
+    "Audio": "",
+    "Definition": "Anchor Box（锚框）——YOLO中预定义多种长宽比的候选框，模型预测相对锚框的偏移而非绝对坐标",
+    "ExampleEN": "Anchor boxes provide predefined aspect ratio templates that the model refines rather than predicting from scratch.",
+    "ExampleCN": "锚框提供预定义的长宽比模板，模型基于此进行微调而非从零预测。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>Anchor Box（锚框）是YOLO v2-v7版本中使用的先验框机制：在训练前预定义数种不同长宽比的模板框（如瘦高框、宽矮框、正方形框），模型预测的是相对锚框的偏移量而非绝对坐标。原始YOLO v1直接预测坐标效果不好（框的大小和位置变化太大），Anchor Box提供\"候选形状\"大大降低了预测难度。每个网格点上配备多个Anchor Box，每个Anchor负责检测与其形状最匹配的物体。<br><br><b>关键要点</b><br>Anchor-Based的代价：需要调参（选择合适数量和大小的Anchor、通过K-means聚类分析数据集中的标注框得到典型长宽比）、增加计算量（每个网格预测N个Anchor相关参数）。YOLOv8起改为Anchor-Free：直接预测物体的中心点和宽高偏移，无需预定义Anchor形状。Anchor-Free的优势：更简洁（无超参数）、更灵活（对任意长宽比的物体都友好）、对小目标的检测效果更好。这是检测领域的重要进化方向。<br><br><b>延伸节点</b><br>§3.5.3 图像识别 | §3.5.4 YOLO版本演进"
+  },
+  {
+    "Word": "FPN",
+    "Pronunciation": "/ˌef piː ˈen/",
+    "Audio": "",
+    "Definition": "Feature Pyramid Network（特征金字塔网络）——多尺度特征融合结构，从不同层融合高低分辨率特征，YOLOv3起用于多尺度目标检测",
+    "ExampleEN": "FPN fuses feature maps at different scales so the model can detect both large and small objects effectively.",
+    "ExampleCN": "FPN融合不同尺度的特征图，使模型能有效检测大目标和小目标。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>FPN（Feature Pyramid Network，特征金字塔网络）是YOLOv3引入的多尺度特征融合结构。它解决了\"深层特征语义强但分辨率低（大目标检测好/小目标看不见），浅层特征分辨率高但语义弱（小目标位置准但不知是什么）\"的矛盾。通过自顶向下路径上采样深层特征+横向连接融合浅层位置信息，为不同尺度的目标提供语义丰富且分辨率合适的特征。<br><br><b>关键要点</b><br>FPN三路结构：自底向上路径（常规CNN前向/从高分辨率浅层→低分辨率深层/语义越来越强）、自顶向下路径（从深层上采样/恢复空间分辨率）、横向连接（将自底向上路径中相同分辨率的特征与上采样后的特征相加/融合位置信息与语义信息）。YOLOv3首次在三个尺度（8×8/16×16/32×32下采样）分别做检测预测——大尺度负责小目标，小尺度负责大目标。FPN是大多数现代检测器（RetinaNet/EfficientDet等）的标配组件。<br><br><b>延伸节点</b><br>§3.5.3 CNN | §3.5.4 YOLO版本演进"
+  },
+  {
+    "Word": "Ultralytics",
+    "Pronunciation": "/ˌʌltrəˈlɪtɪks/",
+    "Audio": "",
+    "Definition": "Ultralytics（YOLO官方实现库）——YOLO最流行的Python实现，10行代码完成检测/训练/评估/导出",
+    "ExampleEN": "Ultralytics provides a 10-line API to load YOLO models, run inference, train custom data, and export models.",
+    "ExampleCN": "Ultralytics提供10行代码的API来加载YOLO模型、运行推理、训练自定义数据和导出模型。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>Ultralytics是YOLO系列模型最流行、最完善的Python实现库，将训练、推理、评估和导出封装为极其简洁的API。核心工作流一行代码搞定：model = YOLO('yolo11n.pt')加载模型→model.train(data='data.yaml', epochs=50)训练→model.val()评估→results = model.predict(source)推理→model.export(format='onnx')导出为ONNX/TensorRT等格式。内置Mosaic、MixUp、HSV空间变换等数据增强默认开启。<br><br><b>关键要点</b><br>支持的导出格式：ONNX（跨框架交换格式）、TensorRT（NVIDIA推理加速/最快）、OpenVINO（Intel CPU/边缘设备）、CoreML（Apple生态）、NCNN（移动端高效推理）、TFLite（Google移动端）。模型后缀含义：n=nano(最轻量/嵌入式)、s=small(轻量/边缘)、m=medium(平衡)、l=large(高精度)、x=xlarge(最高精度/需要更多算力)。训练关键技巧：永远从COCO预训练权重开始（yolo11n.pt），不要从头训练——即使类别数变化预训练分类头也会自动丢弃，backbone权重保留。<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §3.5.4 YOLO模型选择"
+  },
+  {
+    "Word": "ONNX",
+    "Pronunciation": "/ɒnɪks/",
+    "Audio": "",
+    "Definition": "Open Neural Network Exchange（开放神经网络交换格式）——跨框架的模型交换标准格式，可将PyTorch/TensorFlow模型导出为统一格式部署",
+    "ExampleEN": "Export your trained YOLO model to ONNX for cross-platform deployment without framework dependencies.",
+    "ExampleCN": "将训练好的YOLO模型导出为ONNX格式，实现跨平台部署而无需框架依赖。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>ONNX（Open Neural Network Exchange，开放神经网络交换格式）是由微软和Meta共同主导的跨深度学习框架的模型交换标准。核心使命：打破框架锁定——在PyTorch训练好的模型可以导出为ONNX格式，然后在没有PyTorch依赖的环境中用ONNX Runtime推理。一个ONNX模型文件(.onnx)包含完整的计算图定义（算子类型、参数、输入输出规格），它是框架无关的。<br><br><b>关键要点</b><br>典型部署流程：PyTorch训练→model.export(format='onnx')导出→ONNX Runtime推理 或 进一步转换为TensorRT（NVIDIA GPU加速）/OpenVINO（Intel CPU加速）。ONNX是部署链路的中间格式，不是最终推理引擎——通常需要进一步编译为目标平台的优化格式。在Ultralytics中model.export(format='onnx')一键导出。注意：导出时需指定opset_version（算子集版本/控制支持的算子范围）和dynamic_axes（动态batch支持/生产环境通常需要）。<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §3.5.4 Ultralytics导出"
+  },
+  {
+    "Word": "ImageNet",
+    "Pronunciation": "/ˈɪmɪdʒ net/",
+    "Audio": "",
+    "Definition": "ImageNet（大规模图像数据集）——包含1400万+图片、2万+类别的大规模视觉数据集，是计算机视觉预训练模型的核心训练来源",
+    "ExampleEN": "Most CNN architectures are pretrained on ImageNet before being fine-tuned for specific tasks.",
+    "ExampleCN": "大多数CNN架构在ImageNet上预训练后再针对特定任务进行微调。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>ImageNet是计算机视觉领域最大规模的图像数据集之一，包含1400万+张图片、2万+类别的大规模视觉数据集。它不仅是衡量模型性能的基准，更是几乎所有CV预训练模型的核心训练来源——ImageNet-1K（最常用子集：1000类/约120万训练+5万验证/224×224尺寸）上的预训练权重是CV领域迁移学习的\"通用起点\"。ImageNet预训练+目标领域微调是CV领域长达十年的事实标准范式。<br><br><b>关键要点</b><br>ImageNet标准化：PyTorch的torchvision.models中所有预训练模型都基于ImageNet-1K训练，要求输入数据用ImageNet的均值和标准差归一化：(0.485, 0.456, 0.406)均值，(0.229, 0.224, 0.225)标准差（三通道）。注意CIFAR-10的归一化统计量与ImageNet不同（图片特点差异大），加载ImageNet预训练模型再在CIFAR-10上微调时需要调整输入尺寸。ImageNet的局限性：类别偏重西方常见物体、缺乏细粒度和场景理解类别、存在标注错误和偏见。<br><br><b>延伸节点</b><br>§3.3 HuggingFace生态 | §3.5.3 迁移学习"
+  },
+  {
+    "Word": "Vision Transformer",
+    "Pronunciation": "/ˈvɪʒən trænsˈfɔːrmər/",
+    "Audio": "",
+    "Definition": "Vision Transformer (ViT)（视觉Transformer）——将Transformer架构应用于图像，将图片切块后作为token序列处理",
+    "ExampleEN": "Vision Transformer splits an image into patches, treats them as tokens, and applies self-attention across them.",
+    "ExampleCN": "Vision Transformer将图像切分成块作为token，并跨块应用自注意力。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测 进阶方向<br><br><b>核心概念</b><br>Vision Transformer（ViT，视觉Transformer）是将纯Transformer架构应用于图像识别的开创性工作。核心思路：将图片切分为固定大小的patches（如16×16像素块），每个patch展平为向量后加位置编码，作为一个\"token\"输入到标准Transformer Encoder中，通过Self-Attention建立所有patch之间的全局依赖关系。这与CNN的局部滑动窗口提取特征的方式有本质区别——ViT从一开始就能看到全局。<br><br><b>关键要点</b><br>与CNN互补：CNN感受野有限（每层只看局部/需深网络才看到远距离）→ViT的Self-Attention天然全局建模（每个patch直接与所有其他patch交互）。代价：ViT需要更多数据训练（ImageNet-21K甚至JFT-300M等更大数据集预训练），小数据上CNN的归纳偏置（局部性、平移等变性）仍然占优。变体：Swin Transformer（引入分层设计和窗口注意力/效率更高/精度超越CNN）、DeiT（知识蒸馏降低ViT的数据需求）。建议：数据充足用ViT/Swin，数据有限用CNN。<br><br><b>延伸节点</b><br>§1.1.1 Transformer基础 | §3.5.3 CNN对比"
+  },
+  {
+    "Word": "Zero Grad",
+    "Pronunciation": "/ˈzɪəroʊ ɡræd/",
+    "Audio": "",
+    "Definition": "optimizer.zero_grad()（梯度清零）——PyTorch训练循环的必要步骤：每个batch开始前必须手动清零梯度，否则梯度会累加",
+    "ExampleEN": "Forgetting optimizer.zero_grad() causes gradient accumulation across batches, leading to incorrect updates.",
+    "ExampleCN": "忘记optimizer.zero_grad()会导致梯度跨批次累加，造成错误的参数更新。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>optimizer.zero_grad()是PyTorch训练循环中最容易忘记但又绝对必要的步骤。PyTorch的梯度默认是累加模式——每次loss.backward()计算的梯度会加到.grad属性上（而不是覆盖）。如果不手动清零，梯度会跨batch累加，相当于使用了错误的大batch梯度（是所有历史batch梯度之和）。这在大多数情况下会导致训练发散。<br><br><b>关键要点</b><br>累加梯度是特性而非bug——它被设计用于gradient accumulation（梯度累积）技术：当GPU显存不够支持大到理想的batch_size时，可以用小batch_size跑多次前向+反向（不更新参数），累积若干个小batch的梯度后统一更新一次，模拟大batch训练效果。标准训练五步：zero_grad→forward→loss→backward→step。最容易踩的坑：忘记zero_grad导致梯度越来越大（前几个batch正常然后loss突然NaN）。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.1 训练循环模板"
+  },
+  {
+    "Word": "state_dict",
+    "Pronunciation": "/steɪt dɪkt/",
+    "Audio": "",
+    "Definition": "state_dict（模型状态字典）——PyTorch中保存模型所有参数（权重+偏置）的Python字典，用于模型持久化和加载",
+    "ExampleEN": "torch.save(model.state_dict(), 'model.pth') saves only the parameters, not the model architecture.",
+    "ExampleCN": "torch.save(model.state_dict(), 'model.pth')只保存参数，不包括模型架构。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>state_dict是PyTorch中保存和加载模型参数的标准方式——它是一个Python OrderedDict，将模型每一层的参数名映射到对应的参数Tensor（权重和偏置）。通过state_dict保存模型有以下优势：只存参数文件小（不含模型类定义）、跨Python版本兼容（不依赖pickle序列化类）、可灵活部分加载（如预训练模型改分类头后只加载backbone参数，忽略分类头参数不匹配）。<br><br><b>关键要点</b><br>保存加载标准流程：torch.save(model.state_dict(), 'model.pth')保存→model.load_state_dict(torch.load('model.pth'))加载。另一种方式torch.save(model, 'model.pth')保存整个模型对象（含类定义+参数），缺点：(1)文件更大含代码结构；(2)依赖保存时的类定义（代码改了就无法加载）；(3)不够灵活。部分加载技巧：pretrained_dict = torch.load('pretrained.pth'); model_dict = model.state_dict(); pretrained_dict = {k:v for k,v in pretrained_dict.items() if k in model_dict and 'classifier' not in k}——只加载匹配且非分类头的参数。<br><br><b>延伸节点</b><br>§3.3 HuggingFace Trainer保存 | §3.5.1 nn.Module"
+  },
+  {
+    "Word": "model.eval",
+    "Pronunciation": "/ˈmɒdl ɪˈvæl/",
+    "Audio": "",
+    "Definition": "model.eval()（评估模式）——PyTorch将模型从训练模式切换到推理模式，影响Dropout和BatchNorm的行为",
+    "ExampleEN": "model.eval() disables dropout and switches BatchNorm to use running statistics instead of batch statistics.",
+    "ExampleCN": "model.eval()关闭Dropout并让BatchNorm使用全局统计量而非批次统计量。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>model.eval()是PyTorch中将模型从训练模式切换到推理/评估模式的方法，影响Dropout和BatchNormalization的行为。Dropout：训练时以概率p随机置零神经元（防过拟合），推理时不置零且输出按(1-p)缩放。BatchNorm：训练时用当前batch的统计量（μ和σ）做归一化，推理时用训练过程中累积的全局运行统计量（running_mean/running_std）。如果推理时不切换到eval模式，BN会用单样本的统计量导致输出完全错误。<br><br><b>关键要点</b><br>训练/推理切换标准做法：model.train()进入训练模式→model.eval()进入评估/推理模式。评估时配合两个上下文管理器：(1)model.eval()确保Dropout/BN正确运作；(2)torch.no_grad()禁用autograd省显存加速。只做其中一步是不够的——eval不关grad=浪费显存，no_grad不eval=Dropout/BN行为错误。在Trainer/验证循环中这两个步骤通常一起出现：model.eval(); with torch.no_grad(): ...<br><br><b>延伸节点</b><br>§3.4 神经网络基础（Dropout+BN） | §3.5.1 训练循环"
+  },
+  {
+    "Word": "torch.no_grad",
+    "Pronunciation": "/tɔːrtʃ noʊ ɡræd/",
+    "Audio": "",
+    "Definition": "torch.no_grad()（禁用梯度上下文管理器）——PyTorch上下文管理器，在推理/评估时禁用自动求导，不构建计算图以省显存加速",
+    "ExampleEN": "Using with torch.no_grad() during inference avoids building the computation graph, saving memory and speeding up.",
+    "ExampleCN": "推理期间使用with torch.no_grad()可避免构建计算图，节省显存并加速。",
+    "Notes": "<b>学习路径</b><br>§3.5.1 PyTorch核心概念<br><br><b>核心概念</b><br>torch.no_grad()是PyTorch的上下文管理器，在其作用域内的所有Tensor操作都不构建计算图、不追踪梯度。这意味着：(1)省显存——不存储中间激活值（前向传播的结果）用于反向传播；(2)加速——免去构建图的计算开销；(3)防止意外——推理时不需要反向传播却保留计算图会浪费大量显存（每张特征图都缓存着等backward）。<br><br><b>关键要点</b><br>必须使用torch.no_grad()的场景：(1)推理/评估——不需要反向传播；(2)模型验证——配合model.eval()使用；(3)手动更新参数——如optimizer.step()前的参数更新步骤中（已经手动控制了更新/不需要autograd干预）。注意：torch.no_grad()只能阻止autograd记录，不能阻止requires_grad=True的张量参与计算（该算还是会算，只是不存图）。与torch.inference_mode()的区别：inference_mode是更激进的禁用autograd版本，行为更严格。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.1 Autograd自动求导"
+  },
+  {
+    "Word": "Stride",
+    "Pronunciation": "/straɪd/",
+    "Audio": "",
+    "Definition": "Stride（步长）——卷积滤波器在输入上每次滑动的像素距离，控制输出特征图尺寸和计算量",
+    "ExampleEN": "A stride of 2 halves the spatial dimensions of the feature map, reducing computation.",
+    "ExampleCN": "步长为2将特征图的空间维度减半，减少计算量。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Stride（步长）是卷积层中滤波器在输入特征图上每次滑动的像素距离。stride=1（默认值）时输出尺寸基本等于输入尺寸（减去kernel效应），stride=2时输出尺寸约减半（因为每隔两个像素才计算一次卷积）。输出尺寸公式：out_size = (N + 2P - F) / S + 1，其中N是输入尺寸、P是padding大小、F是kernel_size、S是stride。stride是控制特征图尺寸和计算量的关键参数。<br><br><b>关键要点</b><br>stride=2的双重角色：(1)下采样——将特征图尺寸减半，降低计算量和参数量，同时增大感受野（下层卷积能看到原始图像更大区域）；(2)替代池化——现代网络设计中越来越多地用stride=2的卷积层替代单独的MaxPooling层做下采样（因为卷积有可学习参数，而池化是固定的）。注意：stride增大时输出尺寸不是简单的半整数关系（因为N+2P-F可能不被S整除），这时用ceil_mode=True（向上取整）或计算精确尺寸。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.3 卷积层+池化层"
+  },
+  {
+    "Word": "Padding",
+    "Pronunciation": "/ˈpædɪŋ/",
+    "Audio": "",
+    "Definition": "Padding（边缘填充）——在输入特征图边界补零或复制，控制输出尺寸并保留边缘信息",
+    "ExampleEN": "Padding=1 with kernel_size=3 maintains the spatial dimensions ('same' padding).",
+    "ExampleCN": "padding=1配合kernel_size=3可保持空间维度不变（same padding）。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Padding（边缘填充）是在进行卷积操作前在输入特征图边界补零（或其他值），目的是控制输出尺寸和保留边缘信息。两种模式：valid padding（不填充/输出尺寸 = (N-F)/S+1 / 逐渐缩小 / 边缘信息逐层丢失）、same padding（填充使输出尺寸保持N = 输入/S / 通常填充kernel_size的一半 / 保留边缘信息）。最常用的设计模式：3×3卷积 + padding=1 = 保持空间尺寸不变（same padding）。<br><br><b>关键要点</b><br>为什么需要边缘填充：(1)防止边缘信息丢失——图像边缘像素参与的卷积次数远少于中心像素（不加填充边缘物体特征会逐渐消失）；(2)控制尺寸——保留固定的网络结构规划（特别是跳跃连接/残差连接要求前后尺寸一致）；(3)same padding公式：padding = (kernel_size - 1) / 2（适用于奇数的kernel_size如3/5/7）。注意：池化层也有padding参数，用法一致。PyTorch中默认padding=0（valid），需要手动指定padding值。<br><br><b>延伸节点</b><br>§3.4 神经网络基础 | §3.5.3 卷积层参数详解"
+  },
+  {
+    "Word": "Focal Loss",
+    "Pronunciation": "/ˈfoʊkəl lɒs/",
+    "Audio": "",
+    "Definition": "Focal Loss（焦点损失）——解决正负样本严重不均衡的损失函数，通过降低易分类样本的权重聚焦难样本",
+    "ExampleEN": "Focal loss down-weights easy examples and focuses the model on hard, misclassified samples.",
+    "ExampleCN": "焦点损失降低容易分类样本的权重，使模型聚焦于困难的误分类样本。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Focal Loss（焦点损失）是专门解决正负样本极端不均衡的损失函数——特别是目标检测/缺陷检测中，绝大多数预测框是背景（easy negatives，占比>95%），真正含物体的框极少。Focal Loss通过降低\"容易分类正确\"的样本的损失权重（如背景框模型已经很自信地判断它是背景），让模型聚焦于\"难分类\"的样本（如小目标、模糊缺陷）。核心公式：FL(p) = -(1-p)^γ · log(p)，γ控制降低易样本权重的程度。<br><br><b>关键要点</b><br>γ参数：γ=0 = 退化为标准交叉熵；γ=2（常用值）= 易分类样本(p≈1)损失被降低(1-0.95)²≈0.0025倍，难分类样本(p≈0.3)损失基本不变(1-0.3)²≈0.49倍。组合参数α（类别权重）进一步提升少数类重要性。三种解决方案对比：Focal Loss（最优雅/动态调整/计算开销小）、过采样（简单但可能过拟合少数类）、类别权重（class_weight/平衡不同类别的梯度贡献）。工业缺陷检测中Focal Loss几乎是标配。<br><br><b>延伸节点</b><br>§3.4 损失函数 | §3.5.3 缺陷检测"
+  },
+  {
+    "Word": "Semantic Segmentation",
+    "Pronunciation": "/sɪˈmæntɪk ˌseɡmənˈteɪʃən/",
+    "Audio": "",
+    "Definition": "Semantic Segmentation（语义分割）——将图像每个像素分类到预定义类别，输出逐像素标签图",
+    "ExampleEN": "Semantic segmentation classifies every pixel, distinguishing object regions from background.",
+    "ExampleCN": "语义分割对每个像素分类，区分目标区域和背景。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测<br><br><b>核心概念</b><br>Semantic Segmentation（语义分割）是将图像逐像素分类到预定义类别的技术，输出一张与输入同尺寸的标签图（每个像素一个类别索引）。这是CV三大任务中最精细的：分类只需1个标签，检测需要多个框+标签，分割需要逐像素标签。典型应用：自动驾驶（路面/车辆/行人/交通标志分割）、医学影像（肿瘤区域分割）、工业检测（缺陷像素级标记）。<br><br><b>关键要点</b><br>分割网络的核心挑战：需要同时拥有高层语义（\"这是什么\"）和高分辨率空间细节（\"在哪里\"）。经典架构U-Net通过编码器-解码器+跳跃连接解决：编码器下采样提取语义→解码器上采样恢复分辨率→跳跃连接将编码器各层特征直接拼接到解码器对应层（融合位置细节与语义信息）。分割的标注成本极高——每个像素都要标注，通常一张图耗时数十分钟到数小时。实例分割（Mask R-CNN/YOLO-Seg）更进一步：不仅区分类别还区分同一类别的不同个体。<br><br><b>延伸节点</b><br>§3.5.4 YOLO-Seg | §3.5.3 缺陷检测三方案"
+  },
+  {
+    "Word": "U-Net",
+    "Pronunciation": "/juː net/",
+    "Audio": "",
+    "Definition": "U-Net（U型分割网络）——编码器-解码器结构的语义分割模型，通过跳跃连接融合不同层级特征，医学图像和缺陷分割经典架构",
+    "ExampleEN": "U-Net uses skip connections to combine high-resolution encoder features with decoder outputs for precise segmentation.",
+    "ExampleCN": "U-Net使用跳跃连接将高分辨率编码器特征与解码器输出组合，实现精确分割。",
+    "Notes": "<b>学习路径</b><br>§3.5.3 图像识别技术与缺陷检测 进阶方向<br><br><b>核心概念</b><br>U-Net是语义分割领域的经典模型架构，以对称的编码器-解码器U型结构著称。编码器（收缩路径）：通过卷积+池化逐步下采样提取深层语义特征（尺寸变小/通道变多）；解码器（扩展路径）：通过上采样逐步恢复空间分辨率（尺寸变大/通道变小）；瓶颈在中间连接编解码器。U-Net的核心创新：跳跃连接——将编码器每层的特征图直接裁剪/复制拼接到解码器对应层的特征图通道上，融合高分辨率空间细节与深层语义。<br><br><b>关键要点</b><br>U-Net的优势：只需很少的训练数据就能取得好效果（这正是原论文在医学影像上成功的原因），得益于跳跃连接保留了精确的空间位置信息。在工业缺陷检测中，U-Net常用于精密零件的像素级缺陷分割（如芯片缺陷、焊点缺陷）。局限：对小目标的分割精度受限于编码器的下采样倍数；对重叠物体难以区分。U-Net++、Attention U-Net等变体通过密集跳跃连接和注意力机制进一步提升了性能。<br><br><b>延伸节点</b><br>§3.5.3 CNN | §3.5.3 语义分割 | §3.5.4 YOLO-Seg"
+  },
+  {
+    "Word": "Mosaic Augmentation",
+    "Pronunciation": "/məˈzeɪɪk ˌɔːɡmenˈteɪʃən/",
+    "Audio": "",
+    "Definition": "Mosaic Augmentation（马赛克数据增强）——YOLO内置增强方法：将4张图片拼接为1张训练，提高小目标检测能力和batch利用率",
+    "ExampleEN": "Mosaic augmentation combines four images into one, helping the model detect small objects and improving batch utilization.",
+    "ExampleCN": "马赛克增强将四张图片拼成一张，帮助模型检测小目标并提高批次利用率。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>Mosaic Augmentation（马赛克数据增强）是YOLO v4/v5引入的标志性增强方法：将4张不同的图片随机缩放/裁切后拼接为1张新的训练图片，并将4张图的标注信息（边界框坐标）也对应变换到拼接后的坐标空间。YOLO训练时默认开启此增强。Mosaic的主要目的是丰富检测背景多样性（拼接带来更多样的背景组合）和提升小目标检测能力（4张图缩放到1张=每张图中的物体变小）。<br><br><b>关键要点</b><br>Mosaic增强的三重收益：(1)丰富背景——工业检测/安防场景背景变化大，4合1让模型看到更多样的背景组合；(2)提升小目标——图片缩小后物体也变小，增加小目标训练样本；(3)提高batch利用率——4张图拼为1张，相当于每个batch的有效样本量扩大4倍（但每张图片分辨率降低）。缺点是拼接后的物体分布可能与真实场景不同（4个不同场景的物体不可能同时出现），但实验表明利大于弊。<br><br><b>延伸节点</b><br>§3.5.3 数据增强 | §3.5.4 YOLO训练技巧"
+  },
+  {
+    "Word": "MixUp",
+    "Pronunciation": "/mɪks ʌp/",
+    "Audio": "",
+    "Definition": "MixUp（混合增强）——YOLO内置增强：将两张图片按比例混合，标签也按比例混合，平滑决策边界",
+    "ExampleEN": "MixUp blends two images and their labels proportionally, acting as a regularization technique.",
+    "ExampleCN": "MixUp按比例混合两张图片和它们的标签，作为一种正则化技术。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>MixUp（混合增强）是一种简单但强大的数据增强和正则化技术，YOLO训练时默认开启。工作原理：从训练集中随机抽取两张图片及其标签，按λ的随机比例进行线性插值混合——x_mixed = λ·x₁ + (1-λ)·x₂，y_mixed = λ·y₁ + (1-λ)·y₂。其中λ~Beta(α, α)分布（通常α=0.8-1.5）。混合后的图片既是类别A又是类别B，标签也是两者概率的混合。<br><br><b>关键要点</b><br>MixUp与传统增强本质不同：传统增强是对单张图片施加变换（仍保持原始标签），是\"替换型\"；MixUp是\"融合型\"，创造了训练集中不存在的\"插值样本\"。作用：(1)标签平滑效果——混合标签比one-hot更\"软\"，防止模型对训练样本过度自信；(2)正则化——模型学习更平滑的决策边界，改善泛化和对抗鲁棒性；(3)减少对错误标签的记忆——混合样本的标签本身就是\"模糊\"的。YOLO同时开启Mosaic+MixUp双重增强。<br><br><b>延伸节点</b><br>§3.5.3 数据增强 | §3.5.4 YOLO训练技巧"
+  },
+  {
+    "Word": "COCO",
+    "Pronunciation": "/ˈkoʊkoʊ/",
+    "Audio": "",
+    "Definition": "Common Objects in Context（COCO数据集）——80类目标检测/分割/关键点的大型基准数据集，YOLO预训练权重的默认训练来源",
+    "ExampleEN": "COCO is the standard benchmark for object detection with 80 categories and over 200k annotated images.",
+    "ExampleCN": "COCO是目标检测的标准基准，包含80个类别和20万+标注图片。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>COCO（Common Objects in Context，上下文中的常见物体）是目标检测领域最权威的大型基准数据集。包含80个常见物体类别（人、汽车、自行车、猫、狗、餐桌等）、约20万张标注图片、超过150万个物体实例。COCO不仅是衡量检测模型性能的标准，更是YOLO所有预训练权重的默认训练来源——yolo11n.pt等所有官方权重均在COCO上训练，这是YOLO迁移学习的基础。<br><br><b>关键要点</b><br>COCO官方评估标准：mAP@0.5:0.95（0.5到0.95以0.05步长取10个IoU阈值分别计算AP再取平均），比工业界常用的mAP@0.5更严格。COCO的80类涵盖了日常生活中最常见的物体类别。YOLO默认使用COCO的80类标签体系，自定义训练时类别数可以不同。COCO评估指标除了mAP外还包括AP_small（小目标/面积<32²）、AP_medium、AP_large三类细分指标，反映了模型对不同尺寸目标的检测能力。<br><br><b>延伸节点</b><br>§3.5.3 CIFAR-10对比 | §3.5.4 YOLO预训练+迁移学习"
+  },
+  {
+    "Word": "Transfer Learning",
+    "Pronunciation": "/trænsˈfɜːr ˈlɜːrnɪŋ/",
+    "Audio": "",
+    "Definition": "Transfer Learning（迁移学习）——在大型数据集预训练后，在目标小数据集上微调，大幅降低数据需求和训练时间",
+    "ExampleEN": "Transfer learning from COCO pretrained weights cuts training time dramatically and improves accuracy with limited data.",
+    "ExampleCN": "从COCO预训练权重进行迁移学习可大幅缩短训练时间并在有限数据下提高精度。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO<br><br><b>核心概念</b><br>Transfer Learning（迁移学习）是YOLO训练的核心策略：永远从在COCO大数据集上预训练好的权重（yolo11n.pt）开始训练，而不是随机初始化从头训练。预训练权重中的backbone已经学会了通用的视觉特征（边缘检测→纹理识别→物体部件→完整物体），这些知识对所有视觉任务都有用。在目标数据上微调时只需学习\"这些通用特征如何对应到新任务的具体类别\"。<br><br><b>关键要点</b><br>两种范式对比：(1)特征提取——冻结预训练的backbone，只训练分类/检测头（最快/训练数据很少时防过拟合）；(2)微调——加载预训练权重后整个模型一起训练（允许backbone随新任务微调/数据较多时效果最好）。YOLO迁移学习：model = YOLO('yolo11n.pt')就会自动从COCO预训练权重开始，类别数变化时预训练的分类头自动丢弃（因为类别数不同shape不匹配），但backbone权重完整保留。不要从头训练（除非有百万级标注数据）。<br><br><b>延伸节点</b><br>§3.3 HuggingFace微调 | §3.5.4 YOLO训练实战"
+  },
+  {
+    "Word": "SAHI",
+    "Pronunciation": "/ˈsɑːhi/",
+    "Audio": "",
+    "Definition": "Slicing Aided Hyper Inference（切片辅助超推理）——将大图切为小块分别检测再拼接结果，解决小目标检测和高分辨率图像问题",
+    "ExampleEN": "SAHI slices high-resolution images into smaller tiles, runs detection on each, and merges results.",
+    "ExampleCN": "SAHI将高分辨率图片切片为小块，分别检测后合并结果。",
+    "Notes": "<b>学习路径</b><br>§3.5.4 视觉检测模型YOLO 进阶方向<br><br><b>核心概念</b><br>SAHI（Slicing Aided Hyper Inference，切片辅助超推理）是解决YOLO对小目标（<16×16像素）检测效果差的技术方案。原理：将高分辨率大图按照指定尺寸均匀切分为多个小图块（tiles），每个小图块内的物体相对变大后更容易被YOLO检测。在每个切块上独立运行YOLO检测，最后将所有切块的检测结果合并回原图坐标空间，再用NMS去除切块边缘的重复检测。切块间要设置一定的重叠区域防止边界物体被切割。<br><br><b>关键要点</b><br>SAHI典型应用场景：卫星/无人机航拍图像（大图+极小目标）、工业检测的大尺寸产品扫描（如整个钢板的高分辨率扫描）、医学病理切片（整张玻片扫描、细胞级目标）、安防全景监控。核心参数：slice_height/slice_width（切块尺寸/一般根据YOLO训练用的imgsz设置/如640×640）、overlap_ratio（相邻切块重叠比例/一般10-25%/防止边界物体漏检）。代价：计算量成倍增加（切多少块就运行多少次YOLO）。<br><br><b>延伸节点</b><br>§3.5.4 YOLO模型 | §3.5.3 目标检测挑战"
+  }
+]

@@ -1,0 +1,443 @@
+[
+  {
+    "Word": "RAG",
+    "Pronunciation": "/ræɡ/",
+    "Audio": "",
+    "Definition": "Retrieval-Augmented Generation（检索增强生成）——LLM 生成前先从外部知识库检索相关信息，让模型基于参考资料作答的范式",
+    "ExampleEN": "The championship RAG system used multi-route retrieval with BM25 for keywords, vector search for semantics, and hybrid fusion for complex queries.",
+    "ExampleCN": "冠军 RAG 系统使用多路由检索——关键词用 BM25、语义用向量、复杂查询用混合融合。",
+    "Notes": "<b>学习路径</b><br>§5.1 企业RAG大赛冠军项目核心概念。§2.1.2 RAG技术与应用为理论基础。<br><br><b>核心要点</b><br>冠军方案两大改进：多路由检索（关键词/语义/混合动态切换）+ 父页面追溯（小块检索后回追完整父页面喂LLM），准确率较基线提升15%+。RAG的最关键挑战是\"检索质量决定生成质量\"——如果检索回来的文档不相关，LLM再强也白搭。<br><br><b>RAG四阶段流程</b><br>① 文档解析与切分：用Docling等工具解析PDF/Word，按chunk_size=200-500切分 ② 向量化与索引：用Embedding模型生成向量存入向量数据库 ③ 检索：用户提问→向量检索/关键词检索→返回Top-K相关文档 ④ 生成：将检索结果拼接进prompt→LLM基于参考文档生成答案<br><br><b>与LLM Wiki的区别</b><br>RAG是\"临时检索碎片→拼接→生成\"，实时性好但答案质量不稳定。LLM Wiki是\"预处理编译为统一口径的百科文档\"，质量稳定但更新有延迟。两者互补。<br><br><b>延伸节点</b><br>2.1.1 Embeddings和向量数据库 | 2.1.4 RAG调优 | 5.7 LLM Wiki | 5.7.2 三层架构"
+  },
+  {
+    "Word": "Multi-Route Retrieval",
+    "Pronunciation": "/ˈmʌlti ruːt rɪˈtriːvəl/",
+    "Audio": "",
+    "Definition": "Multi-Route Retrieval（多路由检索）——根据查询类型动态选择检索策略：关键词路由(BM25)、语义路由(向量)、混合路由(两者融合)",
+    "ExampleEN": "The multi-route retriever classifies each query as keyword, semantic, or hybrid before selecting the optimal search strategy.",
+    "ExampleCN": "多路由检索器先将查询分类为关键词、语义或混合类型，再选择最优搜索策略。",
+    "Notes": "<b>学习路径</b><br>§5.1 企业RAG大赛冠军项目的核心技术改进。冠军方案的分发节点，是RAG系统从\"单一检索\"到\"智能检索\"的质变。§2.1.2为理论基础。<br><br><b>核心要点</b><br>单一向量检索对所有查询一视同仁，但精确查询（人名/编号/日期）适合BM25，概念查询（\"如何\"\"为什么\"）适合向量检索。多路由动态切换比单一路由准确率更高。冠军方案用LLM先对查询分类为keyword/semantic/hybrid，再选择对应路由策略。<br><br><b>路由判断逻辑</b><br>① keyword路由：精确查找场景——产品编号、人名、日期、法律条款。使用BM25关键词检索，速度快、精确度高。② semantic路由：概念性问题——\"如何优化\"\"为什么出错\"。使用向量相似度检索，能理解语义而非字面匹配。③ hybrid路由：既有精确条件又有语义需求。BM25和向量检索并行，结果通过RRF融合排序。三种路由策略通过LLM的分类判断动态选择，比单一策略覆盖更全面。<br><br><b>延伸节点</b><br>5.1 RRF融合算法 | 2.1.2 RAG技术与应用 | 2.1.4 RAG调优 | 5.1 BM25"
+  },
+  {
+    "Word": "LLM Reranking",
+    "Pronunciation": "/el el em riːˈræŋkɪŋ/",
+    "Audio": "",
+    "Definition": "LLM Reranking（大模型重排序）——用LLM对向量检索返回的候选文档做精排，筛掉\"相似但不相关\"的噪声，准确率提升15-20%",
+    "ExampleEN": "LLM reranking filters out top-K candidates that are semantically similar but not actually relevant to the query.",
+    "ExampleCN": "LLM重排序从Top-K候选中筛掉语义相似但实际不相关的文档，让真正有用的片段排到最前面。",
+    "Notes": "<b>学习路径</b><br>§5.1 冠军方案四阶段中的精排环节。检索→重排序→父页面追溯→生成，Reranking是\"粗筛\"到\"精排\"的关键升级。<br><br><b>核心要点</b><br>向量检索的\"相似\"不等于\"相关\"——两个文档都提到\"Python\"但一个讲Web开发、一个讲数据分析，向量相似度可能都很高但对查询只有部分相关。LLM Reranking的代价只是多一次LLM调用（约0.5s），换来15-20%准确率提升，在准确率敏感的客服/法律/金融场景中ROI极高。<br><br><b>Reranking vs Cross-Encoder</b><br>两种主流方案：① Cross-Encoder重排模型（如bge-reranker-large）：专用小模型，速度快(10-100ms per pair)，但只能打分不能理解复杂语义。② LLM Reranking：用大模型精排，理解力更强但延迟更高(0.5-1s)。冠军方案选择LLM Reranking因为企业知识库场景中的\"相关\"判断需要深度语义理解。<br><br><b>延伸节点</b><br>2.1.4 RAG调优 | 5.1 结构化输出 | 2.1.2 RAG技术与应用 | Cohere Rerank"
+  },
+  {
+    "Word": "Parent Retrieval",
+    "Pronunciation": "/ˈpɛərənt rɪˈtriːvəl/",
+    "Audio": "",
+    "Definition": "Parent Retrieval（父页面检索）——先检索小块文档片段（高精度），再追溯到片段所属的完整父页面，将完整上下文喂给LLM",
+    "ExampleEN": "Parent retrieval first finds the most relevant chunk, then traces back to the full parent document for complete context.",
+    "ExampleCN": "父页面检索先找到最相关的小块片段，再回溯到完整父页面获取全部上下文。",
+    "Notes": "<b>学习路径</b><br>§5.1 冠军方案中检索与生成之间的关键环节。解决小块检索精度高但上下文丢失的矛盾——这是RAG系统设计的经典权衡。§5.7的三层架构有类似设计思想。<br><br><b>核心要点</b><br>小块检索利于精准匹配，但丢失上下文——一个完整的技术方案可能被切成5个碎片，每个碎片都匹配但拼在一起才完整。父页面追溯用检索结果作\"书签\"，回翻完整章节喂LLM，兼顾精度和语境。冠军方案的具体实现：小块chunk_size=200-300用于检索，检索到后追溯回父文档（完整章节/页面），将父文档的完整上下文喂LLM，这样LLM看到的是完整段落而非碎片。<br><br><b>为什么不用大块直接检索</b><br>如果chunk_size=2000直接检索，虽然上下文完整但检索精度下降——一个长文档里可能只有一小段相关，其余都是噪声。小块检索+父页面追溯是最优解：检索看精度，生成看完整性。这种\"用小索引查大文档\"的模式也是搜索引擎的经典做法。<br><br><b>延伸节点</b><br>5.1 chunk_size调参 | 2.1.2 RAG技术 | 5.7 LLM Wiki三层架构 | 5.1 多路由检索"
+  },
+  {
+    "Word": "Chunk Size",
+    "Pronunciation": "/tʃʌŋk saɪz/",
+    "Audio": "",
+    "Definition": "Chunk Size（文档切分大小）——RAG系统中将文档切分为片段的大小参数，直接影响检索精度和上下文完整性",
+    "ExampleEN": "A chunk size of 200-500 tokens is the sweet spot for technical documents, while legal contracts may need 800-1500 tokens.",
+    "ExampleCN": "技术文档的chunk size甜区是200-500 token，法律合同可能需要800-1500 token。",
+    "Notes": "<b>学习路径</b><br>§5.1 RAG系统调参核心中的关键参数。Chunk Size是RAG检索质量的\"第一性原理\"——文档切分方式直接决定了检索结果的质量上限，好的分块策略比好的LLM更关键。<br><br><b>核心要点</b><br>过大(>1000)：噪声多、可能超出上下文窗口，检索精度下降。过小(<100)：语义碎片化、缺少必要上下文，检索到碎片但LLM无法理解完整含义。不同文档类型需要不同切分策略：技术文档200-500 token甜区，法律合同800-1500 token（条款完整性），代码文档按函数/类边界切分。<br><br><b>调参方法</b><br>没有一刀切的chunk_size，需通过实验确定：① 准备一组测试Query ② 用不同chunk_size跑检索 ③ 人工标注Top-5结果相关性 ④ 选准确率最高的参数。表结构数据如果宽表超出embedding模型的max_seq_len(512 token)还需先处理列拆分。<br><br><b>延伸节点</b><br>5.1 chunk_overlap | 2.1.4 RAG调优 | 5.7 LLM Wiki | 2.1.2 RAG技术与应用"
+  },
+  {
+    "Word": "Chunk Overlap",
+    "Pronunciation": "/tʃʌŋk ˈəʊvərlæp/",
+    "Audio": "",
+    "Definition": "Chunk Overlap（块间重叠）——相邻文档片段之间的重叠部分（通常10-20%），防止关键句子在切分边界被截断",
+    "ExampleEN": "Setting chunk overlap to 15% ensures that important sentences spanning chunk boundaries are not lost.",
+    "ExampleCN": "设置15%的块间重叠保证跨越切分边界的关键句子不会丢失。",
+    "Notes": "<b>学习路径</b><br>§5.1 RAG系统调参核心中的关键参数。Chunk Overlap是防止信息在切分边界被截断的\"安全网\"，小参数大作用。与chunk_size配合使用效果最佳。<br><br><b>核心要点</b><br>典型值10-20%。太小会导致信息截断——一个关键句子恰好落在chunk边界上，被切成两半，两个chunk都没完整信息。太大会造成大量冗余内容，增加检索噪声和token消耗——两个相邻chunk重复20%内容，检索结果可能出现大量重复。需根据文本类型调整：散文建议15%，技术文档建议20%（概念密度高、容易在边界截断）。<br><br><b>实际案例分析</b><br>一段500字的段落按chunk_size=200、overlap=40(20%)切分，得到3个chunk。chunk2的开头和chunk1的结尾有40字重叠，确保边界处的完整句子不会被切断。中文文档建议chunk_size=512-1024字符、overlap=200字符。代码文档按函数边界切分时不需要overlap。<br><br><b>延伸节点</b><br>5.1 chunk_size | 2.1.4 RAG调优 | 2.1.2 RAG技术与应用 | LangChain TextSplitters"
+  },
+  {
+    "Word": "Docling",
+    "Pronunciation": "/ˈdɒklɪŋ/",
+    "Audio": "",
+    "Definition": "Docling——IBM开源的文档解析工具，支持PDF/Word/PPT等格式的结构化提取，在RAG大赛中用于文档解析和表格序列化",
+    "ExampleEN": "Docling was used in the championship RAG pipeline for its superior table serialization and document structure preservation.",
+    "ExampleCN": "Docling因其优秀的表格序列化和文档结构保持能力被用于冠军RAG流水线的文档解析。",
+    "Notes": "<b>学习路径</b><br>§5.1 文档解析环节的冠军工具选型。文档解析质量决定RAG知识库的\"天花板\"——解析质量差，后续检索和生成怎么优化都白搭。<br><br><b>核心要点</b><br>Docling是IBM开源的文档解析工具，支持PDF/Word/PPT等格式的结构化提取。冠军方案选择Docling的核心原因：① 优秀的表格序列化——能将复杂表格转为结构化文本而非乱码 ② 文档结构保持——保留标题层级、段落关系、图表引用 ③ 开源免费，可定制解析pipeline。文档解析的三个瓶颈：复杂表格（合并单元格、嵌套表）、扫描件PDF（需要OCR预处理）、图文混排。<br><br><b>对比其他解析工具</b><br>Unstructured（LangChain生态，通用但中文支持弱）、PyMuPDF（轻量快速但无结构化）、marker（开源、专注PDF→Markdown、支持公式）。冠军方案选择Docling主要是看中其表格处理能力——企业文档中表格占比通常30%+。<br><br><b>延伸节点</b><br>5.1 RAG系统 | 2.1.3 多模态RAG | 2.1.2 RAG技术与应用 | 5.1 chunk_size"
+  },
+  {
+    "Word": "Orchestrator",
+    "Pronunciation": "/ˈɔːkɪstreɪtər/",
+    "Audio": "",
+    "Definition": "Orchestrator（编排器）——多Agent系统中的\"大脑\"，负责接收用户指令、拆解为原子子任务、分配给合适的Agent、协调执行顺序并整合结果",
+    "ExampleEN": "The Orchestrator decomposes user tasks into atomic subtasks and dispatches them to the most suitable sub-agents.",
+    "ExampleCN": "编排器将用户任务拆解为原子子任务，然后分发给最合适的子Agent执行。",
+    "Notes": "<b>学习路径</b><br>§5.2 OpenManus核心架构 + §5.5.1 Hermes主Agent核心能力。§2.2.2 Agent自主规划为理论基础。Orchestrator是多Agent系统的\"大脑\"，决定系统从\"各自为战\"到\"统一调度\"的关键。<br><br><b>核心要点</b><br>Orchestrator只做规划与调度，不直接执行业务工具。工具调用在子Agent内完成，实现职责分离。这样设计的优势：① 主Agent上下文不被业务细节污染 ② 子Agent可独立扩展工具集 ③ 权限管控清晰（主Agent管\"谁能做什么\"，子Agent管\"怎么做\"）。<br><br><b>编排流程</b><br>① 接收用户指令→意图分析 ② 拆解为原子子任务（每个子任务单一Agent可完成、有明确输入/输出、有可验证完成标准）③ 匹配子Agent能力→分发任务（独立任务并行、依赖任务串行）④ 监控执行状态→收集结果 ⑤ 整合输出或触发重规划。Hermes额外集成记忆唤醒（5.4.4）：在拆解前检索相关历史记忆。<br><br><b>延伸节点</b><br>5.5.1 主Agent任务拆解 | 5.5.2 子Agent注册 | 2.2.2 Agent自主规划 | 5.4.4 记忆唤醒"
+  },
+  {
+    "Word": "Memory Sharing",
+    "Pronunciation": "/ˈmɛməri ˈʃɛərɪŋ/",
+    "Audio": "",
+    "Definition": "Memory Sharing（共享记忆）——多Agent系统中各Agent通过共享上下文和中间结果实现协作，是Agent间协作的基础",
+    "ExampleEN": "Without memory sharing, each Agent operates in a vacuum — the Researcher's findings would be invisible to the Writer.",
+    "ExampleCN": "没有共享记忆，每个Agent都在真空中操作——研究员找到的资料写手完全看不到。",
+    "Notes": "<b>学习路径</b><br>§5.2 OpenManus五大核心模块之一 + §5.4 Hermes长期记忆系统全部四节。共享记忆是多Agent协作的基础设施——没有它，每个Agent都在真空中操作。<br><br><b>核心要点</b><br>信息传递协议：每个Agent的输出应包含{to, context, summary}，让下游Agent知道要看哪部分。to标识接收方（Orchestrator或下游Agent），context是完整上下文，summary是一句话摘要帮助快速理解。<br><br><b>共享记忆 vs 独立记忆</b><br>共享记忆存任务相关上下文（当前任务的中间结果、Agent间通信），任务完成后可选择性保留。独立记忆存Agent自身经验（如Researcher积累的\"用这个搜索关键词效果好\"），跨任务持久化。Hermes的四层记忆系统（5.4.2）兼顾两种需求：Tier1/Tier2存储当前任务上下文，Tier3/Tier4提炼跨任务可复用的知识。<br><br><b>延伸节点</b><br>5.4.1 心跳唤醒 | 5.4.2 四层颗粒度记忆 | 5.5.3 Agent间通信 | 5.4.4 记忆唤醒"
+  },
+  {
+    "Word": "Qwen-VL",
+    "Pronunciation": "/kjuː wen viː el/",
+    "Audio": "",
+    "Definition": "Qwen-VL（通义千问多模态模型）——Transformer多模态大模型，支持零样本缺陷检测，能描述缺陷特征并推断原因，但推理较慢且可能出现幻觉",
+    "ExampleEN": "Qwen-VL performs zero-shot defect detection without training, describing defect type, location, and severity from a single image.",
+    "ExampleCN": "Qwen-VL无需训练即可零样本检测缺陷，从单张图片描述缺陷类型、位置和严重程度。",
+    "Notes": "<b>学习路径</b><br>§5.3 AI质检技术选型对决中的多模态大模型方案。§2.3.4为VLM理论基础。Qwen-VL代表AI质检的新范式——从\"训练专用模型\"到\"通用模型+prompt引导\"。<br><br><b>核心要点</b><br>Qwen-VL优势：① 零样本检测——无需标注数据，上线快 ② 灵活——能识别训练数据中没有的新缺陷类型 ③ 能描述+推断——不仅输出\"有无缺陷\"，还能描述缺陷特征、推断可能原因。劣势：速度慢(秒级vs YOLO毫秒级)、精度不稳定（对prompt敏感，同一图片不同问法结果不同）、可能产生幻觉（把正常纹理误判为缺陷）、需GPU部署。<br><br><b>Prompt设计是关键</b><br>Qwen-VL的检测质量高度依赖prompt设计。好的prompt需包含：① 明确的缺陷类别定义 ② 严重程度判断标准 ③ 输出格式要求。示例：\"这是一张工业产品表面图。请检测是否有以下缺陷：划痕（细长白色线条）、裂纹（黑色不规则缝隙）、污点（圆形深色斑点）。输出格式：缺陷类型：xxx | 位置：xxx | 严重程度：轻度/中度/严重\"。<br><br><b>延伸节点</b><br>2.3.4 视觉与多模态模型 | 3.5.3 图像识别与缺陷检测 | 5.3 EDA数据工程 | 5.3 YOLO对比"
+  },
+  {
+    "Word": "Zero-Shot Detection",
+    "Pronunciation": "/ˈzɪərəʊ ʃɒt dɪˈtekʃən/",
+    "Audio": "",
+    "Definition": "Zero-Shot Detection（零样本检测）——无需标注数据训练，直接通过多模态大模型理解图像并进行缺陷检测的能力",
+    "ExampleEN": "Zero-shot detection using Qwen-VL can identify defects it has never seen in training, but lacks the precision of a dedicated trained model.",
+    "ExampleCN": "用Qwen-VL做零样本检测能识别训练中从未见过的缺陷，但精度不如专用训练模型。",
+    "Notes": "<b>学习路径</b><br>§5.3 Qwen-VL的核心能力优势。零样本检测是多模态大模型最具颠覆性的能力之一——它改变了\"先标注后训练\"的传统AI落地范式，让AI从\"需要大量数据准备\"变成\"部署即用\"。<br><br><b>核心要点</b><br>优势：不需要标注、上线快（部署模型即可用，无需等待标注周期）、能识别新缺陷（传统YOLO需要重新标注+重新训练）。局限：精度不如专用模型（Qwen-VL的检测准确率在有标注场景下通常低于YOLO）、速度慢（秒级推理，不适合流水线实时检测）、对prompt敏感（同一图片换种问法结果可能不同）、可能产生幻觉。<br><br><b>零样本 vs Few-Shot</b><br>零样本：完全不用标注数据，直接提问\"这张图有没有缺陷\"。Few-Shot：给2-3张标注示例，让模型参考示例做检测——准确率可提升10-15%。在实践中，可以先零样本快速上线覆盖常见缺陷，再根据反馈收集少量样本做Few-Shot优化，实现低成本冷启动。<br><br><b>延伸节点</b><br>5.3 Qwen-VL | 2.3.4 视觉与多模态模型 | 5.3 EDA | 2.3.3 模型蒸馏"
+  },
+  {
+    "Word": "EDA",
+    "Pronunciation": "/iː diː eɪ/",
+    "Audio": "",
+    "Definition": "Exploratory Data Analysis（探索性数据分析）——在质检项目中分析缺陷类别分布、图像尺寸、标注质量、类别不平衡程度",
+    "ExampleEN": "EDA revealed severe class imbalance in the defect dataset — scratch defects were 10x more common than dent defects.",
+    "ExampleCN": "EDA揭示缺陷数据集存在严重的类别不平衡——划痕缺陷的数量是凹陷缺陷的10倍。",
+    "Notes": "<b>学习路径</b><br>§5.3 数据工程环节——质检项目成败的关键第一步。EDA决定了你对自己数据有多少认知，数据认知不足是不可能训出好模型的。<br><br><b>核心要点</b><br>EDA要关注的四个维度：① 缺陷类别分布——各类缺陷的数量占比，发现严重类别不平衡（如划痕1000张、凹陷50张）需要在训练时加权或过采样/欠采样。② 图像尺寸分布——不同图片尺寸差异大会影响模型输入预处理，需要统一resize策略。③ 标注质量——漏标（有缺陷没标）和错标（把划痕标成裂纹）是质检项目第一大坑，需抽检5-10%标注数据。④ 类别不平衡程度——极端不平衡（1:20以上）影响模型对少数类的学习。<br><br><b>EDA工具链</b><br>Python + Counter统计类别分布、PIL读取图像尺寸、json解析标注文件。生产环境推荐使用FiftyOne或CVAT进行可视化数据探索。质检数据的标注成本极高（一张图可能5-10元），EDA帮助发现标注质量问题避免浪费金钱。<br><br><b>延伸节点</b><br>5.3 数据工程 | 3.5.3 图像识别与缺陷检测 | 3.5.4 YOLO"
+  },
+  {
+    "Word": "Heartbeat Mechanism",
+    "Pronunciation": "/ˈhɑːtbiːt ˈmɛkənɪzəm/",
+    "Audio": "",
+    "Definition": "Heartbeat Mechanism（心跳机制）——Agent的\"潜意识\"，定时自动唤醒检查最近对话和操作，识别有价值信息并标记为\"待整理记忆\"",
+    "ExampleEN": "The heartbeat mechanism adapts its frequency — every 5 minutes during active use, every 4 hours during idle periods.",
+    "ExampleCN": "心跳机制自适应调整频率——活跃期每5分钟一次，空闲期每4小时一次。",
+    "Notes": "<b>学习路径</b><br>§5.4.1 心跳唤醒时自主收集记忆。Hermes记忆系统四大模块的第一环——心跳是Agent从\"被动响应\"到\"主动学习\"的关键机制。<br><br><b>核心要点</b><br>自适应公式：interval = base_interval * (1 + inactivity_ratio * 2)。三个阶段：活跃期(最近5min有交互→每5min心跳)、半活跃期(2h内有交互→每30min)、休眠期(长时间无交互→每4h)。心跳的核心流程：检查recent_interactions缓冲区→规则预筛选(关键词/长度)→LLM提取preference/decision/lesson→记忆价值评估(分数>0.6入队)→入队即持久化防丢失。<br><br><b>工程挑战</b><br>最大挑战是在\"不遗漏记忆\"和\"不浪费LLM调用\"之间找平衡。纯靠LLM评估太贵（每5分钟调一次LLM，一天288次），纯靠规则太粗糙。最佳方案：规则预筛选（关键词匹配、长度阈值、重复度）筛掉80%低价值内容，剩下20%送LLM精评估。队列上限200条，超限时强制触发整理。<br><br><b>延伸节点</b><br>5.4.2 四层颗粒度记忆 | 5.4.4 用户新任务唤醒记忆 | 5.4.1 记忆价值评估 | 5.5.4 自进化"
+  },
+  {
+    "Word": "Memory Value Assessment",
+    "Pronunciation": "/ˈmɛməri ˈvæljuː əˈsɛsmənt/",
+    "Audio": "",
+    "Definition": "Memory Value Assessment（记忆价值评估）——从重复度(0-1)、重要性(0-1)、衰减度(0-1)三个维度打分，分数>0.6进入整理队列",
+    "ExampleEN": "The memory value score is calculated as 0.4 * repeat_score + 0.4 * importance + 0.2 * recency.",
+    "ExampleCN": "记忆价值分按 0.4×重复度 + 0.4×重要性 + 0.2×新近度 计算。",
+    "Notes": "<b>学习路径</b><br>§5.4.1 记忆价值评估算法。心跳收集后的筛选环节——不是所有信息都值得记住，评估算法是记忆系统的\"质量控制\"，确保有限的记忆容量存储最有价值的信息。<br><br><b>核心要点</b><br>价值分 = 0.4×重复度 + 0.4×重要性 + 0.2×新近度。三类型评分：preference(用户偏好，基准分0.8)、decision(重要决策，基准分0.9)、lesson(经验教训，基准分1.0)。分数>0.6进入整理队列。重复度：类似信息在近期交互中出现次数/5封顶。重要性：按类型设基准分，再根据信息的具体内容微调（涉及安全的+0.1，纯闲聊的-0.2）。新近度的0.2权重保证最新经验不被淹没。<br><br><b>队列管理</b><br>队列上限200条，入队即持久化（防重启丢失）。队列>100条时强制触发四层整理（避免积压过多）。去重策略：新记忆入队前与已有记忆做相似度比对，相似度>0.9的合并（保留最新版本），不做全量比对（每50条抽检以控制性能开销）。<br><br><b>延伸节点</b><br>5.4.2 四层颗粒度记忆 | 5.4.1 心跳机制 | 5.4.4 记忆唤醒 | Mem0记忆层"
+  },
+  {
+    "Word": "Four-Tier Memory",
+    "Pronunciation": "/fɔːr tɪər ˈmɛməri/",
+    "Audio": "",
+    "Definition": "Four-Tier Memory（四层颗粒度记忆）——Hermes记忆系统从粗糙到精炼的四层金字塔结构：Tier1原文层→Tier2摘要层→Tier3洞察层→Tier4知识层",
+    "ExampleEN": "The four-tier memory system stores raw conversations at Tier 1 and distilled one-sentence principles at Tier 4 for fast recall.",
+    "ExampleCN": "四层记忆系统在Tier1存储原始对话，在Tier4存储一句话精华原则用于快速回忆。",
+    "Notes": "<b>学习路径</b><br>§5.4.2 整理成4层颗粒度记忆文字。Hermes记忆系统的核心结构设计——从粗糙到精炼的四层金字塔，不同查询场景匹配不同层级。<br><br><b>核心要点</b><br>Tier1原文层（最长最完整，存原始对话片段和工具调用返回）→Tier2摘要层（2-3句话总结单轮对话）→Tier3洞察层（可泛化规律，如\"用户偏好numpy数据处理\"）→Tier4知识层（一句话原则，如\"用户是性能优先型开发者\"）。检索策略按查询复杂度匹配：快速回忆→T4；相关信息→T3+T4；完整上下文→T2+T3；精确引用→T1。<br><br><b>层级间关系</b><br>T1→T2通过LLM摘要（实时），T2→T3通过LLM提炼可泛化规律（空闲时批量处理），T3→T4通过LLM压缩为一句话原则（定期审查）。渐进式提炼而非一次性生成四层，平衡实时性和质量。人工审核层对T4设置人工审核机制，避免LLM提炼出错误的\"用户偏好\"。<br><br><b>延伸节点</b><br>5.4.3 Embedding保存到LanceDB | 5.4.4 新任务唤醒记忆 | 2.1.4 RAG调优 | Mem0"
+  },
+  {
+    "Word": "LanceDB",
+    "Pronunciation": "/læns diː biː/",
+    "Audio": "",
+    "Definition": "LanceDB——专为AI工作负载设计的嵌入式向量数据库，无需独立服务，支持向量检索+全文检索+元数据过滤的混合查询",
+    "ExampleEN": "LanceDB outperforms FAISS in persistence and supports native hybrid search combining vector, full-text, and metadata filtering.",
+    "ExampleCN": "LanceDB在持久化上优于FAISS，并原生支持向量检索+全文检索+元数据过滤的混合查询。",
+    "Notes": "<b>学习路径</b><br>§5.4.3 Embedding保存到LanceDB。Hermes记忆向量化和持久化的存储层——LanceDB是AI原生向量数据库，专为嵌入应用设计。<br><br><b>核心要点</b><br>vs FAISS：LanceDB原生持久化（数据落盘，进程重启不丢失）+ 混合检索（向量+全文+元数据过滤一体化），FAISS只在内存中运行需手动持久化。vs Chroma：LanceDB嵌入式（无需独立服务进程）+性能更高（磁盘索引优化），Chroma需独立服务但Python-native更易上手。LanceDB支持SQL风格的元数据过滤，如memory_table.query().where(\"importance > 0.7 AND tier = 3\")。<br><br><b>混合检索实现</b><br>LanceDB原生支持向量检索 + 全文检索 + 元数据过滤的混合查询。在Hermes中：L0原始片段仅存对象存储路径引用，L1/L2/L3才做Embedding存入LanceDB。检索时可以用metadata filter限定tier层级和importance阈值，再结合向量相似度排序。<br><br><b>延伸节点</b><br>2.1.1 Embeddings和向量数据库 | 5.4.4 记忆唤醒 | 5.7.4 知识库索引 | 5.1 RRF融合"
+  },
+  {
+    "Word": "Memory Wakeup",
+    "Pronunciation": "/ˈmɛməri weɪkʌp/",
+    "Audio": "",
+    "Definition": "Memory Wakeup（记忆唤醒）——用户发起新任务时自动检索相关历史记忆并注入当前上下文，让Agent带着\"过去的经验\"处理新任务",
+    "ExampleEN": "Memory wakeup retrieves relevant past memories and injects them into the system prompt before the agent processes the new task.",
+    "ExampleCN": "记忆唤醒在新任务处理前检索相关历史记忆并注入系统提示词，让Agent带着过去经验工作。",
+    "Notes": "<b>学习路径</b><br>§5.4.4 用户新任务唤醒记忆。记忆系统最终价值的体现——存着好看不如用起来好，唤醒是记忆的\"最后一公里\"，也是记忆系统实际产生价值的唯一环节。<br><br><b>核心要点</b><br>注入策略：Tier4优先（信息密度最高，一句话浓缩最多信息），记忆注入量不超过总token的20%（挤占实际问题空间会导致回答质量下降）。注入流程：提取任务关键词→生成查询向量→LanceDB混合检索各层记忆→T4→T3→T2优先级排序→裁剪到token预算→注入system prompt前缀。没相关记忆就不强塞——虚假的相关记忆比没有记忆更糟糕，宁可少注入也不要注入噪音。<br><br><b>唤醒质量评估</b><br>关键指标：唤醒记忆的有效利用率（被LLM实际引用的记忆/被唤醒的记忆总数）。需做记忆消融测试——A/B对比开启/关闭记忆唤醒的回复质量，量化记忆实际贡献。对超过N天未被唤醒的记忆降低检索权重，超过M天的自动归档，保持记忆库精炼。<br><br><b>延伸节点</b><br>5.4.3 LanceDB | 5.5.1 主Agent任务拆解 | 5.5.4 自进化 | 5.4.1 心跳机制"
+  },
+  {
+    "Word": "Task Decomposition",
+    "Pronunciation": "/tæsk ˌdiːkɒmpəˈzɪʃən/",
+    "Audio": "",
+    "Definition": "Task Decomposition（任务拆解）——主Agent将用户复杂指令拆解为原子子任务，每个子任务由单一Agent可独立完成，有明确输入/输出",
+    "ExampleEN": "Master Agent decomposes 'analyze sales and send report' into four atomic subtasks: query database, analyze data, generate report, send email.",
+    "ExampleCN": "主Agent将\"分析销售并发送报告\"拆解为四个原子子任务：查询数据库、数据分析、生成报告、发送邮件。",
+    "Notes": "<b>学习路径</b><br>§5.5.1 主Agent核心能力之任务拆解。多Agent系统的第一步——拆解质量决定了整个系统的执行效率和最终结果质量。<br><br><b>核心要点</b><br>拆解原则：① 原子操作——每个子任务由单一Agent可独立完成 ② 明确输入/输出——{input: \"查询sales_30d\", output: \"csv_path\"} ③ 可验证完成标准——子任务成功/失败有客观判断标准。简单任务(<5s执行时间)不建议拆分——拆解+调度+通信的开销可能大于任务本身执行时间。<br><br><b>拆解输出JSON Schema</b><br>{\"subtasks\": [{\"id\":1, \"description\":\"查询近30天销售汇总\", \"agent\":\"data\", \"input\":\"table=sales, range=30d\", \"output\":\"csv_path\", \"depends_on\":[], \"required_scopes\":[\"db.read\"]}]}。depends_on定义依赖关系（无依赖可并行执行），required_scopes定义权限要求（分发前校验子Agent权限是否匹配）。<br><br><b>延伸节点</b><br>5.5.2 子Agent注册 | 5.5.3 Agent间通信DAG | 2.2.2 Agent自主规划 | 5.5.4 全局闭环"
+  },
+  {
+    "Word": "DAG",
+    "Pronunciation": "/diː eɪ dʒiː/",
+    "Audio": "",
+    "Definition": "Directed Acyclic Graph（有向无环图）——任务依赖图的数据结构，定义子任务间的依赖和执行顺序，通过拓扑排序确定执行序列",
+    "ExampleEN": "The DAG scheduler uses topological sort to execute tasks in order — independent tasks run in parallel, dependent tasks wait for upstream completion.",
+    "ExampleCN": "DAG调度器用拓扑排序确定执行顺序——无依赖的任务并行执行，有依赖的等待上游完成。",
+    "Notes": "<b>学习路径</b><br>§5.5.3 Agent间通信 + 任务流闭环的核心数据结构。DAG是描述任务依赖关系的标准方法，让多Agent系统从\"顺序执行\"升级到\"智能并行\"，是复杂工作流编排的理论基础。<br><br><b>核心要点</b><br>DAG通过拓扑排序确定执行顺序——找出所有依赖已满足的任务→并行执行→标记完成→重复下一批。无依赖关系的任务并行执行（如同时查3个数据源），有依赖关系的任务串行（如分析必须等查询完成）。系统必须检测循环依赖并及时拒绝执行——子任务A依赖B、B依赖A会形成死锁，拓扑排序会检测到并报错。<br><br><b>工程实践</b><br>并发上限控制：设置最大并行子任务数（如5），防止瞬间创建50个子任务撑爆系统。任务失败传播：如果上游子任务失败，依赖它的下游子任务自动标记为\"skipped\"而非执行后失败。超时处理：每个子任务设timeout，超时后标记失败并通知主Agent触发重规划。<br><br><b>延伸节点</b><br>5.5.1 任务拆解 | 5.5.4 全局闭环 | 5.5.2 子Agent注册 | 2.2.2 Agent自主规划"
+  },
+  {
+    "Word": "Topological Sort",
+    "Pronunciation": "/ˌtɒpəˈlɒdʒɪkəl sɔːrt/",
+    "Audio": "",
+    "Definition": "Topological Sort（拓扑排序）——对有向无环图中节点按依赖关系排序的算法，找到所有依赖已满足的任务→执行→标记→重复",
+    "ExampleEN": "Topological sort ensures that no task executes before its dependencies are resolved, grouping independent tasks for parallel execution.",
+    "ExampleCN": "拓扑排序确保没有任务在其依赖解决之前执行，同时将独立任务分组并行执行。",
+    "Notes": "<b>学习路径</b><br>§5.5.3 Agent间通信DAG执行的核心算法。拓扑排序是多Agent系统中实现任务并行化的算法基础，是所有工作流引擎（Airflow、Temporal、Cadence）的底层原理。<br><br><b>核心要点</b><br>算法流程：① 构建DAG，记录每个任务的依赖数量（入度）② 找出所有入度=0的任务（无依赖，可直接执行）③ 并行执行这批任务 ④ 任务完成→将其下游任务的入度-1 ⑤ 重复②-④直到所有任务完成。遇上循环依赖（某批任务执行后没有新增入度=0的任务但有剩余任务）说明DAG存在环路，break并报错。<br><br><b>复杂度分析</b><br>时间复杂度O(V+E)，V为任务数、E为依赖关系数。在Agent系统中通常V<50、E<100，拓扑排序的耗时可以忽略。关键是依赖关系的准确表达——如果依赖关系有问题（该依赖的没标注、不该依赖的标了依赖），拓扑排序结果会正确但执行顺序错误，导致\"分析在查询完成前就开始了\"。<br><br><b>延伸节点</b><br>5.5.3 DAG | 5.5.1 任务拆解 | 5.5.4 全局闭环 | 图论基础"
+  },
+  {
+    "Word": "Self-Evolution",
+    "Pronunciation": "/sɛlf ˌiːvəˈluːʃən/",
+    "Audio": "",
+    "Definition": "Self-Evolution（自进化）——Agent每次任务执行完毕后自动复盘执行轨迹、提炼可复用经验和流程、生成个性化技能的能力",
+    "ExampleEN": "The self-evolution engine records execution traces, runs retrospective analysis, extracts reusable templates, and generates personalized skills for future tasks.",
+    "ExampleCN": "自进化引擎记录执行轨迹、复盘分析、提炼可复用模板、生成个性化技能，供后续任务使用。",
+    "Notes": "<b>学习路径</b><br>§5.5.4 全局闭环系统的核心能力。自进化是多Agent从\"一次性执行器\"到\"越用越聪明\"的关键——让系统在每次任务执行后自动学习和优化，是Agent系统的\"元学习\"能力。<br><br><b>核心要点</b><br>四步流程：① 记录轨迹——完整记录每个Agent做了什么、耗时、成败状态、关键决策点。失败轨迹比成功轨迹更有学习价值，因为\"为什么失败\"能预防未来踩同样的坑。② 事后复盘——LLM分析轨迹，识别\"哪里可以改进\"。③ 提炼流程——从复盘结果中提取可复用的执行模板（如\"数据分析+报告生成\"的通用流程）。④ 生成技能——将模板转化为可注册的新技能，供后续任务调用。<br><br><b>进化边界</b><br>允许自动调整prompt和拆解模板（文本层面风险低），禁止自动修改生产代码（需代码审查）和删除数据（不可逆操作）。自进化引擎应有回滚机制：如果新生成的技能导致后续任务质量下降，自动回滚到上一个版本，确保进化是进步的而非退化的。<br><br><b>延伸节点</b><br>5.4 Hermes长期记忆 | 2.2.3 Agent评估 | RLHF | 5.5.3 DAG执行"
+  },
+  {
+    "Word": "Trace",
+    "Pronunciation": "/treɪs/",
+    "Audio": "",
+    "Definition": "Trace（执行轨迹）——多Agent任务执行过程的完整记录，包括谁做了什么、耗时、成败状态、关键决策点，是事后复盘的基础",
+    "ExampleEN": "Each task execution produces a full trace recording which agent did what, how long it took, and every decision point.",
+    "ExampleCN": "每次任务执行生成完整轨迹记录——哪个Agent做了什么、花了多长时间、每个决策节点。",
+    "Notes": "<b>学习路径</b><br>§5.5.4 全局闭环自进化流程的第一阶段。Trace是Agent学习的基础数据——没有完整的执行记录，就无法事后分析和优化，自进化就无从谈起。<br><br><b>核心要点</b><br>轨迹必须同等记录成功和失败两个方向。失败轨迹比成功轨迹更有学习价值——\"为什么失败\"是预防未来踩坑的关键。完整Trace应包含：① 时间线（何时开始、每个步骤耗时）② Agent执行日志（谁做了什么、输入/输出）③ 关键决策点（为什么选择这个Agent、为什么选这个策略）④ 错误信息（如果失败，完整报错和上下文）。这四个维度的数据缺一不可。<br><br><b>Trace vs Log</b><br>Log是平面的文本流（时间+事件），Trace是结构化的执行图谱（关联关系+因果链）。Log说\"Agent A调用了search\"，Trace说\"Agent A因为用户问'最新AI新闻'调用了search，返回3条结果，用时1.2s\"。Trace的因果关系让复盘变得可能——知道\"为什么\"比知道\"是什么\"更有价值。<br><br><b>延伸节点</b><br>5.5.4 自进化 | 5.5.3 DAG执行 | 5.5.1 任务拆解 | LangSmith"
+  },
+  {
+    "Word": "Face Swap Pipeline",
+    "Pronunciation": "/feɪs swɒp ˈpaɪplaɪn/",
+    "Audio": "",
+    "Definition": "Face Swap Pipeline（换脸流水线）——视频逐帧换脸的完整处理流程：帧提取→人脸检测→人脸对齐→特征提取→换脸推理→帧合成→视频输出",
+    "ExampleEN": "The face swap pipeline processes each video frame independently — from face detection and alignment to inference and final compositing.",
+    "ExampleCN": "换脸流水线逐帧独立处理视频——从人脸检测和对齐到推理和最终合成。",
+    "Notes": "<b>学习路径</b><br>§5.6.1 换脸流程完整流水线设计。GPU密集型计算任务工程化案例——换脸是从算法到工程的全链路实践。<br><br><b>核心要点</b><br>完整流水线：帧提取(ffmpeg)→人脸检测(YOLO/RetinaFace)→人脸对齐(仿射变换)→特征提取(InsightFace)→换脸推理(核心模型，占70%+时间)→人脸融合(Inpainting/边缘平滑)→帧合成(ffmpeg按原fps重合成)→音频合并(原视频音轨)。瓶颈在推理环节，优化方向：检测可CPU/GPU混部，推理用多卡并行。<br><br><b>工程注意事项</b><br>① 输出必须用原视频帧率(fps)和时间基准重合成，否则音画不同步（画面比声音快/慢）。② 帧提取和合成必须使用一致的编码参数（分辨率、编码格式、码率），否则输出视频质量下降。③ 长视频(>10分钟)需做内存管理——不能一次性加载所有帧到内存，应分批处理。④ 换脸可能涉及法律风险，需获得被换脸对象授权。<br><br><b>延伸节点</b><br>5.6.2 算力分配 | 5.6.3 脸部预处理 | 3.5.4 YOLO | 3.5.3 图像识别"
+  },
+  {
+    "Word": "Face Alignment",
+    "Pronunciation": "/feɪs əˈlaɪnmənt/",
+    "Audio": "",
+    "Definition": "Face Alignment（人脸对齐）——通过仿射变换将不同角度的人脸统一对齐到256×256标准位置，是换脸模型稳定工作的前提",
+    "ExampleEN": "Face alignment uses affine transformation to map detected facial landmarks to a standard 256x256 coordinate system.",
+    "ExampleCN": "人脸对齐通过仿射变换将检测到的人脸关键点映射到标准的256×256坐标系。",
+    "Notes": "<b>学习路径</b><br>§5.6.3 脸部预处理核心步骤。人脸对齐是换脸质量的关键保障——对齐不准，后续推理再强也白搭，换脸模型的输入质量直接决定输出质量。<br><br><b>核心要点</b><br>对齐流程：人脸检测→关键点定位→计算仿射变换矩阵→将源脸映射到标准坐标系(256×256)。正面脸(<30度偏转)用5点(眼角+鼻尖+嘴角)快速对齐，侧脸(30-60度)用68点精细对齐，极端角度(>60度)用106点或跳过该帧（效果太差不如跳过）。源关键点顺序必须和目标点一一对应——左眼对应左眼、右眼对应右眼，顺序错了对齐结果是扭曲的。<br><br><b>对齐与换脸模型的关系</b><br>换脸模型假设输入的人脸已经对齐到标准位置。如果对齐不准（比如脸偏了3度），换脸模型的输出也会偏，导致换脸结果和背景不融合。对齐的质量直接决定了换脸效果的上限——对齐做得好，简单的换脸模型也能出好效果；对齐做不好，再强的模型也无济于事。<br><br><b>延伸节点</b><br>5.6.3 关键点检测 | 3.5.3 图像识别 | InsightFace | RetinaFace | OpenCV warpAffine"
+  },
+  {
+    "Word": "Affine Transformation",
+    "Pronunciation": "/əˈfaɪn ˌtrænsfərˈmeɪʃən/",
+    "Audio": "",
+    "Definition": "Affine Transformation（仿射变换）——保持平行线关系的几何变换，用于将人脸对齐到标准位置（缩放+旋转+平移）",
+    "ExampleEN": "cv2.estimateAffinePartial2D computes the affine matrix from source landmarks to target standard coordinates.",
+    "ExampleCN": "cv2.estimateAffinePartial2D从源关键点到目标标准坐标计算仿射变换矩阵。",
+    "Notes": "<b>学习路径</b><br>§5.6.3 脸部预处理的几何变换实现。仿射变换是人脸对齐的数学基础——将歪斜的人脸\"摆正\"到标准位置的几何操作，是所有面部识别和换脸系统的前置处理。<br><br><b>核心要点</b><br>仿射变换保持平行线关系，包含缩放+旋转+平移三种操作，由3×2的变换矩阵描述。OpenCV实现：cv2.estimateAffinePartial2D从源关键点→目标标准坐标计算矩阵，cv2.warpAffine应用矩阵做实际变换。5点关键点源顺序：左眼、右眼、鼻尖、左嘴角、右嘴角，顺序错了对齐结果就是扭曲的——左眼映射到右眼位置会导致人脸镜像翻转。<br><br><b>5点 vs 68点关键点</b><br>5点：速度快、计算量小，适合正面脸快速对齐（视频帧率>30fps）。68点：精度高，适合侧脸和表情丰富的脸。实际工程中：先用关键点检测器定位68点，根据检测置信度决定用几对点计算仿射变换——置信度高用全部68点，置信度中抽取5对核心点，置信度低跳过该帧。<br><br><b>延伸节点</b><br>5.6.3 人脸对齐 | InsightFace | RetinaFace | OpenCV仿射变换"
+  },
+  {
+    "Word": "GPU Scheduling",
+    "Pronunciation": "/dʒiː piː juː ˈʃɛdjuːlɪŋ/",
+    "Audio": "",
+    "Definition": "GPU Scheduling（GPU调度）——多GPU系统中将换脸任务高效分配给各GPU的策略，核心关注负载均衡、队列控制、超时重试和视频缓存",
+    "ExampleEN": "The GPU scheduler selects the least-loaded GPU for each task, but also considers VRAM usage and temperature for optimal assignment.",
+    "ExampleCN": "GPU调度器为每个任务选择负载最少的GPU，但更优的做法是同时考虑显存使用率和温度做加权评估。",
+    "Notes": "<b>学习路径</b><br>§5.6.2 换脸任务及算力分配。GPU密集型AI工程化的调度核心——合理分配算力直接影响系统和用户体验，是GPU资源稀缺场景下的关键工程问题。<br><br><b>核心要点</b><br>关键策略：① SJF短任务优先防饿死——短视频(1-2分钟)优先处理，长视频(30-60分钟)可拆batch跨卡并行 ② 负载感知：不能只看队列长度，需综合显存使用率、GPU温度、历史处理速度做加权评分选卡 ③ 队列深度控制：队列>5时提示用户预计等待时间，>20时暂停接收新任务防雪崩 ④ 超时重试：单帧超时30s自动跳过，连续10帧超时标记任务失败。<br><br><b>多卡调度选型</b><br>简单选卡：选队列最短的GPU。最优选卡：综合评分（显存使用率+历史处理速度+温度），选总分最低的GPU。大任务拆分：单视频>500帧时，将视频按帧区间均匀分给N张GPU并行处理，每卡处理完后汇总结果。监控指标包括GPU利用率、显存使用率、队列深度、平均等待时间等。<br><br><b>延伸节点</b><br>1.3.1 企业级部署 | 1.3.2 高并发原理 | Celery分布式队列 | 5.6.2 SJF"
+  },
+  {
+    "Word": "SJF",
+    "Pronunciation": "/ɛs dʒeɪ ɛf/",
+    "Audio": "",
+    "Definition": "Shortest Job First（短任务优先调度）——GPU调度策略，优先执行耗时短的任务防饿死，大任务可拆batch跨卡并行",
+    "ExampleEN": "SJF scheduling prevents short tasks from being starved behind long-running batch jobs in the GPU queue.",
+    "ExampleCN": "SJF调度防止短任务被长时间运行的批处理任务饿死在GPU队列中。",
+    "Notes": "<b>学习路径</b><br>§5.6.2 GPU算力分配调度策略之一。SJF是操作系统经典调度算法在AI工程中的实际应用，核心思想是\"先做快的事，让更多人等更少的时间\"。<br><br><b>核心要点</b><br>适用场景：短剧换脸场景中，短视频(1-2分钟)和长视频(30-60分钟)混合排队时，优先处理短视频可减少用户等待时间和提高系统吞吐量——处理一个30分钟视频的时间可以处理15个2分钟视频，15个用户都得到结果vs只有1个用户。大任务(>10分钟)可拆batch跨卡并行执行，实现\"大任务拆分+短任务优先\"的组合策略。<br><br><b>SJF的局限性</b><br>① 长视频可能被永久饿死——如果短视频持续不断涌入，长视频永远得不到执行。需要设置最大等待时间（如60分钟），超时的长视频自动升级优先级。② 无法预测准确耗时——需要在系统中记录每种视频长度的历史处理时间做预估。③ 不适合需要资源预留的场景。<br><br><b>延伸节点</b><br>5.6.2 GPU调度 | 1.3.2 高并发原理 | 5.6.1 换脸流水线 | 操作系统调度 | Round-Robin算法"
+  },
+  {
+    "Word": "LRU Cache",
+    "Pronunciation": "/ɛl ɑːr juː kæʃ/",
+    "Audio": "",
+    "Definition": "Least Recently Used Cache（最近最少使用缓存）——淘汰策略：缓存满时删除最久未使用的条目。换脸系统中用于缓存热门视频素材到本地SSD",
+    "ExampleEN": "The LRU video cache stores up to 5 frequently used videos on local SSD to avoid repeated downloads from object storage.",
+    "ExampleCN": "LRU视频缓存在本地SSD存储最多5个常用视频，避免从对象存储重复下载。",
+    "Notes": "<b>学习路径</b><br>§5.6.2 算力分配中的视频缓存策略。LRU是经典的缓存淘汰算法，在换脸系统中用于缓存热门视频素材到本地SSD以减少对象存储下载开销，是\"空间换时间\"的典型实践。<br><br><b>核心要点</b><br>LRU适用场景：热门素材缓存——某部热门短剧可能被多个用户同时请求换脸，缓存到本地SSD可避免每次从对象存储重复下载。当前方案的局限：5个缓存槽位在面对10个不同用户的10部不同短剧时命中率为0——缓存太小、场景不够热。应扩展为LFU(按使用频率淘汰，缓存被换脸次数最多的视频)或按视频大小加权（大视频下载成本高优先保留）。<br><br><b>缓存层级设计</b><br>L1(显存缓存)：处理中的帧数据，最大2-4GB。L2(本地SSD缓存)：热门视频文件+预处理结果，LRU淘汰。L3(对象存储): 原始视频文件来源。冷视频直接从L3读取，热视频从L2命中，避免每帧都从远端下载（10分钟视频下载可能花30秒，本地SSD读只需1秒）。三级缓存设计是存储IO优化的经典模式。<br><br><b>延伸节点</b><br>5.6.2 GPU调度 | 系统设计缓存策略 | LFU | Redis缓存"
+  },
+  {
+    "Word": "Inpainting",
+    "Pronunciation": "/ɪnˈpeɪntɪŋ/",
+    "Audio": "",
+    "Definition": "Inpainting（图像修复）——用算法填充图像中缺失或被遮挡区域，换脸场景中用于光头化（去除头发遮挡）和闭嘴处理",
+    "ExampleEN": "cv2.inpaint with INPAINT_TELEA algorithm fills hair regions with surrounding skin color for face swap preprocessing.",
+    "ExampleCN": "cv2.inpaint的INPAINT_TELEA算法用周围肤色填充头发区域，用于换脸预处理的去遮挡。",
+    "Notes": "<b>学习路径</b><br>§5.6.3 脸部预处理中的光头化去遮挡处理。Inpainting是换脸预处理的去遮挡关键技术——头发是换脸最常见的遮挡物。<br><br><b>核心要点</b><br>cv2.inpaint的TELEA算法基于快速行进方法（FMM），用周围像素颜色填充缺失区域。在换脸预处理中用于：① 光头化——检测头发区域→用肤色填充→去除头发遮挡 ② 闭嘴处理——检测牙齿/舌头区域→用唇色填充。在大面积遮挡时效果差（填充区域大时颜色过渡不自然）。工业场景推荐LaMa（深度学习inpainting），基于FFC(Fast Fourier Convolutions)，修复大面积遮挡效果更好。<br><br><b>关键坑：眉毛误删</b><br>头发语义分割时不能把眉毛也划进去——眉毛区域需从头发mask中排除。如果眉毛被一起填充，换脸结果看起来\"不像人\"。解决方案：先用人脸关键点定位眉毛位置，从头发mask中减去眉毛区域再做inpainting。<br><br><b>延伸节点</b><br>5.6.3 脸部预处理 | LaMa图像修复 | 语义分割 | 5.6.3 关键点检测"
+  },
+  {
+    "Word": "Landmark Detection",
+    "Pronunciation": "/ˈlændmɑːrk dɪˈtekʃən/",
+    "Audio": "",
+    "Definition": "Landmark Detection（关键点检测）——检测人脸关键特征点（眼角/鼻尖/嘴角等），5点/68点/106点三种密度，用于人脸对齐和换脸预处理",
+    "ExampleEN": "Facial landmark detection with 68 points enables precise face alignment for profile and side-angle faces.",
+    "ExampleCN": "68点人脸关键点检测能对侧脸和半侧脸进行精确对齐。",
+    "Notes": "<b>学习路径</b><br>§5.6.3 脸部预处理中的关键点检测环节。关键点是人脸对齐和换脸预处理的基础——关键点定位不准，后续所有处理都白搭。<br><br><b>核心要点</b><br>三种密度：5点(眼角+鼻尖+嘴角)用于快速对齐正面脸(<30度偏转)，68点用于侧脸精细对齐(30-60度)，106点用于极端角度(>60度)或跳过该帧。常用工具：MTCNN（三级级联，快但精度中等）、RetinaFace（单阶段检测器，速度和精度平衡最好）、InsightFace（精度最高但更重）。实际工程中根据帧率和精度要求动态选工具。<br><br><b>关键点质量对换脸的影响</b><br>关键点定位偏差1个像素，仿射变换后整个脸的位置就偏。在视频帧间，如果相邻帧的关键点位置抖动（检测结果在帧间不稳定），换脸结果会出现\"闪烁\"——同一张脸在相邻帧间位置微跳。解决方案：对关键点做时序平滑（用前后3帧的加权平均替代单帧检测结果），消除帧间抖动。<br><br><b>延伸节点</b><br>5.6.3 仿射变换 | RetinaFace | InsightFace | MTCNN | MediaPipe Face Mesh"
+  },
+  {
+    "Word": "Bidirectional Link",
+    "Pronunciation": "/ˌbaɪdɪˈrɛkʃənəl lɪŋk/",
+    "Audio": "",
+    "Definition": "Bidirectional Link（双向链接）——Wiki文档之间的双向引用机制：正向链接(A引用B) + 反向链接(谁引用了A)，形成可遍历的知识图谱",
+    "ExampleEN": "Bidirectional links enable both 'which documents does A reference' (forward) and 'which documents reference A' (backlink).",
+    "ExampleCN": "双向链接同时支持\"A引用了哪些文档\"（正向）和\"哪些文档引用了A\"（反向），形成可遍历的知识图谱。",
+    "Notes": "<b>学习路径</b><br>§5.7.1 结构化Wiki文档的核心特性。双向链接是知识图谱可视化的基础——让Wiki从\"堆叠的页面\"变成\"可遍历的知识网络\"，是Obsidian/Roam Research等知识管理工具的核心思想在LLM Wiki中的应用。<br><br><b>核心要点</b><br>双向链接同时支持\"A引用了哪些文档\"（正向链接）和\"哪些文档引用了A\"（反向链接），形成可遍历的知识图谱。一个文档通常3-8个链接足够，通过图的传递性自然关联——A→B→C，A和C虽然没有直接链接但通过B产生了概念关联。过多链接反而造成认知负担。<br><br><b>反向链接的工程价值</b><br>反向链接在增量更新中用于追踪间接影响——改了文档A→需要检查所有引用A的文档（B、C、D）是否也需要更新。没有反向链接，改了A后无法知道哪些文档受到影响，知识库的增量更新就是盲目的。实现：在文档中维护backlinks字段，每次新文档创建时扫描全文识别引用，更新被引用方的backlinks。<br><br><b>延伸节点</b><br>5.7.1 冲突解决 | 5.7.3 增量更新 | Obsidian/Roam Research | 知识图谱"
+  },
+  {
+    "Word": "Three-Tier Architecture",
+    "Pronunciation": "/θriː tɪr ˈɑːrkɪtɛktʃər/",
+    "Audio": "",
+    "Definition": "Three-Tier Architecture（三层架构）——LLM Wiki的分层设计：Raw层(原始数据)→Wiki层(LLM编译的结构化文档)→Schema层(实体类型/关系/查询协议)",
+    "ExampleEN": "The three-tier architecture separates concerns: Raw stores original data, Wiki compiles structured knowledge, Schema defines entity types and query patterns.",
+    "ExampleCN": "三层架构分离关注点：Raw层存原始数据，Wiki层编译结构化知识，Schema层定义实体类型和查询模式。",
+    "Notes": "<b>学习路径</b><br>§5.7.2 Raw→Wiki→Schema三层架构。知识从原始到结构化到协议化的递进——三层架构是LLM Wiki的\"脊柱\"。<br><br><b>核心要点</b><br>各层SLA：Raw层实时(<1s)——原始文档更新立即可见，只是原始数据不要求结构化。Wiki层近实时(<1h)——等累积变化足够多(如10条以上相关原始数据变更)或定时触发(每6h)才编译更新Wiki文档。Schema层低频(按需变更)——实体类型和关系定义变化频率极低，只在新增知识领域或发现Schema不足时变更。Wiki编译需保留所有具体数字/日期/代码片段，不过度概括（否则丢掉了最有检索价值的具体信息）。<br><br><b>层间流转</b><br>Raw→Wiki：LLM读取原始文档→理解结构→编译为统一格式的Wiki页面。Wiki→Schema：从Wiki页面中自动提取实体类型和关系模式，人工审核后加入Schema层。Schema→Wiki：Schema层的查询模板和类型约束指导Wiki页面的结构化程度。<br><br><b>延伸节点</b><br>5.7.1 Wiki文档 | 5.7.3 增量更新 | 5.7.4 索引体系 /"
+  },
+  {
+    "Word": "Schema Layer",
+    "Pronunciation": "/ˈskiːmə leɪər/",
+    "Audio": "",
+    "Definition": "Schema Layer（Schema层）——LLM Wiki三层架构的最上层，定义知识库的实体类型、关系和查询协议，相当于\"知识的类型系统\"",
+    "ExampleEN": "The Schema layer defines entity types like 'technical issue' and 'solution', and relation types like 'solves' and 'depends_on'.",
+    "ExampleCN": "Schema层定义实体类型如\"技术问题\"和\"解决方案\"，以及关系类型如\"解决\"和\"依赖\"。",
+    "Notes": "<b>学习路径</b><br>§5.7.2 三层架构的最顶层。Schema层是查询精确度的关键保障——没有Schema只能全文搜索，有了Schema可以做结构化查询，就像数据库有DDL后查询从\"select * from unknown\"变成\"select col from table where condition\"。<br><br><b>核心要点</b><br>Schema定义了实体类型（如\"技术问题\"\"解决方案\"\"项目配置\"）、关系类型（如\"solves\"\"depends_on\"\"configures\"）和查询模板。例如定义了\"(技术问题)-[solves]->(解决方案)\"的关系后，查询\"XX问题的解决方案\"就能精确返回结构化结果而非全文搜索的大杂烩。Schema层像数据库的DDL，定义了知识库的\"类型系统\"。<br><br><b>Schema演变</b><br>Schema不需要一开始就完备——从常见的实体类型和关系开始（技术问题/解决方案/最佳实践），根据实际使用反馈逐步扩展。每次新增Schema实体或关系后，需要重新编译部分Wiki文档以适配新的结构化要求，这是Schema层的维护成本。<br><br><b>延伸节点</b><br>5.7.2 三层架构 | 5.7.4 索引体系 | 知识图谱Schema设计 | 5.7.3 增量更新"
+  },
+  {
+    "Word": "Inverted Index",
+    "Pronunciation": "/ɪnˈvɜːtɪd ˈɪndɛks/",
+    "Audio": "",
+    "Definition": "Inverted Index（倒排索引）——关键词到文档ID的映射表，用于快速精确匹配检索，是搜索引擎和Wiki轻量索引的核心数据结构",
+    "ExampleEN": "The inverted index maps each keyword to the set of document IDs containing that word for O(1) lookup.",
+    "ExampleCN": "倒排索引将每个关键词映射到包含该词的文档ID集合，实现O(1)查找。",
+    "Notes": "<b>学习路径</b><br>§5.7.4 知识库索引体系核心数据结构。倒排索引是搜索引擎50年来最经典的数据结构，在LLM Wiki中用于轻量索引。<br><br><b>核心要点</b><br>中文必须先用jieba分词再建倒排索引——不分词整句话当做一个token，用户搜任何子词都搜不到（如\"深度学习框架\"不分词→搜\"深度学习\"命中结果为0）。倒排索引结构：term -> [doc_id1, doc_id2, ...]，查找O(1)复杂度。10万文档约产生500万+倒排条目（每篇文档约50个不同词），需LFU淘汰超低频词（只在1-2篇文档中出现的长尾词）控制索引体积。<br><br><b>倒排索引与向量检索的关系</b><br>倒排索引负责精确匹配（搜\"DeepSeek V4\"必返回包含这几个词的文档），向量检索负责语义匹配（搜\"大模型部署方案\"返回相关但不一定包含关键词的文档）。两者配合完成混合检索——倒排找精确的，向量找相关的，RRF融合。<br><br><b>延伸节点</b><br>5.7.4 轻量索引 | 5.7.2 三层架构 | Elasticsearch | jieba分词 | 5.1 RRF"
+  },
+  {
+    "Word": "Incremental Compilation",
+    "Pronunciation": "/ˌɪnkrɪˈmɛntəl ˌkɒmpɪˈleɪʃən/",
+    "Audio": "",
+    "Definition": "Incremental Compilation（增量编译）——只重新编译发生变化的部分而非全量重建Wiki，通过MD5/SHA256检测Raw层变化，仅更新受影响的Wiki页面",
+    "ExampleEN": "Incremental compilation detects changed raw data via hash comparison, then recompiles only the affected wiki pages rather than rebuilding everything.",
+    "ExampleCN": "增量编译通过哈希比对检测Raw层变化，仅重新编译受影响的Wiki页面而非全量重建。",
+    "Notes": "<b>学习路径</b><br>§5.7.3 增量更新与持久化存储。Wiki在\"实时性\"和\"成本\"之间的平衡方案——全量编译太贵（大Wiki可能花费数小时），增量编译是工程现实，用\"只编译变化部分\"换取近实时的更新能力。<br><br><b>核心要点</b><br>触发条件：① Raw层新增>10条相关数据→编译变更影响范围内的Wiki页面 ② 手动触发（如紧急更正错误） ③ 定时编译(每6h例行全量检查)。增量编译通过MD5/SHA256哈希检测Raw层文件变化（只编译变化了的部分），利用反向链接追踪间接影响——改了文档A，还需更新所有引用A的文档，因为它们展示的\"引用A的内容\"可能过时了。<br><br><b>编译缓存策略</b><br>缓存已编译的Wiki文档+编译所用Raw数据的哈希值。下次编译时对比哈希：相同→跳过，不同→重新编译。如果中间版本太多(>100个累积)，强制触发一次全量编译清理中间状态，避免累积误差导致质量下降。<br><br><b>延伸节点</b><br>5.7.1 双向链接 | 5.7.2 三层架构 | Git LFS | 5.7.4 索引体系 | 蓝绿部署更新"
+  },
+  {
+    "Word": "MoE",
+    "Pronunciation": "/ɛm əʊ iː/",
+    "Audio": "",
+    "Definition": "Mixture of Experts（混合专家）——DeepSeek V4核心架构，总参数236B但每次推理只激活约21B参数，用\"全科医生vs专家会诊团\"类比：路由器决定每个token送给哪2-3位专家处理",
+    "ExampleEN": "MoE achieves 236B-level knowledge capacity with only 21B-level computation cost by activating only the most relevant experts for each token.",
+    "ExampleCN": "MoE通过每次只激活最相关的专家，以21B级别的计算量实现236B级别的知识容量。",
+    "Notes": "<b>学习路径</b><br>§5.8.1 DeepSeek V4深度解析核心架构。§5.8.2 CANN架构 + §5.8.3 部署实战。MoE是DeepSeek V4最核心的技术亮点——用\"全科医生vs专家会诊团\"理解就对了。<br><br><b>核心要点</b><br>关键认知：推理计算量由激活参数决定(≈21B)，但显存由总参数决定(≈236B)。不能误以为\"21B激活=21B级别显存需求\"。类比：传统模型=全科医生（每次启用全部知识236B参数参与计算），MoE=专家会诊团（每个token只找最对口的2-3位专家，约21B参数参与计算），路由器=分诊台护士决定每个token送给哪位专家。总知识容量是236B级别，但每次只激活21B——用计算效率换取知识广度。<br><br><b>MoE的核心权衡</b><br>优势：参数量可以扩到非常大（DeepSeek V4有236B参数），但推理成本只与激活参数相关。劣势：显存需求高（所有专家都需常驻显存）、负载均衡难（有些专家可能\"过忙\"有些\"闲置\"）、通信开销大（多卡部署时跨卡专家路由有通信延迟）。<br><br><b>延伸节点</b><br>5.8.1 版本选型 | 1.3.1 企业级部署 | 2.3.3 模型蒸馏 | 5.8.1 Expert Router"
+  },
+  {
+    "Word": "Expert Router",
+    "Pronunciation": "/ˈɛkspɜːrt ˈruːtər/",
+    "Audio": "",
+    "Definition": "Expert Router（专家路由器/Gate）——MoE架构中的\"分诊台护士\"，决定每个token该送给哪几位专家处理，是MoE推理效率与质量的关键",
+    "ExampleEN": "The expert router uses a learned gating mechanism to select the top-k most relevant experts for each input token.",
+    "ExampleCN": "专家路由器用学习的门控机制为每个输入token选择最相关的top-k专家。",
+    "Notes": "<b>学习路径</b><br>§5.8.1 MoE架构中的核心组件。Expert Router是MoE的\"分诊台护士\"——路由决策的质量直接决定了MoE的推理质量和效率。<br><br><b>核心要点</b><br>路由器用学到的门控机制（Gate Network）为每个输入token计算所有专家的匹配分数，选Top-K（通常K=2或3）最相关的专家处理。路由器的训练与模型一起进行——通过梯度下降学习\"什么样的token应该给哪个专家\"。训练过程中需要负载均衡损失（Load Balancing Loss）防止所有token都路由到少数几个热门专家，导致其他专家\"没活干\"。<br><br><b>路由器面临的挑战</b><br>① 负载不均：某些专家可能被频繁调用（如\"代码\"专家），某些几乎闲置。通过auxiliary loss惩罚不均匀分布 ② 路由崩塌：极端情况下所有token都路由到同一批专家，MoE退化成普通Dense模型 ③ 跨卡通信：多卡部署时专家分布在不同卡上，路由到非本卡专家需跨卡传输，增加通信开销。<br><br><b>延伸节点</b><br>5.8.1 MoE | 2.3.3 模型蒸馏 | Transformer架构 | 5.8.3 部署实战"
+  },
+  {
+    "Word": "CANN",
+    "Pronunciation": "/kæn/",
+    "Audio": "",
+    "Definition": "Compute Architecture for Neural Networks（神经网络计算架构）——华为昇腾的软件栈，类似NVIDIA CUDA，包含框架适配层(torch_npu)、图编译层(ATC)、运行时层(ACL)、驱动层",
+    "ExampleEN": "CANN is the Ascend equivalent of CUDA — a full software stack from driver to runtime to compiler for NPU computing.",
+    "ExampleCN": "CANN是昇腾的CUDA等价物——从驱动到运行时到编译器的全栈NPU计算软件架构。",
+    "Notes": "<b>学习路径</b><br>§5.8.2 华为昇腾Ascend生态与CANN架构详解。CANN是部署DeepSeek必须理解的基础——它是昇腾的\"CUDA等价物\"。<br><br><b>核心要点</b><br>五层架构从高到低：① 应用层(PyTorch/TensorFlow/ONNX等，开发者直接调用的框架) ② 框架适配层(torch_npu，将PyTorch操作映射到昇腾，一行import torch_npu搞定迁移) ③ 图编译层(ATC，将模型图编译为OM格式，离线编译后推理延迟降30-50%) ④ 运行时层(ACL，类似cuBLAS/cuDNN，提供NPU上的高性能算子) ⑤ 驱动层→NPU硬件。CUDA→CANN概念一一对应：nvcc→ATC, cuBLAS→ACL, torch.cuda→torch_npu。<br><br><b>迁移注意</b><br>torch_npu当前未100%覆盖全部PyTorch算子。迁移前需用算子兼容列表检查代码中使用的API，提前识别不支持的算子（算子的兼容性报告可在昇腾官方文档中找到）。<br><br><b>延伸节点</b><br>5.8.3 部署实战 | 1.3.1 企业级部署 | 3.5.2 PyTorch分布式 | 5.8.2 ATC"
+  },
+  {
+    "Word": "ATC",
+    "Pronunciation": "/eɪ tiː siː/",
+    "Audio": "",
+    "Definition": "Ascend Tensor Compiler（昇腾张量编译器）——CANN的图编译层，类似NVIDIA nvcc，将模型图编译为昇腾可执行的OM格式，离线编译后延迟可降30-50%",
+    "ExampleEN": "Skipping ATC offline compilation and relying on online JIT compilation sacrifices 30-50% of inference performance.",
+    "ExampleCN": "跳过ATC离线编译而依赖在线JIT编译会牺牲30-50%的推理性能。",
+    "Notes": "<b>学习路径</b><br>§5.8.2 CANN架构的核心编译层。ATC是部署性能的关键优化点——跳过它就直接损失30-50%推理性能。<br><br><b>核心要点</b><br>常用误区：直接用torch_npu推理也可以（在线JIT编译），但ATC离线编译成OM格式后再推理，延迟能降30-50%。ATC编译流程：加载模型→解析计算图→算子融合（将多个小算子融合为一个高效算子）→图优化→生成OM格式文件。ATC报错不会阻止服务启动——只是推理时会走在线JIT编译慢速路径，服务能跑但性能打折扣。<br><br><b>ATC vs JIT</b><br>ATC离线编译：Pros: 性能最优、延迟稳定、可做激进优化；Cons: 只能处理静态shape、需要提前编译、编译时间长。JIT在线编译：Pros: 灵活（支持动态shape）、开箱即用；Cons: 每次推理有编译开销、延迟不稳定。最佳实践：JIT快速验证→ATC上线部署。<br><br><b>延伸节点</b><br>5.8.2 CANN | 5.8.3 部署实战 | TensorRT(AOE) | 5.8.2 JIT Compilation"
+  },
+  {
+    "Word": "ACL",
+    "Pronunciation": "/eɪ siː ɛl/",
+    "Audio": "",
+    "Definition": "Ascend Computing Library（昇腾计算库）——CANN的运行时算子库，类似NVIDIA cuBLAS/cuDNN，提供NPU上的高性能数学和AI算子",
+    "ExampleEN": "ACL provides the low-level operator implementations that torch_npu maps PyTorch operations to for NPU execution.",
+    "ExampleCN": "ACL提供底层算子实现，torch_npu将PyTorch操作映射到ACL以在NPU上执行。",
+    "Notes": "<b>学习路径</b><br>§5.8.2 CANN运行时层的核心组件。ACL是算子兼容性的根基——torch_npu能跑多少算子，取决于ACL实现了多少。<br><br><b>核心要点</b><br>ACL（Ascend Computing Library）是昇腾的底层算子库，类似NVIDIA的cuBLAS/cuDNN。torch_npu将PyTorch的每个操作（如torch.matmul）映射到ACL中对应的NPU算子实现。如果ACL没有实现某个算子，torch_npu就映射不过去——这就是\"算子兼容性\"的本质。<br><br><b>算子兼容性检查</b><br>迁移前必做的检查：① 列出代码中使用的所有PyTorch API ② 在昇腾算子兼容列表中逐个检查 ③ 不支持的算子需要找替代方案（用支持的其他算子组合实现，或修改模型结构绕过不支持的算子）。常见不支持的算子类型：某些特殊的激活函数、自定义CUDA kernel、动态shape操作。<br><br><b>延伸节点</b><br>5.8.2 CANN | 5.8.2 算子兼容性测试 | torch_npu | 5.8.3 部署实战"
+  },
+  {
+    "Word": "NPU",
+    "Pronunciation": "/ɛn piː juː/",
+    "Audio": "",
+    "Definition": "Neural Processing Unit（神经网络处理器）——华为昇腾AI芯片的统称，910B单卡64GB显存/BF16算力320TFLOPS，4卡可跑DeepSeek V4 MoE版本",
+    "ExampleEN": "The Ascend 910B NPU delivers 320 TFLOPS of BF16 compute with 64GB HBM — comparable to NVIDIA A100 for inference workloads.",
+    "ExampleCN": "昇腾910B NPU提供320 TFLOPS的BF16算力和64GB HBM显存——推理性能接近NVIDIA A100。",
+    "Notes": "<b>学习路径</b><br>§5.8.2 昇腾硬件家族核心 + §5.8.3 NPU上部署DeepSeek实战。NPU是华为自研的AI芯片，在推理场景下性能接近NVIDIA A100。<br><br><b>核心要点</b><br>硬件家族三层：① 310P(推理/边缘计算，24GB，适合小型模型推理和边缘场景) ② 910B(训练/推理主力卡，64GB HBM，BF16算力320TFLOPS，4卡可跑DeepSeek V4 MoE版本) ③ 910C(训练旗舰，128GB，适合超大模型训练)。必须装torch-npu而非标准PyTorch——虽然后者不会报错但隐式降级为CPU推理，速度差100倍。<br><br><b>NPU vs GPU</b><br>910B在推理场景中性能接近NVIDIA A100（80GB），但软件生态成熟度有差距（CUDA生态积累了十几年，CANN才几年）。选择NPU的场景：① 国产化要求（金融、政务）② 成本考量（华为定价通常低于NVIDIA）③ 供应链安全（规避制裁风险）。<br><br><b>延伸节点</b><br>5.8.2 CANN | 5.8.3 部署实战 | 1.3.1 企业级部署 | 5.8.2 torch_npu"
+  },
+  {
+    "Word": "vLLM-ascend",
+    "Pronunciation": "/viː ɛl ɛl ɛm əˈsɛnd/",
+    "Audio": "",
+    "Definition": "vLLM-ascend——昇腾适配版vLLM推理引擎，将DeepSeek等模型运行在NPU上并暴露OpenAI兼容API，支持Continuous Batching和PagedAttention",
+    "ExampleEN": "vLLM-ascend runs DeepSeek V4 on Ascend NPUs and exposes an OpenAI-compatible API endpoint for seamless application integration.",
+    "ExampleCN": "vLLM-ascend在昇腾NPU上运行DeepSeek V4，并暴露OpenAI兼容API端点供应用无缝接入。",
+    "Notes": "<b>学习路径</b><br>§5.8.3 昇腾部署DeepSeek V4的推理引擎选型。vLLM-ascend让DeepSeek在昇腾NPU上暴露OpenAI兼容API，实现无缝应用接入。<br><br><b>核心要点</b><br>关键参数：① tensor-parallel-size（张量并行卡数，Lite版1卡/主版本4卡TP=4/全量版8卡）② gpu-memory-utilization（0.90留10%给系统和框架开销，太高易OOM）③ max-num-seqs（最大并发序列数，太多影响单请求延迟）。NPU版功能滞后于CUDA版——某些vLLM特性（如Speculative Decoding）在NPU版可能还未支持。<br><br><b>部署验证检查清单</b><br>① 启动成功无报错（vLLM-ascend的server日志正常）② OpenAI兼容API端点可访问（curl测试/channels/completions）③ 推理结果正确（对比CUDA版同一prompt的输出一致性）④ 四维性能指标达标（TTFT/TPOT/Token生成速度/异常率在可接受范围）。<br><br><b>延伸节点</b><br>5.8.3 部署实战 | 1.3.3 SGLang优化 | 5.8.4 Claude Code集成 | 5.8.3 OOM"
+  },
+  {
+    "Word": "OpenAI-Compatible API",
+    "Pronunciation": "/əʊpən eɪ aɪ kəmˈpætəbəl eɪ piː aɪ/",
+    "Audio": "",
+    "Definition": "OpenAI-Compatible API（OpenAI兼容API）——遵循OpenAI Chat Completion协议的服务端点，让任何支持OpenAI SDK的应用零改动接入本地模型",
+    "ExampleEN": "By exposing an OpenAI-compatible API, the locally deployed DeepSeek can be used directly by Claude Code, LangChain, and LlamaIndex without code changes.",
+    "ExampleCN": "通过暴露OpenAI兼容API，本地部署的DeepSeek可以直接被Claude Code、LangChain和LlamaIndex零改动调用。",
+    "Notes": "<b>学习路径</b><br>§5.8.3 推理服务化 + §5.8.4 Claude Code集成的API层标准。OpenAI Compatible API是LLM服务化的工业标准。<br><br><b>核心要点</b><br>绝大多数LLM应用框架（LangChain、LlamaIndex、Claude Code、Dify、AutoGPT）都支持OpenAI格式的API。兼容它意味着零改动接入整个LLM开发生态——部署好vLLM-ascend暴露/v1/chat/completions端点后，这些框架无需任何代码修改就能直接调用本地DeepSeek。vLLM自带OpenAI Server实现（vllm.entrypoints.openai.api_server），一键启动即暴露兼容API。<br><br><b>API端点规范</b><br>核心端点：POST /v1/chat/completions，body包含model、messages、temperature、max_tokens等标准字段。响应格式与OpenAI完全一致（包括streaming模式）。本地部署的API密钥可设为占位符（如\"not-needed\"），因为请求不出本地网络。<br><br><b>延伸节点</b><br>5.8.4 Claude Code集成 | 2.2.1 Function Calling与MCP | 5.8.3 vLLM-ascend | LangChain"
+  },
+  {
+    "Word": "Agent Registry",
+    "Pronunciation": "/ˈeɪdʒənt ˈrɛdʒɪstri/",
+    "Audio": "",
+    "Definition": "Agent Registry（Agent注册表）——多Agent系统中所有可用子Agent的信息中心，包含名称、描述、能力清单(capabilities)、输入/输出schema，支持动态注册发现",
+    "ExampleEN": "The Agent Registry enables hot-plug capability — new agents register on startup and are automatically discoverable by the Master Agent.",
+    "ExampleCN": "Agent注册表支持热插拔能力——新Agent启动时注册，主Agent自动发现并调度。",
+    "Notes": "<b>学习路径</b><br>§5.5.2 子Agent分工、注册与执行机制。Agent注册表是多Agent系统的可扩展性基础——支持热插拔意味着新Agent上线不需要重启系统。<br><br><b>核心要点</b><br>注册信息 = {name, description, capabilities, input_schema, output_schema}。Capabilities描述要细化到具体操作(如[\"sql_query\", \"pandas_transform\", \"matplotlib_chart\"])不能太宽泛(如[\"data_processing\"])——因为主Agent根据capabilities匹配任务，太宽泛会导致匹配不准。新Agent启动时向注册表注册自己的能力和接口，主Agent通过匹配capabilities字段自动发现和调度。<br><br><b>注册表设计关键</b><br>① 健康检查：定期ping子Agent确保在线，不在线的自动标记为unavailable并从调度池移除。② 版本管理：同一能力的多个版本共存（如v1_data_agent和v2_data_agent），主Agent可根据任务类型选择不同版本。③ Capability冲突：多个Agent声明相同能力时，按优先级和负载做选择。<br><br><b>延伸节点</b><br>5.5.1 主Agent | 5.5.3 Agent间通信 | A2A协议 | 5.5.4 自进化"
+  },
+  {
+    "Word": "Cloud-Local Hybrid",
+    "Pronunciation": "/klaʊd ˈloʊkəl ˈhaɪbrɪd/",
+    "Audio": "",
+    "Definition": "Cloud-Local Hybrid（云地混合架构）——简单任务走本地NPU推理(快速安全)，复杂任务自动路由到云端(能力强)，兼顾成本和体验的部署策略",
+    "ExampleEN": "The cloud-local hybrid architecture routes simple tasks to the local NPU for data sovereignty and complex tasks to the cloud for stronger reasoning.",
+    "ExampleCN": "云地混合架构将简单任务路由到本地NPU保证数据主权，复杂任务路由到云端借助更强推理能力。",
+    "Notes": "<b>学习路径</b><br>§5.8.4 工业界最佳实践中的部署策略。云地混合架构是企业AI部署的实战最优解——不是非此即彼，而是各取所长。<br><br><b>核心要点</b><br>本地模型优势：① 数据安全（代码和数据不出本地网络，满足金融/政务合规要求）② 低延迟（局域网调用延迟<10ms，云API延迟50-200ms）③ 合规（敏感行业不能使用公有云AI服务）。云端优势：① 更强推理能力（云端可部署更大更强的模型）② 更大模型选择（不同任务选不同模型）③ 免运维（不需要管硬件故障和升级）。<br><br><b>路由策略</b><br>简单任务（代码格式化、简单问答、模板生成）→本地DeepSeek，保证数据不出本地且低延迟。复杂任务（深度代码审查、复杂推理、长文档分析）→云端（如Claude/GPT-4），借助更强推理能力。关键：路由判断由本地完成，不需要向外传数据判断\"是否敏感\"——本地模型判断任务复杂度，决定走本地还是云端。<br><br><b>延伸节点</b><br>5.8.4 Claude Code集成 | 1.3.1 企业级部署 | 2.2.1 Function Calling"
+  },
+  {
+    "Word": "Query Refinement",
+    "Pronunciation": "/ˈkwɪəri rɪˈfaɪnmənt/",
+    "Audio": "",
+    "Definition": "Query Refinement（指令细化/查询改写）——在RAG检索前先用LLM优化用户的模糊提问，补充关键词、消除歧义、明确范围，提高检索精准度",
+    "ExampleEN": "Query refinement rewrites a vague question like 'how to fix the bug' into a precise retrieval query with specific module names and error codes.",
+    "ExampleCN": "查询改写将\"怎么修这个bug\"的模糊问题改写为包含模块名和错误码的精准检索查询。",
+    "Notes": "<b>学习路径</b><br>§5.1 冠军方案中检索前的重要预处理步骤。§5.4.4中记忆唤醒也用到类似改写逻辑。指令细化是RAG系统\"读懂用户真实意图\"的关键——用户提问往往太随意，不经过改写就检索效果大打折扣。<br><br><b>核心要点</b><br>指令细化和多路由检索配合使用：先用LLM优化用户的模糊提问（补充关键词、消除歧义、明确范围），再判断最适合的检索路径。对用户\"太随意\"的提问特别有效——如\"怎么修这个bug\"→\"Java Spring Boot项目中NullPointerException的修复方法（项目:xxx, 版本:2.7.x）\"。细化后的查询检索精度通常是原始查询的1.5-2倍，这个ROI极高。<br><br><b>细化的维度</b><br>① 关键词补充：添加领域术语、技术栈名称等关键词 ② 歧义消除：明确用户可能的多重含义（\"Java\"可能是语言也可能是岛屿）③ 范围约束：根据对话历史推断用户的项目/技术栈上下文 ④ 结构化改写：将口语化提问改写为更适合检索的书面化表达。<br><br><b>延伸节点</b><br>5.1 多路由检索 | 2.1.4 RAG调优 | 5.4.4 记忆唤醒 /"
+  },
+  {
+    "Word": "JIT Compilation",
+    "Pronunciation": "/dʒeɪ aɪ tiː ˌkɒmpɪˈleɪʃən/",
+    "Audio": "",
+    "Definition": "Just-In-Time Compilation（即时编译）——运行时动态编译模型算子，对比ATC离线编译，在线JIT虽然更灵活但牺牲30-50%推理性能",
+    "ExampleEN": "JIT compilation in torch_npu works out of the box but sacrifices significant performance compared to ATC offline compilation.",
+    "ExampleCN": "torch_npu的JIT编译开箱即用，但相比ATC离线编译牺牲了显著的推理性能。",
+    "Notes": "<b>学习路径</b><br>§5.8.2 CANN架构中ATC编译方式的对比。JIT和ATC的选择体现了\"快速验证\"和\"性能上线\"的工程权衡——开发追求灵活性，上线追求极致性能。<br><br><b>核心要点</b><br>ATC离线编译→OM格式→固定计算图（性能最优，延迟降30-50%）。JIT在线编译→每次推理都有编译开销，但灵活（支持动态shape、不需要预编译）。最佳实践：开发阶段用JIT快速验证模型能跑通，上线部署阶段用ATC编译为OM格式追求极致性能。两者不是互斥的，而是开发-部署流水线的不同阶段。<br><br><b>JIT适用场景</b><br>① 模型开发和调试阶段（频繁修改代码，每次ATC编译太耗时）② 动态shape场景（输入维度不固定，ATC不支持动态shape编译）③ 原型验证（快速验证模型逻辑正确性，不关注性能）。生产环境长期运行的服务必须用ATC——30-50%的性能提升对于24x7运行的推理服务积累起来非常可观（年化节省30-50%的NPU资源成本）。<br><br><b>延伸节点</b><br>5.8.2 ATC | 5.8.3 部署实战 | 5.8.2 CANN | 5.8.1 模型基准测试"
+  },
+  {
+    "Word": "Telemetry",
+    "Pronunciation": "/tɪˈlɛmɪtri/",
+    "Audio": "",
+    "Definition": "Telemetry（遥测）——IDE/工具自动上报的使用数据（崩溃报告、使用统计），在本地化部署中必须关闭以保证数据安全",
+    "ExampleEN": "Disable telemetry in settings.json with 'telemetryEnabled: false' to prevent code and usage data from leaving the local environment.",
+    "ExampleCN": "在settings.json中设'telemetryEnabled: false'关闭遥测，防止代码和使用数据离开本地环境。",
+    "Notes": "<b>学习路径</b><br>§5.8.4 数据安全边界配置中的关键检查项。遥测关闭是本地部署安全四检查之一——不止IDE有遥测，很多AI工具都会\"偷偷\"上报数据。<br><br><b>核心要点</b><br>安全四检查：① 代码内容→推理服务（本地部署保证不经过外部网络）② 推理结果→IDE（同样是本地服务，不经过外部）③ 遥测/崩溃报告（需要主动关闭IDE和AI工具的遥测，它们可能上报代码片段和使用统计数据）④ 模型更新下载（模型更新时有联网需求，需要在隔离网络中单独下载后导入）。<br><br><b>常见漏网之鱼</b><br>不止IDE有遥测——AI代码助手、Agent框架、甚至vLLM本身都可能上报使用数据。部署前需要逐个检查每个组件的文档，找到遥测配置项并关闭。Claude Code的telemetryEnabled、Copilot的telemetry、Anthropic API的usage数据等都是需要检查的点。<br><br><b>延伸节点</b><br>5.8.4 Claude Code集成 | 数据安全 | MCP | 5.8.4 Cloud-Local Hybrid"
+  },
+  {
+    "Word": "Graceful Shutdown",
+    "Pronunciation": "/ˈɡreɪsfəl ˈʃʌtdaʊn/",
+    "Audio": "",
+    "Definition": "Graceful Shutdown（优雅关闭）——收到SIGTERM信号后等待当前请求处理完（最长30s）再退出，防止请求中断丢失",
+    "ExampleEN": "Graceful shutdown waits up to 30 seconds for in-flight requests to complete before terminating the inference server process.",
+    "ExampleCN": "优雅关闭在终止推理服务进程前等待最多30秒让正在处理的请求完成。",
+    "Notes": "<b>学习路径</b><br>§5.8.3 部署工业界最佳实践。优雅关闭是生产环境服务更新的基本要求——不优雅关闭等于给用户\"请求被吞了\"的体验，是生产事故。<br><br><b>核心要点</b><br>不要直接kill进程——正确流程：① 收到SIGTERM信号→停止接收新请求（返回503给新请求，告诉客户端\"暂时不可用请重试\"）② 等待现有请求处理完（最长等30秒，超时后强制关闭）③ 从服务注册中心注销自身（从负载均衡中移除）④ 清理资源→退出进程。配合K8s滚动更新实现零停机——K8s发SIGTERM给旧Pod→优雅关闭→同时启动新Pod→无缝切换。<br><br><b>错误处理</b><br>如果优雅关闭过程中出现异常（如清理资源失败），仍要退出进程——不能因为清理失败就永久挂起，这会导致资源泄露。记录错误日志供排查，但退出是强制性的。关闭超时设太长（如5分钟）会让K8s觉得卡住了然后SIGKILL，反而失去优雅关闭的意义——30秒是最优经验值。<br><br><b>延伸节点</b><br>5.8.3 部署实战 | 1.3.2 高并发 | K8s | 5.8.3 蓝绿部署 | SIGTERM/SIGKILL"
+  }
+]

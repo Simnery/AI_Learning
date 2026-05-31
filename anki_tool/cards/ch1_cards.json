@@ -1,0 +1,1199 @@
+[
+  {
+    "Word": "LLM",
+    "Pronunciation": "/ˌelˌelˈem/",
+    "Audio": "",
+    "Definition": "Large Language Model（大语言模型）——基于海量文本数据训练的大规模语言模型，能够理解和生成自然语言",
+    "ExampleEN": "Modern LLMs like GPT-4 can perform complex reasoning, code generation, and multi-turn conversations.",
+    "ExampleCN": "像 GPT-4 这样的现代大语言模型可以执行复杂推理、代码生成和多轮对话。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 从提示工程到RAG 和 §1.2.1 AI大模型基本原理及API使用 的核心概念。LLM 是整个 AI 应用开发的基础设施——所有提示工程、RAG、Agent 技术都建立在 LLM 之上。<br><br><b>什么是 LLM</b><br>Large Language Model，参数规模通常在十亿(B)到万亿级别。基于 Transformer 架构，在海量文本数据上训练，获得理解和生成自然语言的能力。GPT-4 约 1.7 万亿参数，训练数据涵盖互联网文本、书籍、代码等。<br><br><b>三阶段训练流水线</b><br>① 预训练(Pre-training)：在海量无标注文本上学习语言的统计规律，获得基本语言能力。成本最高（千万-亿美元级）<br>② 指令微调(SFT)：在人工标注的 Q&A 对上训练，让模型学会遵循指令。数据格式：{\"messages\":[{\"role\":\"system\"},{\"role\":\"user\"},{\"role\":\"assistant\"}]}<br>③ 人类反馈强化学习(RLHF)：用人类偏好数据训练奖励模型，再用 PPO 算法优化模型输出，使其更符合人类期望。新兴替代方案 DPO 更简单且稳定<br><br><b>核心概念</b><br>Token：文本的基本单位，GPT 系列 1 token ≈ 0.75 英文单词 ≈ 1.5 汉字。模型按 token 计费<br>Context Window：模型一次能处理的最大 token 数，从 GPT-2 的 1K 到 GPT-4-Turbo 的 128K<br>Temperature：控制输出随机性，0=确定性(适合事实性任务)，1=创造性(适合写作)<br>Emergent Abilities：模型规模达到一定阈值后突然出现的能力(如逻辑推理、代码生成)，这些能力在小型模型中不存在<br><br><b>主要模型家族</b><br>OpenAI GPT 系列(GPT-3.5/GPT-4/GPT-4o)、Anthropic Claude 系列(Sonnet/Opus)、Google Gemini、Meta LLaMA(开源)、阿里 Qwen(通义千问)、智谱 GLM(ChatGLM)、DeepSeek(国产开源强推理)、Mistral(欧洲开源)<br><br><b>延伸节点</b><br>§1.1.1 提示工程与RAG | §1.2.1 AI大模型基本原理及API使用 | §2.3 模型训练与微调 | §3.3 HuggingFace生态 | §3.5 PyTorch"
+  },
+  {
+    "Word": "GPT",
+    "Pronunciation": "/ˌdʒiːˌpiːˈtiː/",
+    "Audio": "",
+    "Definition": "Generative Pre-trained Transformer（生成式预训练Transformer）——OpenAI开发的基于Transformer架构的大语言模型系列",
+    "ExampleEN": "GPT-4 demonstrated significant improvements in reasoning, multilingual capability, and multimodal understanding over GPT-3.",
+    "ExampleCN": "GPT-4 在推理能力、多语言能力和多模态理解方面相比 GPT-3 有显著提升。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 和 §1.2.1 的核心概念。GPT 系列是最具代表性的大语言模型家族，理解 GPT 的演进是理解整个 LLM 领域发展的最佳切入点。<br><br><b>GPT 系列演进</b><br>GPT-1 (2018)：1.17 亿参数，首次证明 Transformer 解码器 + 无监督预训练的有效性。使用 BooksCorpus 训练。<br>GPT-2 (2019)：15 亿参数，展示惊人的零样本迁移能力。OpenAI 最初因安全顾虑拒绝开源完整模型。<br>GPT-3 (2020)：1750 亿参数，提出 In-Context Learning 范式——不需要微调，只需给几个示例(Few-shot)就能完成新任务。<br>GPT-3.5/ChatGPT (2022)：加入指令微调 + RLHF，实现对话式交互。2 个月用户破亿，引爆 AI 应用浪潮。<br>GPT-4 (2023)：多模态(文本+图像)，1.7T 参数(推测)。在律师资格考试中超过 90% 考生。引入 System Message 机制。<br>GPT-4o (2024)：o=omni，原生多模态，实时语音对话，速度翻倍、价格减半。<br><br><b>核心技术架构</b><br>架构：Transformer Decoder-only。自回归生成——每次预测下一个 token，然后用预测结果继续预测。<br>训练三阶段：海量文本预训练 → 人工标注指令微调(SFT) → 人类偏好强化学习(RLHF)<br>Token 化：GPT-3 词表 50257 tokens。1 token ≈ 0.75 英文单词 ≈ 1.5 汉字。<br><br><b>GPT 命名惯例</b><br>GPT = Generative Pre-trained Transformer。数字代表代际跃迁(1→2→3→4)，后缀代表特性(turbo=速度优化，o=omni 多模态)。<br><br><b>延伸节点</b><br>§1.2.1 AI大模型基本原理及API使用 | §2.3 模型训练与微调 | §3.3 HuggingFace生态 | §1.3.1 企业级AI部署"
+  },
+  {
+    "Word": "Embedding",
+    "Pronunciation": "/ɪmˈbedɪŋ/",
+    "Audio": "",
+    "Definition": "Embedding（向量嵌入）——将文本、图像等非结构化数据转换为固定长度的数值向量，使语义相近的内容在向量空间中距离更近",
+    "ExampleEN": "Sentence embeddings convert paragraphs into dense vectors that capture semantic meaning for similarity search.",
+    "ExampleCN": "句子向量嵌入将段落转换为捕获语义信息的稠密向量，用于相似度搜索。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 和 §2.1.1 的核心概念。Embedding 是 RAG 检索的基础设施，也是所有 NLP 任务中文本表示的标准方法。<br><br><b>什么是 Embedding</b><br>将非结构化数据(文本/图片/音频)映射为固定维度的稠密浮点数向量。核心特性：语义相近的文本，其向量在空间中的距离也相近。维度通常为 384/768/1024/1536(OpenAI ada-002)，维度越高表达能力越强但存储成本也越大。<br><br><b>关键概念</b><br>稠密 vs 稀疏：Embedding 是稠密向量(大部分值非零)，One-Hot 是稀疏向量(只有一个 1)。稠密向量的优势是能捕捉语义相似性。<br>距离度量：Cosine Similarity(余弦相似度)最常用，也使用 Euclidean Distance(欧氏距离)和 Dot Product(点积)。<br>Cosine(a,b) = a·b / (|a|×|b|)，值域 [-1,1]，1=完全相同，0=无关，-1=完全相反。<br><br><b>主流 Embedding 模型</b><br>OpenAI：text-embedding-ada-002 (1536维)，text-embedding-3-small/large(支持 Matryoshka 学习，可截断维度)<br>中文：BAAI/bge-large-zh-v1.5 (1024维, MTEB 中文榜首)、M3E (768维, Moka 开源, 中文社区流行)<br>英文：all-MiniLM-L6-v2 (384维, 轻量快速)、BGE-large-en (1024维, MTEB 榜首)<br><br><b>选型考量</b><br>维度：384(轻量) vs 768(平衡) vs 1536(高精度)。维度翻倍 = 存储翻倍 + 检索略慢。<br>最大序列长度：512 token 的模型处理不了长文档，需要先分块。<br>multilingual vs Chinese-only：英文为主用英语模型，中文为主必须用中文优化模型(BGE/M3E)。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库 | §2.1.2 RAG技术与应用 | MTEB Benchmark | §6.1 RAG面试辅导"
+  },
+  {
+    "Word": "Vector Database",
+    "Pronunciation": "/ˈvektər ˈdeɪtəbeɪs/",
+    "Audio": "",
+    "Definition": "Vector Database（向量数据库）——专门存储和检索向量化数据的数据库系统，支持基于语义相似度的近似最近邻搜索",
+    "ExampleEN": "ChromaDB and FAISS are popular vector databases used to store document embeddings for RAG pipelines.",
+    "ExampleCN": "ChromaDB 和 FAISS 是常用的向量数据库，用于存储 RAG 管道的文档向量嵌入。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 和 §2.1.1 的核心基础设施。向量数据库是 RAG 系统存储和检索 Embedding 的关键组件。<br><br><b>为什么需要向量数据库</b><br>传统数据库(B树/哈希)只能做精确匹配或范围查询，无法支持语义搜索。向量数据库通过近似最近邻(ANN)算法实现对高维向量的快速相似度搜索。核心挑战：维度灾难——随着向量维度增加，传统精确搜索(O(n×d))的速度线性下降，ANN 算法通过牺牲少量精度换取百倍速度提升。<br><br><b>主流方案对比</b><br>FAISS: Meta 开源，纯C++引擎+Python接口。性能极高，支持GPU加速。缺点：内存中运行，需手动持久化。适合研究/原型。<br>ChromaDB: 开源商业友好，Python-native。自动持久化，支持元数据过滤。适合中小规模生产。<br>LanceDB: 嵌入式(无独立服务)，支持向量+全文+SQL过滤的混合查询。速度快，native持久化。适合嵌入应用。<br>Pinecone: 商业SaaS，免运维，自动扩缩。适合不想管基础设施的团队。<br>Qdrant/Milvus: 企业级分布式向量数据库。支持十亿级向量。适合大规模生产。<br><br><b>索引算法</b><br>HNSW(Hierarchical Navigable Small World): 图索引，检索快，构建慢，内存占用大。适合读多写少。<br>IVF(Inverted File): 聚类+倒排，构建快，检索需要调参(nprobe)。适合写多读少。<br>PQ(Product Quantization): 压缩向量，内存小但精度略降。适合内存受限场景。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库 | §2.1.2 RAG技术与应用 | §2.1.4 RAG调优 | §5.1 企业RAG冠军项目"
+  },
+  {
+    "Word": "ChromaDB",
+    "Pronunciation": "/ˈkroʊmə ˌdiːˈbiː/",
+    "Audio": "",
+    "Definition": "ChromaDB（Chroma向量数据库）——轻量级开源向量数据库，内置 embedding 功能，支持内存模式和持久化存储",
+    "ExampleEN": "ChromaDB's in-memory mode is perfect for rapid RAG prototyping before switching to persistent storage for production.",
+    "ExampleCN": "ChromaDB 的内存模式非常适合 RAG 快速原型开发，之后可切换到持久化存储用于生产环境。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。ChromaDB 是 RAG 管道中向量数据库组件的入门首选，也是知识图谱代码实战中 simple_rag.py 的核心依赖。<br><br><b>核心概念</b><br>ChromaDB 是一款轻量级开源向量数据库，专为 LLM 应用开发设计。它内置了 embedding 功能——默认使用 all-MiniLM-L6-v2 (384维) 模型将文本自动转为向量，开发者无需单独安装 embedding 库即可搭建 RAG 管道。ChromaDB 提供两种运行模式: ① in-memory 模式(内存中运行，适合快速原型验证，数据进程结束后丢失) ② PersistentClient 持久化模式(数据落盘，适合生产环境)。它原生支持 metadata 过滤——可以在检索时按文档来源、时间、类别等元数据进行过滤，提升检索精度。同时提供简单的 collection API(类比 MySQL 中的表)，支持增删改查和向量相似度搜索。与其他向量数据库相比，ChromaDB 的优势在于 Python-native 设计、零配置、启动快，缺点是大规模场景下性能不如 FAISS/Milvus。<br><br><b>关键要点</b><br>① 安装: pip install chromadb ② 创建 client: chromadb.Client()(内存) 或 chromadb.PersistentClient(path=\"./db\")(持久化) ③ 创建 collection: client.create_collection(name=\"docs\") ④ 添加数据: collection.add(documents=[...], ids=[...]) ⑤ 检索: collection.query(query_texts=[...], n_results=5) ⑥ 生产环境必须替换 default embedding 为更强的模型(如 BAAI/bge-large-zh-v1.5) ⑦ metadata 过滤示例: collection.query(query_texts=[...], where={\"source\": \"manual\"})<br><br><b>延伸节点</b><br>§1.1.1 RAG 工作流代码实战 | §2.1.1 Embeddings 和向量数据库 | §2.1.4 RAG 调优 | Vector Database 对比"
+  },
+  {
+    "Word": "Chunking Strategy",
+    "Pronunciation": "/ˈtʃʌŋkɪŋ ˈstrætədʒi/",
+    "Audio": "",
+    "Definition": "Chunking Strategy（分块策略）——将长文档切分成小块的规则，决定块大小、重叠量和方法，直接影响RAG检索质量",
+    "ExampleEN": "A good chunking strategy uses 256-1024 token blocks with 10-20% overlap to prevent information fragmentation.",
+    "ExampleCN": "一个好的分块策略使用 256-1024 token 的块大小和 10%-20% 的重叠量，以防止信息断裂。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。分块策略是 RAG 检索质量的\"第一性原理\"——文档切分方式直接决定了检索结果的质量上限，好的分块策略比好的 LLM 更关键。<br><br><b>核心概念</b><br>Chunking Strategy 决定了长文档如何被切成可检索的语义单元。核心矛盾: 块太小则丢失上下文(一个完整概念被拆成两份)，块太大则稀释关键信息(检索返回一坨无关内容)。最佳实践: 块大小 256-1024 tokens，块之间留 10%-20% 重叠(overlap)——重叠保证了块边界处的语义不被切断。分块方法: ① 固定长度分块: 最简单的方案，按 token 数切分。优点: 简单可控。缺点: 可能在句子中间切断 ② 递归分块(RecursiveCharacterTextSplitter): 按分隔符优先级(段落→句子→词)递归切分，尽量保持语义完整性 ③ 语义分块(Semantic Chunking): 用 embedding 计算相邻句子的相似度，在相似度低谷处切分——真正\"按语义切块\"，效果最好但计算成本高 ④ 句子窗口分块: 以句为单位，加上前后各 k 句做上下文窗口。适合 Q&A 场景。<br><br><b>关键要点</b><br>① 中文文档: 建议按 512-1024 字符切分，overlap 200 字符 ② 代码文档: 按函数/类边界切分 ③ 表格数据: 宽表可能超出 embedding 模型的 max_seq_len(512 token)，需先处理 ④ 分块并非一成不变——不同场景需要不同的分块策略，需通过实验(AB test 检索准确率)确定最佳参数<br><br><b>延伸节点</b><br>§1.1.1 RAG 关键设计点 | §2.1.4 RAG 调优 | LangChain TextSplitters | LlamaIndex NodeParser"
+  },
+  {
+    "Word": "Re-ranking",
+    "Pronunciation": "/riːˈræŋkɪŋ/",
+    "Audio": "",
+    "Definition": "Re-ranking（重排序）——用更强的模型对初步检索结果进行二次排序，提升检索精确度",
+    "ExampleEN": "After initial retrieval returns top-20 candidates, a cross-encoder re-ranking model selects the most relevant top-5 for the LLM.",
+    "ExampleCN": "在初步检索返回前 20 个候选后，交叉编码器重排序模型选出最相关的前 5 个给 LLM。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。Re-ranking 是 RAG 管道\"粗筛+精排\"两阶段检索的第二阶段，把检索从\"找到相关内容\"升级为\"找到最相关的内容\"。<br><br><b>核心概念</b><br>RAG 的第一步检索(Bi-Encoder 或向量检索): 速度快、覆盖广，但精度有限——可能在 Top-20 结果里只有 5-8 个真正相关。Re-ranking 用更强的模型(Cross-Encoder)对初检的 Top-K 结果进行精细排序: 将每个(Query, Document)对一起输入模型，输出精确的相关性分数。Cross-Encoder 之所以精度高于 Bi-Encoder，是因为它看到了 Query 和 Document 的交互信息(而非独立编码后算相似度)——它能理解\"查询中的A与文档中的B是什么关系\"。但代价是计算量翻倍(每个 query-doc pair 都要跑一次编码)，所以只用于 Top-K 重排而不用在全量检索。典型流程: 向量检索取 Top-20 → Cross-Encoder 重排取 Top-5 → 送入 LLM 生成答案。实践中，重排序后 RAG 的答案准确率通常能提升 10-20%。<br><br><b>关键要点</b><br>① 常用 Cross-Encoder 模型: BAAI/bge-reranker-large, Cohere Rerank API ② 初检 K 值: 通常取 Top-20 到 Top-50 ③ 重排后 K 值: 通常取 Top-3 到 Top-10 ④ 重排模型比 embedding 模型大得多(约 300M-1B 参数)，延迟在 10-100ms per pair<br><br><b>延伸节点</b><br>§1.1.1 RAG 关键设计点 | §2.1.4 RAG 调优 | Bi-Encoder vs Cross-Encoder | Cohere Rerank"
+  },
+  {
+    "Word": "Hybrid Search",
+    "Pronunciation": "/ˈhaɪbrɪd sɜːrtʃ/",
+    "Audio": "",
+    "Definition": "Hybrid Search（混合检索）——将向量检索（语义相似）和关键词检索（BM25）的结果合并排序，互补语义理解和精确匹配",
+    "ExampleEN": "Hybrid search combines vector similarity for semantic understanding with BM25 for exact keyword matching, outperforming either alone.",
+    "ExampleCN": "混合检索将向量语义相似度与 BM25 精确关键词匹配相结合，效果优于单独使用任一方法。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 的检索优化方案，§2.1.4 RAG调优中深入展开。混合检索是提升RAG准确率最直接有效的手段。<br><br><b>为什么需要混合检索</b><br>纯向量检索有三大盲区：① 对精确匹配不友好——订单号ORD-12345在向量空间中可能与任何向量都不相似 ② 同义词干扰——向量检索把同义词视为相似但可能不相关 ③ 低频术语——稀疏词在训练数据中占比低，Embedding表示不准确。BM25关键词检索恰好弥补这些盲区：对精确匹配、低频术语、专有名词极其准确。<br><br><b>融合方法</b><br>RRF(Reciprocal Rank Fusion): 最常用的无监督融合。score(d)=sum(1/(k+rank_i(d)))，k=60是经验最优值。无需训练、无需调参、无需归一化不同检索器的score分布。实践效果：混合检索比纯向量检索准确率提升10-15%。<br><br><b>BM25原理</b><br>TF-IDF的现代改进版。核心公式：score(D,Q)=sum(IDF(q_i)×f(q_i,D)×(k1+1)/(f(q_i,D)+k1×(1-b+b×|D|/avgdl)))。k1控制词频饱和(通常1.2-2.0)，b控制文档长度归一化(通常0.75)。<br><br><b>延伸节点</b><br>§2.1.4 RAG调优 | §2.1.3 检索策略优化 | RRF论文(Cormack 2009) | §5.1 企业RAG冠军项目"
+  },
+  {
+    "Word": "BM25",
+    "Pronunciation": "/ˌbiːˈem ˈtwenti faɪv/",
+    "Audio": "",
+    "Definition": "Best Matching 25（Best Match 25）——经典的关键词检索排序算法，基于词频和逆文档频率计算文档与查询的相关性",
+    "ExampleEN": "BM25 excels at matching exact terms like product codes and legal references where semantic similarity falls short.",
+    "ExampleCN": "BM25 擅长匹配精确术语，如产品代码和法律条款引用，这是语义相似度检索的薄弱环节。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。BM25 是混合检索(Hybrid Search)中的关键词检索组件，与向量检索(Vector Search)形成互补，解决纯向量检索对精确关键词不敏感的盲区。<br><br><b>核心概念</b><br>BM25(Best Match 25)是 TF-IDF 的现代改进版，也是信息检索领域使用最广泛的关键词排序算法。核心原理: BM25 通过三因子计算文档相关性——① TF(Term Frequency)项: 词频对相关性的贡献不是线性的，达到某个饱和点后词再多也没额外加分(参数 k1 控制饱和曲线，通常 1.2-2.0) ② IDF(Inverse Document Frequency)项: 稀有词的权重高，常见词(如\"的\"/\"the\")权重趋近于零 ③ 文档长度归一化: 长文档天然包含更多词，需要惩罚(参数 b 控制惩罚强度，通常 0.75，b=0 不惩罚长文档，b=1 完全按比例惩罚)。与向量检索的互补关系: 向量检索擅长语义相似但不擅长精确匹配——订单号 ORD-12345 在向量空间中可能与任何向量都不相似；BM25 恰好擅长精确匹配和低频术语。混合检索的核心公式: score_final = α×score_vector + (1-α)×score_bm25，或使用 RRF(Reciprocal Rank Fusion)无监督融合。<br><br><b>关键要点</b><br>① BM25 不需训练，不需 GPU，代码库成熟(Elasticsearch/rank_bm25 等) ② 混合检索(向量+BM25)比纯向量检索准确率提升 10-15% ③ 对于产品代码、法律法规、药品名称等\"精确匹配\"场景，BM25 不可替代<br><br><b>延伸节点</b><br>§1.1.1 混合检索(Hybrid Search) | §2.1.4 RAG 调优 | RRF 论文(Cormack 2009) | Elasticsearch BM25"
+  },
+  {
+    "Word": "Agent",
+    "Pronunciation": "/ˈeɪdʒənt/",
+    "Audio": "",
+    "Definition": "AI Agent（智能体）——能自主感知环境、制定计划、调用工具、执行行动并自我反思的AI系统，不只是回答问题而是主动完成任务",
+    "ExampleEN": "An AI agent can plan a multi-step task, search the web, write code, execute it, check results, and fix errors autonomously.",
+    "ExampleCN": "AI Agent 可以自主规划多步骤任务，搜索网络、编写代码、执行代码、检查结果并修正错误。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.2 和 §2.2 全部的核心概念。Agent是2025-2026 AI应用最热方向，能清晰讲清楚Agent设计和调优的候选人非常稀缺。<br><br><b>Agent vs 传统LLM</b><br>传统LLM：一问一答，无记忆，无工具，被动响应。Agent：自主感知环境→制定计划→调用工具→执行行动→反思结果→循环迭代。核心差异在于自主性和工具使用。<br><br><b>ReAct范式</b><br>Reasoning + Acting。Thought(推理)→Action(调用工具)→Observation(观察结果)→Thought→...直到得到Final Answer。相比纯推理(CoT)多了工具调用，相比纯行动(Act-only)多了推理规划。<br><br><b>Agent架构组件</b><br>① 规划器(Planner): 将复杂任务拆解为子任务 ② 记忆(Memory): 短期(对话上下文)+长期(向量数据库持久化) ③ 工具集(Tools): 搜索、代码执行、API调用、数据库查询 ④ 执行器(Executor): 按规划调用工具 ⑤ 评估器(Evaluator): 检查结果质量、触发重试或重规划<br><br><b>多Agent系统</b><br>单Agent+多工具: 一个大脑+多个手脚，适合中等复杂度任务。多Agent协作: 每个Agent有独立角色+工具集+记忆，通过消息通信。AutoGen/CrewAI等框架支持。<br><br><b>延伸节点</b><br>§2.2.1 Function Calling与MCP | §2.2.2 Agent自主规划 | §2.2.3 Agent评估 | §5.2 OpenManus | §5.5 Hermes多Agent"
+  },
+  {
+    "Word": "ReAct",
+    "Pronunciation": "/riːˈækt/",
+    "Audio": "",
+    "Definition": "ReAct（Reasoning + Acting）——Agent核心框架，将思维链推理(Thought)与工具调用(Action)组合成循环，直至得出最终答案",
+    "ExampleEN": "ReAct prompts the model to output Thought, Action, Observation triples in a loop until it reaches a Final Answer.",
+    "ExampleCN": "ReAct 要求模型循环输出\"思考-行动-观察\"三元组，直到得出最终答案。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.2 Agent从可控性到自主反思的核心范式。ReAct是理解Agent工作原理的最简模型——把推理(Reasoning)和行动(Acting)融合在一个循环中。<br><br><b>ReAct循环详解</b><br>Step 1 Thought: 分析当前状态，推理下一步应该做什么。不是随便想，而是基于已有信息做逻辑推导。<br>Step 2 Action: 执行具体的工具调用。可以是搜索、计算、查询数据库、执行代码等。必须有明确的Action Input(工具参数)。<br>Step 3 Observation: 工具返回的结果——可能是搜索结果摘要、计算结果、错误信息等。这个结果被追加到上下文中。<br>Step 4 回到Thought: 分析Observation结果。如果信息足够了→输出Final Answer。如果还不够→继续下一轮。最多执行max_steps轮(通常5-10轮)。<br><br><b>vs其它推理方法</b><br>CoT(Chain of Thought): 只有推理没有行动，适合纯数学/逻辑题。ReAct: 推理+行动，适合需要调用外部工具的复杂任务。Plan-and-Solve: 先制定全局计划再逐步执行，适合长期多步骤任务。<br><br><b>面试要点</b><br>能现场手写一个ReAct Agent(50行Python)是极大的加分项。展示对Thought→Action→Observation循环的理解，比背定义重要得多。<br><br><b>延伸节点</b><br>§1.1.2 Agent可控性与自反思 | §2.2.2 Agent自主规划 | §5.5 Hermes多Agent | §6.2 Agent面试辅导"
+  },
+  {
+    "Word": "CoT",
+    "Pronunciation": "/ˌsiːˌoʊˈtiː/",
+    "Audio": "",
+    "Definition": "Chain of Thought（思维链）——让模型在给出最终答案前将推理过程一步步显式写出的提示技术，把隐式计算变成显式推理",
+    "ExampleEN": "Chain of Thought prompting dramatically improves accuracy on arithmetic and multi-step reasoning tasks by making the reasoning explicit.",
+    "ExampleCN": "思维链提示通过让推理过程显式化，大幅提升了算术和多步推理任务的准确率。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.2 Agent从可控性到自主反思 的核心推理技术。CoT 是 LLM 推理能力的里程碑式发现——不是改变模型架构，只是改变提问方式。<br><br><b>什么是CoT</b><br>Chain of Thought，思维链。在 prompt 中加入「让我们一步步思考」或给出推理范例，引导 LLM 将复杂问题拆解为多个中间步骤，逐步推理得出最终答案。2022年 Google 论文首次提出。<br><br><b>为什么有效</b><br>① 分解复杂问题：将多步推理问题分解为单步子问题，每个子问题单独求解难度大幅降低。<br>② 暴露推理过程：中间步骤让模型有更多「思考空间」(更多 token 用于推理计算)。<br>③ 错误可追溯：如果最终答案错了，可以从中间步骤定位推理断点。<br><br><b>变体</b><br>Zero-shot CoT: 「Lets think step by step」一句魔法咒语即可激活推理能力。<br>Few-shot CoT: 给 2-3 个带完整推理过程的范例。<br>Self-Consistency: 多次采样 CoT，取多数答案。对数学题效果显著(准确率提升 10-30%)。<br>Auto-CoT: 自动生成 CoT 范例，无需人工标注。<br><br><b>延伸节点</b><br>§1.1.2 Agent可控性与自反思 | §2.2.2 Agent自主规划 | Self-Consistency论文(Wang et al. 2022)"
+  },
+  {
+    "Word": "Self-Reflection",
+    "Pronunciation": "/self rɪˈflekʃən/",
+    "Audio": "",
+    "Definition": "Self-Reflection（自主反思）——Agent在完成每一步后审视自己的输出，发现错误并自行修正的能力",
+    "ExampleEN": "Self-reflection uses a critic prompt to have the agent evaluate its own reasoning steps and identify potential errors before finalizing.",
+    "ExampleCN": "自主反思使用评估提示词让 Agent 评估自己的推理步骤，在最终确认前识别潜在错误。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.2 Agent从可控性到自主反思 的高级 Agent 能力。自反思让 Agent 从「执行后就忘」提升到「能从错误中学习」。<br><br><b>什么是自反思</b><br>Agent 在执行完一轮 ReAct 循环后，对自己的输出进行自我评估和批评，识别错误或不足之处，然后基于反思结果调整策略重新执行。这是一个「执行→反思→改进→再执行」的元认知循环。<br><br><b>三层自反思机制</b><br>① 前置反思：执行前自问「这个方案有什么潜在风险？」<br>② 中置反思：每一步推理后自问「这条信息的依据是什么？推理是否有跳跃？」——这直接对抗 Hallucination<br>③ 后置反思：生成最终答案前自问「答案是否完整回应了问题？是否有事实错误？」<br><br><b>实现方式</b><br>Critic Prompt: 专门设计一个「评审员」prompt，让 LLM 以第三方视角评估自己的输出。<br>Self-Verification: 要求模型在输出答案前先生成一个验证步骤。<br>Reflexion: Shinn et al.(2023)提出的框架，将环境反馈融入反思循环。<br><br><b>延伸节点</b><br>§1.1.2 Agent可控性与自反思 | §2.2.3 Agent评估 | §5.4 Hermes长期记忆(自进化引擎)"
+  },
+  {
+    "Word": "Function Calling",
+    "Pronunciation": "/ˈfʌŋkʃən ˈkɔːlɪŋ/",
+    "Audio": "",
+    "Definition": "Function Calling（函数调用）——让LLM通过严格的JSON Schema格式调用外部工具/API，而非用自然语言\"假装\"调用",
+    "ExampleEN": "Function Calling enforces structured JSON output like {\"name\":\"get_weather\",\"arguments\":{\"city\":\"Beijing\"}} instead of free-form text.",
+    "ExampleCN": "函数调用强制输出结构化JSON如{\"name\":\"get_weather\",\"arguments\":{\"city\":\"北京\"}}，而非自由格式文本。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.2 Agent从可控性到自主反思 和 §2.2.1 的核心机制。Function Calling 是 LLM 连接外部世界的桥梁——让模型不仅能「说」，还能「做」。<br><br><b>什么是 Function Calling</b><br>不是模型真的调用函数，而是模型输出 JSON 格式的函数调用请求，由调用方(你的代码)解析后执行，执行结果再返回给模型。这是一个「模型声明意图→代码执行→结果反馈」的协议。<br><br><b>完整流程</b><br>① 定义工具：在 API 请求中声明 tools 列表，每个 tool 包含 name、description(关键！)、parameters(JSON Schema)<br>② 模型决策：LLM 判断用户意图是否需要调用工具。如果需要→输出 tool_calls，包含 function.name 和 function.arguments<br>③ 你的代码执行：解析 arguments JSON→调用实际函数→获得结果<br>④ 结果反馈：将 tool_call_id + 函数返回值追加到 messages 中<br>⑤ 模型生成最终回复：基于工具返回结果生成自然语言回答<br><br><b>最佳实践</b><br>description 是成败关键——清晰描述「何时用这个工具」比参数定义更重要。<br>参数类型要严格：required 数组标记必填参数，enum 约束可选值。<br>并行调用：OpenAI 支持在一次请求中返回多个 tool_calls，同时调用多个独立工具。<br><br><b>延伸节点</b><br>§2.2.1 Function Calling与MCP | §2.2.2 Agent自主规划 | §5.5 Hermes多Agent"
+  },
+  {
+    "Word": "Human-in-the-Loop",
+    "Pronunciation": "/ˈhjuːmən ɪn ðə luːp/",
+    "Audio": "",
+    "Definition": "Human-in-the-Loop（人机协同）——在Agent执行关键操作（发邮件、删数据、付款）前必须经过人工审批的安全机制",
+    "ExampleEN": "Human-in-the-loop approval is mandatory before the agent sends external emails, modifies production configs, or processes payments.",
+    "ExampleCN": "Agent在发送对外邮件、修改生产配置或处理付款之前，必须经过人工审批。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.2。Human-in-the-Loop 是 Agent 安全机制的最后一层防线——当 Agent 要做\"不可逆的事\"时，必须停下来等人类批准。<br><br><b>核心概念</b><br>HITL(Human-in-the-Loop)是人类在 AI Agent 决策环路中设置审批节点的安全机制。Function Calling 只能保证 Agent 输出的格式正确(JSON Schema 约束的 tool_calls)，但不能保证 Agent \"该不该调用这个工具\"。想象一个能发邮件、删数据库的 Agent——你需要它在点击\"发送\"之前问你一声。HITL 的介入原则: 该介入的场景——涉及金钱交易(付款、退款)、删除数据(删表、删记录)、发送对外消息(邮件、短信)、修改生产配置(数据库参数、API 路由)；不该介入的场景——纯信息查询、数据分析、格式转换、文档生成(这些让 Agent 自由发挥效率更高)。实现方式: ① 人工审批界面:Agent 执行前弹出确认对话框 ② 规则引擎: 预设规则(金额 > 1000 元需审批) ③ 多级审批: 小改动自动通过、中等改动主管审批、大改动需要多重审批。<br><br><b>关键要点</b><br>① HITL 是 Agent 安全三要素之一: 安全围栏(规则引擎) + 工具白名单 + 速率限制 + HITL ② 关键设计: 审批不能太久(>30秒)，否则用户体验差 ③ 审批日志必须记录(审计要求) ④ 过度使用 HITL 会降低 Agent 的自主性——只在真正不可逆的操作前介入<br><br><b>延伸节点</b><br>§1.1.2 Agent 可控性与自反思 | §2.2.3 Agent 安全 | Function Calling | Tool White List"
+  },
+  {
+    "Word": "JSON Schema",
+    "Pronunciation": "/ˌdʒeɪˌesˈoʊn ˈskiːmə/",
+    "Audio": "",
+    "Definition": "JSON Schema（JSON模式）——定义JSON数据结构规范的词汇表，在Function Calling中严格约束LLM输出的工具调用格式",
+    "ExampleEN": "The JSON Schema defines required fields, parameter types, and value constraints so the model outputs structured calls programmatically.",
+    "ExampleCN": "JSON Schema 定义了必需字段、参数类型和值约束，使模型能够以编程方式输出结构化调用。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.2, §1.2.1。JSON Schema 是 Function Calling 的\"接口文档\"——它告诉 LLM 如何输出结构化的工具调用，而不是自由格式文本。<br><br><b>核心概念</b><br>JSON Schema 是一种定义 JSON 数据结构的词汇表标准(Draft 2020-12)，在 Function Calling 中扮演关键角色。知识图谱 §1.1.2 明确指出: \"Function Calling + JSON 约束\"是控制 Agent 幻觉的三板斧之一——工具调用用严格的 JSON Schema，输入输出格式固定，就像填表格而不是写作文，不会跑题。一个完整的 Function Calling JSON Schema 包含: ① name: 函数名(LLM 以此识别要调哪个工具) ② description: 函数用途说明(这是成败关键——清晰描述\"何时用这个工具\"比参数定义更重要) ③ parameters: 用 JSON Schema 规范定义参数类型(type)、必填项(required 数组)、可选值(enum)、参数描述(description) ④ strict 模式(某些 API 支持): 强制 LLM 输出必须完全符合 Schema，否则报错。正确的 Schema 设计能让 LLM 的 tool_calls 输出可编程解析(JSON 直接 load)，错误的 Schema 则导致参数格式错误或调用不存在的工具。<br><br><b>关键要点</b><br>① 参数类型: string/number/boolean/object/array ② required 标记必填参数 ③ description 字段比 type 更重要——LLM 靠描述理解参数含义 ④ enum 约束可选值范围 ⑤ 嵌套 Schema: 复杂参数用 object 类型定义子字段<br><br><b>延伸节点</b><br>§2.2.1 Function Calling 与 MCP 实战 | §1.2.1 DashScope tools 参数 | OpenAI Function Calling 文档 | JSON Schema 官网(spec)"
+  },
+  {
+    "Word": "Multimodal",
+    "Pronunciation": "/ˌmʌltiˈmoʊdəl/",
+    "Audio": "",
+    "Definition": "Multimodal（多模态）——AI模型能同时理解和生成多种信息形式（文本、图像、音频、视频），类比人类的多感官感知",
+    "ExampleEN": "Multimodal models like GPT-4V can analyze a photograph, read text within it, and answer questions about the combined visual and textual content.",
+    "ExampleCN": "像 GPT-4V 这样的多模态模型可以分析照片，读取其中的文字，并回答关于视觉和文本组合内容的问题。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。多模态是 AI 进化的必经之路——人类 80% 的信息获取靠视觉，如果 AI 只能读文字，它永远是\"半盲\"的。多模态 AI 就是让模型同时理解和生成文字、图像、音频、视频。<br><br><b>核心概念</b><br>模态(Modality)指信息的形式: 文本、图像、音频、视频各是一种模态。人类天生就是多模态的——我们同时听+看+读+说。传统的 AI 模型(如纯文本 LLM)只处理单一模态，多模态模型则通过各自模态的编码器将不同形式的信息统一映射到 LLM 可理解的向量空间中。多模态 Agent 的核心设计: 将视觉/听觉能力封装为 Tool——与 Agent 调用搜索工具一样，Agent 可以调用\"看图工具\"来分析用户发送的图片，调用 ASR 工具来理解语音输入。三个关键设计点: ① 统一输入分发: 不同模态经各自编码器处理(CLIP 编码图片、Whisper 编码语音)后统一送入 LLM 推理 ② 工具封装: 视觉模型、ASR、TTS 各封装为独立 Tool，Agent 按需调用 ③ 结果融合: Agent 无需关心数据来自哪种模态，统一推理出最终答案。示例: 用户发一张冰箱内部照片，Agent 调用视觉模型识别食材→搜索菜谱→推荐晚餐方案。<br><br><b>关键要点</b><br>① 代表模型: GPT-4V/GPT-4o(多模态理解)、Gemini(原生多模态) ② 多模态编码器: CLIP(文图对齐)、ViT(视觉编码) ③ 商用场景: 视频检索、图片问答、语音助手、医学影像分析<br><br><b>延伸节点</b><br>§1.1.3 多模态 Agent 构建 | §2.3.4 视觉与多模态模型 | §3.5.3 图像识别 | CLIP | ViT"
+  },
+  {
+    "Word": "AIGC",
+    "Pronunciation": "/ˌeɪˌaɪˌdʒiːˈsiː/",
+    "Audio": "",
+    "Definition": "AI Generated Content（人工智能生成内容）——用AI从零生成文本、图像、音频、视频等内容",
+    "ExampleEN": "AIGC is reshaping the content creation industry, with models like Sora generating videos and DALL-E creating images from text descriptions.",
+    "ExampleCN": "AIGC 正在重塑内容创作行业，Sora 等模型生成视频，DALL-E 根据文本描述创作图像。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。AIGC(AI Generated Content)代表了 AI 从\"分析工具\"到\"内容创作者\"的范式转变——不是分类/识别/预测已有数据，而是从零创造新内容。<br><br><b>核心概念</b><br>AIGC 与传统分析式 AI 的本质区别: 分析式 AI 做分类(垃圾邮件识别)、识别(人脸识别)、预测(股价预测)——输入数据输出标签；AIGC 做生成(写文章、画图、做视频)——输入描述输出原创内容。AIGC 覆盖四大生成模态: ① 文本生成: ChatGPT/Claude 写文章、翻译、写代码 ② 图像生成: DALL-E/Midjourney/SD 文生图、图生图 ③ 音频生成: 语音合成(TTS)、音乐生成 ④ 视频生成: Sora/Kling/Runway 文本生成视频。AIGC 正在重塑内容创作行业——广告公司用 Midjourney 生成创意素材、教育机构用合成语音制作课件、影视行业用 AI 生成特效镜头。视频 AIGC 是当前技术挑战最大的方向——不仅要每帧图像真实，还要帧与帧之间保持时序一致性(运动连贯不失真)。<br><br><b>关键要点</b><br>① 视频生成代表模型: OpenAI Sora(物理规律理解好)、快手可灵 Kling(国内可用，1080p 最长 2 分钟)、Runway Gen-3(电影级画质) ② 生成类+理解类模型共同构成多模态 AI 全景 ③ AIGC 的内容版权和水印溯源是当前未解决的法律问题<br><br><b>延伸节点</b><br>§1.1.3 多模态 Agent | §1.1.3 视频 AIGC 详解 | §2.3.4 视觉与多模态模型 | Diffusion Model | Sora"
+  },
+  {
+    "Word": "Diffusion Model",
+    "Pronunciation": "/dɪˈfjuːʒən ˈmɒdl/",
+    "Audio": "",
+    "Definition": "Diffusion Model（扩散模型）——\"先破坏再重建\"的生成模型：训练时逐步加噪至纯噪声再学去噪，推理时从纯噪声逐步去噪生成内容",
+    "ExampleEN": "Diffusion models are the foundation of modern image and video generation, including Stable Diffusion, DALL-E, and Sora.",
+    "ExampleCN": "扩散模型是现代图像和视频生成的基础，包括 Stable Diffusion、DALL-E 和 Sora。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。扩散模型(Diffusion Model)是现代图像和视频生成的底层数学框架——Stable Diffusion、DALL-E、Sora 都基于扩散模型思想。<br><br><b>核心概念</b><br>扩散模型的核心理念是\"先破坏，再重建\"。训练阶段(正向扩散): 对真实图片逐步添加高斯噪声，经过 T 步(T 通常为 1000)后变为完全随机噪声。模型学习的是: 给定加了 t 步噪声的图片，预测第 t 步的噪声是什么(即反向去噪的能力)。推理阶段(反向去噪): 从纯随机噪声开始，模型逐步去噪，T 步后生成一张全新图片。核心优势: ① 不需要成对数据——不需要\"原图+精美图\"的配对训练数据，只需大量真实图片 ② 生成质量高——逐步优化的过程天然适合生成高质量细节 ③ 可控性强——通过文本条件(如 CLIP 文本编码器将提示词嵌入到去噪过程)实现文生图。视频生成的额外挑战: 不仅每帧要真实，帧与帧之间还要保持时序一致性——第 N 帧的人物位置/姿态必须与第 N-1 帧连贯，否则产生闪烁或抖动。Sora 通过 Diffusion Transformer 架构同时建模空间+时间维度来解决这一挑战。<br><br><b>关键要点</b><br>① 训练不需要标注数据，只需真实图片 ② 推理过程耗时较长(1000 步迭代)，需要 GPU 加速 ③ DPM-Solver/DDIM 等加速采样算法可将推理步数从 1000 降到 20-50 ④ Stable Diffusion 在 Latent Space 做扩散(压到 1/8 尺寸)，大幅降低计算量<br><br><b>延伸节点</b><br>§1.1.3 视频生成核心原理 | §2.3.4 视觉与多模态模型 | Stable Diffusion | Diffusion Transformer"
+  },
+  {
+    "Word": "CLIP",
+    "Pronunciation": "/klɪp/",
+    "Audio": "",
+    "Definition": "Contrastive Language-Image Pre-training（对比语言-图像预训练）——OpenAI提出的多模态模型，通过对比学习将文本和图像映射到同一向量空间",
+    "ExampleEN": "CLIP embeddings enable cross-modal retrieval, such as searching video keyframes using natural language descriptions.",
+    "ExampleCN": "CLIP 向量嵌入实现了跨模态检索，例如使用自然语言描述搜索视频关键帧。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。CLIP(Contrastive Language-Image Pre-training)是 OpenAI 2021 年提出的里程碑式多模态模型，它的核心贡献是实现了文本和图像的跨模态语义对齐。<br><br><b>核心概念</b><br>CLIP 通过对比学习(Contrastive Learning)将文本和图像映射到同一个向量空间中。训练方式: 同时输入一批(图像, 文本描述)对，CLIP 分别用图像编码器(ViT 或 ResNet)和文本编码器(Transformer)将它们编码为同维度的向量，然后计算所有可能配对的余弦相似度矩阵。训练目标: 正确的 (图像, 文本) 对的相似度应远高于错误的配对。效果: 训练完成后，文本\"一只猫\"和猫咪图片在向量空间中的距离很近，而\"一只狗\"和猫咪图片距离远。这实现了\"以图搜视频\"和\"以文搜图\"两种跨模态检索能力。在视频检索中，CLIP 是第一条路(视觉路)的编码器: 将视频抽帧后，用 CLIP 将每帧编码为向量存入向量数据库，用户搜索时同样用 CLIP 编码搜索词，实现语义级视频帧检索。CLIP 也是 Stable Diffusion 的文本编码基础——将提示词编码为控制扩散方向的向量。<br><br><b>关键要点</b><br>① 训练数据: 4 亿图文对(从互联网爬取) ② 对比损失: InfoNCE Loss ③ 零样本能力: 训练后无需微调即可完成图像分类(将类别名作为文本，选最匹配的图像) ④ 多种变体: SigLIP(sigmoid 替代 softmax)、BLIP(自回归+对比)<br><br><b>延伸节点</b><br>§1.1.3 视频检索原理 | §2.3.4 视觉与多模态模型 | Stable Diffusion | ViT | OpenAI CLIP 论文"
+  },
+  {
+    "Word": "ASR",
+    "Pronunciation": "/ˌeɪˌesˈɑːr/",
+    "Audio": "",
+    "Definition": "Automatic Speech Recognition（自动语音识别）——将语音信号转为文字的AI技术，视频检索中用于将音频轨道转为可搜索文本",
+    "ExampleEN": "ASR converts video narration into searchable text, enabling users to find specific moments by searching spoken content.",
+    "ExampleCN": "ASR 将视频旁白转为可搜索的文本，使用户能够通过搜索说话内容找到特定时刻。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。ASR(Automatic Speech Recognition)是视频检索管道中\"文本路\"的核心引擎——它将视频中的语音对话转为可被搜索的文字。<br><br><b>核心概念</b><br>视频检索需要三条数据路: ① 视觉路(CLIP 抽帧转向量) ② 文本路(ASR 将语音转文字，再经 Embedding 转向量) ③ 画面文字路(OCR 识别画面中的字幕、PPT、路牌并向量化)。ASR 负责第二条路——将视频的音频轨道转为逐句文本，使得用户可以搜索说话内容。传统 ASR 基于 HMM+DNN，现代 ASR 基于端到端 Transformer(Encoder-Decoder 架构)，直接建模语音→文字的映射。代表模型: OpenAI Whisper(开源，支持 99 种语言，多种模型尺寸从 tiny 39M 到 large 1.6B 参数)；通义听悟(阿里云，针对中文和会议场景优化)。Whisper 的核心创新: 在 68 万小时多语言语音数据上训练，天然的噪声鲁棒性和多语言能力，零样本迁移到新语言。<br><br><b>关键要点</b><br>① Whisper 安装: pip install openai-whisper ② 使用: whisper.load_model(\"base\").transcribe(\"audio.mp3\") ③ 视频检索中: 先运行 ASR 获取逐句文本和时间戳，再对文本做 embedding 存入向量数据库 ④ 中文场景: 通义听悟效果优于 Whisper(中文训练数据更多)，但 Whisper 胜在开源免费<br><br><b>延伸节点</b><br>§1.1.3 视频检索原理 | §2.3.4 多模态模型 | OpenAI Whisper | 通义听悟"
+  },
+  {
+    "Word": "TTS",
+    "Pronunciation": "/ˌtiːˌtiːˈes/",
+    "Audio": "",
+    "Definition": "Text-to-Speech（文本转语音）——将书面文本合成为自然语音输出的AI技术",
+    "ExampleEN": "TTS engines have advanced from robotic voices to near-human naturalness, powering virtual assistants and audiobook generation.",
+    "ExampleCN": "TTS 引擎已从机械音进化到接近人类的自然度，驱动着虚拟助手和有声书生成。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。TTS(Text-to-Speech)是多模态 AI 的输出模态之一——将书面文字转为可听的语音，与 ASR(语音转文字)互为逆过程。<br><br><b>核心概念</b><br>文本转语音(TTS)的任务是将输入文字合成为自然流畅的语音输出。传统 TTS 分为两级: 文本前端处理(分词、韵律预测) + 声学模型(生成声谱图) + 声码器(Vocoder, 声谱图→波形)。现代神经 TTS 基于端到端深度学习: FastSpeech(非自回归，并行生成，速度快)、VITS(端到端，无需声码器)、Tortoise-TTS(高质量但慢)。多模态 Agent 中，TTS 被封装为 Tool——Agent 完成推理后，可选择以文字或语音形式输出答案。商业应用场景: ① 虚拟助手(如 Siri、小爱同学的语音回复) ② 有声书自动朗读 ③ 视频配音(用 TTS 替代人工录音) ④ 无障碍应用(帮助视障人士\"听\"屏幕内容)。技术挑战: ① 韵律自然度——机器合成语音与真人录音之间仍有\"机器腔\"差距 ② 情感表达——需要在合成语音中表达愤怒、喜悦等情感 ③ 多人对话——多个说话人的语音特征需要区分建模。<br><br><b>关键要点</b><br>① 代表模型: FastSpeech 2(微软)、VITS(Kakao)、XTTS(开源多语言) ② 评估指标: MOS(Mean Opinion Score，人工评分 1-5) ③ 中文 TTS 方案: 阿里云语音合成 API、讯飞开放平台 ④ TTS 与 ASR 在知识图谱中互为逆操作，共享 Encoder 架构思想<br><br><b>延伸节点</b><br>§1.1.3 多模态 Agent | §1.1.3 多模态知识图谱全景 | §2.3.4 多模态模型 | ASR"
+  },
+  {
+    "Word": "OCR",
+    "Pronunciation": "/ˌoʊˌsiːˈɑːr/",
+    "Audio": "",
+    "Definition": "Optical Character Recognition（光学字符识别）——从图像或视频画面中提取文字信息的AI技术",
+    "ExampleEN": "OCR extracts subtitles, road signs, and on-screen text from video frames, converting visual text into searchable strings.",
+    "ExampleCN": "OCR 从视频帧中提取字幕、路牌和屏幕文字，将视觉文本转为可搜索的字符串。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。OCR(Optical Character Recognition)是视频检索管道的第三路数据源——从视频画面中提取字幕、PPT 文字、路牌等视觉文本信息并转为可搜索的字符串。<br><br><b>核心概念</b><br>OCR 的任务是从图像(包括视频帧)中检测和识别文字。视频检索的三条数据路: ① 视觉路(CLIP 抽帧语义向量) ② 文本路(ASR 语音转文字) ③ 画面文字路(OCR 识别画面中的字)。三条路的数据合并存入向量数据库，用户搜索时从三个维度同时匹配，找到最相关的视频片段。OCR 技术的演进: 传统 OCR(基于图像处理: 二值化→连通域检测→模板匹配)准确性低，仅适用于扫描件；深度学习 OCR: CRNN(CNN 特征提取+RNN 序列建模)+CTC 损失，适合水平排列的文本；现代 OCR: PaddleOCR(百度开源，支持中英文和多种版面)、Tesseract(Google 维护，多语言支持)、TrOCR(基于 Transformer 的端到端 OCR)。视频 OCR 的特殊挑战: ① 画面动态变化——文字可能在几帧内出现和消失 ② 低分辨率——字幕和路牌像素低 ③ 多角度——文字可能倾斜或透视变形。<br><br><b>关键要点</b><br>① 推荐工具: PaddleOCR(中文效果最好)、Tesseract+OpenCV(通用) ② 视频 OCR 流程: 视频抽帧→OCR 识别→文本+时间戳向量化→存入向量数据库 ③ 多模态检索中 OCR 路径与 ASR 路径相互补充——ASR 捕获语音，OCR 捕获画面文字<br><br><b>延伸节点</b><br>§1.1.3 视频检索原理 | §3.5.3 图像识别 | PaddleOCR | ASR | CLIP"
+  },
+  {
+    "Word": "Sora",
+    "Pronunciation": "/ˈsɔːrə/",
+    "Audio": "",
+    "Definition": "Sora——OpenAI发布的视频生成模型，基于Diffusion Transformer架构，可生成最长1分钟的视频并展现物理规律理解能力",
+    "ExampleEN": "Sora represents a breakthrough in video generation, understanding physical dynamics to produce coherent minute-long clips from text prompts.",
+    "ExampleCN": "Sora 代表了视频生成的突破，它理解物理动态，能从文本提示中生成连贯的一分钟长视频片段。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Sora 是 OpenAI 2024 年 2 月发布的文本生成视频模型，代表了视频 AIGC 从\"玩具\"到\"实用\"的跨越——能生成最长 1 分钟的连贯视频并展现对物理规律的理解。<br><br><b>核心概念</b><br>Sora 基于 Diffusion Transformer(DiT)架构——将扩散模型的去噪过程与 Transformer 架构结合。传统扩散模型(如 Stable Diffusion)使用 U-Net 作为去噪骨干，Sora 用 Transformer 替代 U-Net，展现出更好的规模化特性(scaling law): 模型越大、训练数据越多，视频质量和时长就越好。核心技术创新: ① 时空 Patch: 将视频切分为时空块(spacetime patches)——类似于 ViT 将图像切 patch，Sora 将视频切为 3D patch(宽×高×时间)，统一作为 Transformer 的输入 token ② 原生多分辨率训练: 不需要将所有视频 resize 到固定尺寸，可以处理不同长宽比和时长的视频 ③ 涌现的物理规律理解能力: 模型展示了 3D 一致性(物体旋转时保持形态)、远距离一致性(镜头切换后场景状态保持)、物理交互(吃汉堡留下咬痕)等涌现能力。Sora 目前尚未公开发布，仅向红队测试人员和部分创作者开放。国内开发者可关注替代方案: 快手可灵(Kling)、Runway Gen-3、AnimateDiff(开源)。<br><br><b>关键要点</b><br>① 架构: Diffusion Transformer，不是传统的 U-Net diffusion ② 目前不可用(未公开 API)，国内关注可灵(Kling) ③ 视频时长: 最长 1 分钟 ④ 物理规律理解是 Sora 相比其他视频生成模型的最大差异化优势<br><br><b>延伸节点</b><br>§1.1.3 视频 AIGC | §1.1.3 扩散模型 | Diffusion Transformer | Kling(可灵) | Runway Gen-3"
+  },
+  {
+    "Word": "Pre-training",
+    "Pronunciation": "/priːˈtreɪnɪŋ/",
+    "Audio": "",
+    "Definition": "Pre-training（预训练）——在海量无标注文本数据上训练模型学习语言模式、知识和推理能力的初始阶段",
+    "ExampleEN": "During pre-training, the model processes trillions of tokens to learn grammar, factual knowledge, and reasoning patterns.",
+    "ExampleCN": "在预训练阶段，模型处理数万亿个 token 来学习语法、事实知识和推理模式。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.2.1 和 §2.3 的核心概念。预训练是LLM训练的基石——模型从这里学会语言的基本能力。<br><br><b>预训练做什么</b><br>在海量无标注文本(数TB到数十TB)上用自监督学习训练Transformer。常用目标: 下一个Token预测(GPT系列)或掩码语言建模(BERT系列)。训练数据: Common Crawl(网页)、Wikipedia、BooksCorpus(书籍)、GitHub(代码)、ArXiv(论文)。GPT-3训练数据约570GB文本。<br><br><b>关键特点</b><br>成本极高: GPT-3训练电费约1200万美元(2020年)。需要数千张GPU训练数月。<br>数据质量>数据量: 清洗不干净的低质量网页数据会降低模型能力。数据去重、毒性过滤、格式清洗是成败关键。<br>Scaling Laws(缩放定律): 模型性能随参数量、数据量、计算量的幂律增长。更大的模型用更少的数据就能达到同等效果。<br><br><b>延伸节点</b><br>§1.2.1 AI大模型基本原理 | §2.3.1 LLM微调原理 | §3.5 PyTorch分布式训练 | §6.4 模型训练与微调面试辅导"
+  },
+  {
+    "Word": "Instruction Tuning",
+    "Pronunciation": "/ɪnˈstrʌkʃən ˈtjuːnɪŋ/",
+    "Audio": "",
+    "Definition": "Instruction Tuning（指令微调）——用\"问题-答案\"对训练LLM，使其学会遵循人类指令，从\"接话机器\"变成\"有用的助手\"",
+    "ExampleEN": "Instruction tuning transforms a raw pre-trained model into a helpful assistant by training it on thousands of instruction-response pairs.",
+    "ExampleCN": "指令微调通过数千个\"指令-回答\"对的训练，将原始预训练模型转变为有用的助手。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Instruction Tuning(指令微调)是 LLM 训练三阶段的第二阶段——它让模型从\"只会接话的语言模型\"变成\"能听懂人话、执行指令的有用助手\"。<br><br><b>核心概念</b><br>预训练完成后的 LLM 只会做一件事: 预测下一个 token(给定上文，推测下文)。这样的模型能\"接话\"但不会\"做事\"——你问\"用 Python 写一个快速排序\"，它可能接着你的话说\"然后呢？\"而不会真的写代码。Instruction Tuning 通过构造大量\"(指令, 回答)\"对的数据集让模型学习指令遵循能力。数据格式通常为: {\"instruction\": \"将以下句子翻译成英文\", \"input\": \"今天天气真好\", \"output\": \"The weather is really nice today.\"}。常见实现方式: ① SFT(Supervised Fine-Tuning): 直接在这些 Q&A 对上做有监督微调——输入 instruction+input，期望输出为 output，交叉熵损失训练 ② Prompt Tuning/P-Tuning: 训练少量 prompt embedding 而非全参数微调，效率更高但效果略差 ③ Self-Instruct: 用大模型自动生成指令-回答对，降低人工标注成本。典型数据集: Alpaca(52K，GPT-3.5 生成)、Dolly(15K，人工标注)、FLAN(多任务指令集)。<br><br><b>关键要点</b><br>① 指令微调后的模型能力分水岭明显——SFT 前后的模型可用性差距巨大 ② 数据质量 > 数据量——100 条高质量指令的效果可能超过 1000 条低质量数据 ③ 中文指令数据: BAAI/COIG(智源中文指令数据集)、BELLE(链家开源) ④ InstructGPT(2022)是 Instruction Tuning + RLHF 的开创性工作<br><br><b>延伸节点</b><br>§2.3.1 LLM 微调原理 | §1.2.1 LLM 训练三阶段 | Pre-training | RLHF"
+  },
+  {
+    "Word": "RLHF",
+    "Pronunciation": "/ˌɑːrˌelˌeɪtʃˈef/",
+    "Audio": "",
+    "Definition": "Reinforcement Learning from Human Feedback（基于人类反馈的强化学习）——让人类给LLM的回答打分，用强化学习训练模型学习\"什么是好回答\"",
+    "ExampleEN": "RLHF was key to ChatGPT's success, training the model to produce more helpful, harmless, and honest responses.",
+    "ExampleCN": "RLHF 是 ChatGPT 成功的关键，它训练模型产生更有帮助、更无害、更诚实的回答。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.2.1 AI大模型基本原理 的核心训练技术。RLHF是让GPT-3进化到ChatGPT的关键魔法——不是让模型更聪明，而是让模型更符合人类期望。<br><br><b>三阶段流程</b><br>Step1 监督微调(SFT): 用人工标注的高质量Q&A对训练基座模型，学会遵循指令格式<br>Step2 训练奖励模型(RM): 让人工标注员对同一prompt的多个回答排序(A>B>C)。用排序数据训练奖励模型，学会预测人类偏好<br>Step3 PPO强化学习: 用奖励模型打分LLM的输出→用PPO算法更新LLM参数使奖励最大化。同时加KL惩罚项防止模型偏离SFT太远(避免reward hacking)<br><br><b>替代方案: DPO</b><br>DPO(Direct Preference Optimization): 不需要单独训练奖励模型，直接从偏好数据中优化策略。更简单、更稳定、效果相当。已成为RLHF的主流替代。<br><br><b>面试要点</b><br>被问RLHF要能说出三阶段流程+每个阶段的数据需求+DPO的改进。SFT→RM→PPO是完整链路。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §2.3.2 微调数据工程 | §6.4 模型训练与微调面试辅导"
+  },
+  {
+    "Word": "Temperature",
+    "Pronunciation": "/ˈtemprətʃər/",
+    "Audio": "",
+    "Definition": "Temperature（温度参数）——LLM生成时控制输出随机性的旋钮，范围0-2，低值确定性高(代码/数学)，高值多样性高(创意写作)",
+    "ExampleEN": "Setting temperature to 0.1 makes the model deterministic for coding tasks, while 1.0 introduces creative variation for storytelling.",
+    "ExampleCN": "将温度设为0.1让模型在编码任务中输出确定性结果，而1.0则为故事创作引入创意变化。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.2.1 AI大模型基本原理及API使用 的核心推理参数。Temperature 是控制 LLM 输出随机性的阀门——理解它让你精确控制模型的创造性。<br><br><b>工作原理</b><br>LLM 输出是概率分布(Softmax(logits))。Temperature 在 Softmax 之前对 logits 进行缩放: new_logits = logits / T。T=0→logits 被放大→高概率token概率趋近1→输出确定(总选最可能的下一个词)。T=1→原始分布。T=2→logits 被缩小→分布更平坦→输出随机(低概率token也有机会被选中)。<br><br><b>选值指南</b><br>T=0: 事实性任务(数学计算、代码生成、翻译、知识问答)。确保每次输出一致<br>T=0.3-0.5: 结构化输出(JSON/表格)，给一些灵活性但基本可控<br>T=0.7-1.0: 创意写作、头脑风暴。产生多样化的表达<br>T=1.2-2.0: 极度随机，可能产生不连贯输出。通常不推荐<br><br><b>配合 Top-P</b><br>Temperature+Top-P=nucleus sampling。先缩放分布(温度)，再截断到累积概率>P的token集合(去尾)，最后采样。通常只调一个，另一个保持默认。<br><br><b>延伸节点</b><br>§1.2.1 AI大模型基本原理及API使用 | §2.3 LLM微调原理 | §3.5 PyTorch核心概念(Softmax)"
+  },
+  {
+    "Word": "Top-P",
+    "Pronunciation": "/tɒp piː/",
+    "Audio": "",
+    "Definition": "Top-P（核采样）——LLM生成时的另一个随机性控制参数，只从累积概率达到P的最小候选词集合中采样，范围0-1",
+    "ExampleEN": "Top-P sampling with p=0.9 restricts the model to the smallest set of tokens whose cumulative probability exceeds 90%.",
+    "ExampleCN": "Top-P 采样 p=0.9 将模型限制在累积概率超过 90% 的最小 token 集合中进行选择。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Top-P(nucleus sampling) 与 Temperature 并列为 LLM 控制输出随机性的两个核心参数——Temperature 改变概率分布的形状，Top-P 裁剪候选词的范围。<br><br><b>核心概念</b><br>LLM 生成每个 token 时，对所有可能的下一个 token 都有一个概率分布(经 Softmax 得到)。传统的 Top-K 采样: 只从概率最高的 K 个 token 中选择，但 K 是固定的——不管概率分布是否集中。Top-P(Nucleus Sampling)的改进: 从概率最高的 token 开始累加，直到累积概率超过阈值 P，只从这些 token 中采样。例如 P=0.9: 如果最高概率 token 已经是 0.5，下一个是 0.3，累积到 0.8<0.9，再加第三个 0.1 累积到 0.9>=0.9，则从这三个中采样。效果: 当模型很确定时(概率集中在少数 token)，Top-P 选很少的候选词→输出确定；当模型不确定时(概率分散)，Top-P 选更多候选词→输出多样。这就是\"动态候选集\"的智慧——不像 Top-K 那样一刀切。配合 Temperature 使用: 先调整 Temperature 改变概率分布→再用 Top-P 裁剪→最后采样。<br><br><b>关键要点</b><br>① P 值推荐: 代码/数学用 0.1-0.3，创意写作用 0.7-0.95 ② Top-P 和 Temperature 通常只调一个，另一个保持默认 ③ API 参数: top_p (OpenAI)、top_p (vLLM) ④ 与 Top-K 的区别: Top-P 的候选集大小是动态的，Top-K 是固定的<br><br><b>延伸节点</b><br>§1.2.1 Temperature 原理 | §1.2.1 API 参数详解 | Holtzman et al. 2020 Nucleus Sampling 论文"
+  },
+  {
+    "Word": "Token",
+    "Pronunciation": "/ˈtoʊkən/",
+    "Audio": "",
+    "Definition": "Token（令牌/词元）——LLM处理文本的最小单位，1个汉字约等于2个token，1个英文单词约等于1-2个token，是API计价的单位",
+    "ExampleEN": "API costs are calculated per token, with input tokens and output tokens billed at different rates.",
+    "ExampleCN": "API 费用按 token 计算，输入 token 和输出 token 的计费费率不同。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Token 是 LLM 理解和处理文本的最小单位，也是 API 计价的基本单元——理解 Token 的实质是理解 LLM 的运行成本和上下文管理。<br><br><b>核心概念</b><br>Token 是文本在 LLM 内部的编码单位，不是字符也不是单词。词表(Vocabulary)是模型支持的 token 集合: GPT-3 有 50257 个 token，GPT-4 约 100k。Tokenizer(分词器)将输入文本转为 token ID 序列: \"Hello World\" → [15496, 2159] → 两个 token。中文与 Token 的关系: 由于中文不天然有空格分隔，中文字符 token 化效率较低。经验规则: 1 个汉字 ≈ 1.5-2 个 token，1 个英文单词 ≈ 1-1.3 个 token。这也是\"中文比英文更贵\"的原因——同样语义的内容，中文消耗更多 token。Token 计价的商业含义: API 按(输入 token + 输出 token)收费。GPT-4o 约 $2.5/百万输入 token、$10/百万输出 token。多轮对话的成本陷阱: 对话历史作为输入 token 每轮都在增长——第 10 轮对话可能消耗的 input tokens 比前 9 轮加起来还多。成本优化方向: ① 定期裁剪对话历史 ② 用摘要替代完整历史 ③ 将长文档用 RAG 替代直接传入。<br><br><b>关键要点</b><br>① 计费: prompt_tokens + completion_tokens 分别计费 ② 输出 token 通常比输入 token 贵(3-5 倍) ③ max_tokens 限制输出 token 数，不限制输入 ④ 中文≈2 tokens/字，英文≈1.3 tokens/词 ⑤ Token 工具: OpenAI Tokenizer(在线) 或 tiktoken 库<br><br><b>延伸节点</b><br>§1.2.1 Context Window | §1.3.2 KV Cache | prompt_tokens | completion_tokens"
+  },
+  {
+    "Word": "Context Window",
+    "Pronunciation": "/ˈkɒntekst ˈwɪndoʊ/",
+    "Audio": "",
+    "Definition": "Context Window（上下文窗口）——LLM一次能处理的最大token数，决定了模型能\"记住\"多长的对话历史，GPT-4o约128K",
+    "ExampleEN": "With a 128K context window, GPT-4o can process entire books in a single request, though attention quality may degrade at extremes.",
+    "ExampleCN": "拥有128K上下文窗口的GPT-4o可以在单次请求中处理整本书，但极端长度下注意力质量可能下降。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Context Window 定义了 LLM 一次能\"看到\"的最大文本量——它决定了一次能处理多少对话历史、多大篇幅的文档，是 LLM 能力的关键边界。<br><br><b>核心概念</b><br>Context Window(上下文窗口)类似于 LLM 的\"工作记忆\"——在生成每个 token 时，模型只能关注窗口范围内的 token。超过窗口的文本会被\"遗忘\"(实际被截断或丢弃)。窗口的演进: GPT-2(2019): 1024 tokens → GPT-3(2020): 2048 → GPT-3.5-turbo: 4096 → GPT-4: 8192/32768 → GPT-4-Turbo: 128K → Claude 3: 200K(约 15 万词)。窗口内性能衰减: \"Lost in the Middle\"现象——模型对窗口中间位置的信息\"注意\"明显弱于开头和结尾。这意味着把关键信息放在窗口的\"黄金位置\"(开头和结尾)是提升效果的实用技巧。上下文工程(Context Engineering): 不仅设计 prompt，还管理窗口内的信息排布——把最重要的指令放在 System Prompt 末尾，把最重要的参考资料放在靠后位置。窗口扩展技术: RoPE 位置编码支持外推(RoPE scaling)、ALiBi 线性偏差使窗口可扩展、FlashAttention 通过内存优化支持更大窗口。<br><br><b>关键要点</b><br>① 超长文档处理: Context Window > 文档 → 直接传入；窗口不够 → RAG 分片检索 ② 窗口占用 = 输入 token + 输出 token + KV Cache ③ 窗口越大 KV Cache 越大，显存需求越高 ④ \"Lost in the Middle\"是面试高频考点<br><br><b>延伸节点</b><br>§1.1.1 上下文工程(Context Engineering) | §1.2.1 Token | §1.3.2 max-model-len 参数 | KV Cache"
+  },
+  {
+    "Word": "Max Tokens",
+    "Pronunciation": "/mæks ˈtoʊkənz/",
+    "Audio": "",
+    "Definition": "Max Tokens（最大输出token数）——限制LLM单次生成文本的最大长度，防止输出过长、控制成本",
+    "ExampleEN": "Setting max_tokens to 200 ensures the response stays concise, preventing the model from generating unnecessarily long answers.",
+    "ExampleCN": "将max_tokens设为200确保回答保持简洁，防止模型生成不必要的冗长答案。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Max Tokens 是 API 调用的核心参数之一，用于限制模型单次生成的最大长度——是控制成本和响应长度的直接手段。<br><br><b>核心概念</b><br>Max Tokens 约束模型\"最多输出多少个 token\"，而非\"最多想多久\"。它与 Context Window 的关系: (输入 token 数 + max_tokens) ≤ Context Window 上限。如果设置过大导致超出窗口，API 会报错。设置过小的后果: 模型可能在关键信息说完之前就被截断——理想设置应使 max_tokens 略大于预期回答长度但不浪费。实际场景的参数选择: ① 短问答/分类: max_tokens=50-200 ② 段落回答: 500-1000 ③ 长文章/代码生成: 2000-8000 ④ 极长生成: 根据 Context Window 设置(但建议用分块生成+拼接替代单次超长输出)。Max Tokens 与 Token 成本的联动: max_tokens 大 → API 返回时间长 → 扣费多(输出 token 比输入贵)。Max Tokens 只限制 output tokens——不限制 prompt_tokens(输入 token 数由你发送的 messages 决定)。<br><br><b>关键要点</b><br>① API 参数: max_tokens(OpenAI)、max_new_tokens(HuggingFace)、max_tokens(vLLM) ② 必须在调用前设置，无法中途改变 ③ 与 TTFT 无关——TTFT 是收到第一个 token 的时间，max_tokens 限制总输出长度 ④ 长文本生成建议配合 stream=True 提升体验<br><br><b>延伸节点</b><br>§1.2.1 API 调用参数 | §1.3.2 TTFT/TPOT | Context Window | Token | Streaming"
+  },
+  {
+    "Word": "Emergent Ability",
+    "Pronunciation": "/ɪˈmɜːrdʒənt əˈbɪləti/",
+    "Audio": "",
+    "Definition": "Emergent Ability（涌现现象）——模型参数量达到某个临界点后突然展现出训练时未明确教的新能力（如逻辑推理、代码调试），\"量变引起质变\"",
+    "ExampleEN": "Emergent abilities like few-shot reasoning and code debugging appeared in GPT-3 at 175B parameters, despite no explicit training for these tasks.",
+    "ExampleCN": "涌现现象如少样本推理和代码调试在GPT-3的1750亿参数时出现，尽管没有针对这些任务的明确训练。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Emergent Ability(涌现能力)是大模型最令人着迷的现象——当模型参数量越过某个临界点后，突然表现出训练时未明确教授的新能力，这解释了\"为什么更大的模型更好\"。<br><br><b>核心概念</b><br>涌现(Emergence)是复杂系统理论的概念: 系统整体的性质不能从其组成部分的性质推导出来。在 LLM 中，涌现表现为: 小模型(如 GPT-2 15 亿参数)无法完成的某些任务(如逻辑推理、代码调试、翻译)，当参数量增长到某个阈值后(如 GPT-3 1750 亿)，模型\"突然\"就会了——而且准确率迅速提升。涌现能力并非训练目标，而是规模化的副产品。典型的涌现能力: ① Few-shot 推理: 给 2-3 个示例就能完成新任务(小模型做不到) ② 代码生成与调试: 能写复杂算法并找 bug ③ 多步推理: 解决需要多步逻辑推断的问题 ④ 翻译: 小模型翻译质量差，大模型接近专业水平 ⑤ 思维链(CoT): 大模型加入\"让我们一步步思考\"就能提升推理准确率，小模型加了也没用。关于涌现的学术争论: 2023 年有论文指出涌现可能是评估指标(如 accuracy threshold)的人为假象，但工业界实践确认了涌现确实存在。<br><br><b>关键要点</b><br>① GPT 系列参数量增长: 1.17 亿(GPT-1) → 15 亿(GPT-2) → 1750 亿(GPT-3) → ~1.8T(GPT-4) ② 不是\"逐步提升\"而是\"阶跃式提升\"——75B 模型不行 → 175B 突然行了 ③ 面试要点: 能解释涌现与 Scaling Laws 的关系，以及为什么持续投入算力训练更大模型还有收益<br><br><b>延伸节点</b><br>§1.2.1 GPT 进化史 | §2.3 模型训练 | Scaling Laws 论文(Kaplan 2020) | CoT 论文"
+  },
+  {
+    "Word": "Few-shot Learning",
+    "Pronunciation": "/fjuː ʃɒt ˈlɜːrnɪŋ/",
+    "Audio": "",
+    "Definition": "Few-shot Learning（少样本学习）——在提示词中提供少量示例让模型理解任务模式，无需额外训练即可完成新任务",
+    "ExampleEN": "With few-shot prompting, providing just 2-3 examples in the prompt enables the model to classify sentiments without any fine-tuning.",
+    "ExampleCN": "通过少样本提示，在提示词中仅提供2-3个示例就能让模型完成情感分类，无需任何微调。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1, §1.2.1。Few-shot Learning 是 GPT-3 时代最标志性的涌现能力——不需要微调模型，只需在 prompt 中给几个示例，模型就能理解任务格式并正确执行。<br><br><b>核心概念</b><br>Few-shot Learning(少样本学习)是 In-Context Learning(上下文学习)的一种形式。与微调(Fine-tuning)的本质区别: 微调更新模型参数，Few-shot 不更新任何参数——只在 prompt 中放入示例。提示层次的区别: ① Zero-shot: 只给任务描述，不给示例。\"将以下文字分类为正面或负面情绪: 这个产品太棒了\" ② One-shot: 给一个示例。\"Q: 今天很开心 → A: 正面。Q: 这个产品太棒了 → A:？\" ③ Few-shot: 给 2-5 个示例。越多示例效果越好但有上限(通常 3-5 个即可) ④ Many-shot: 给几十个示例。最近研究(2024)发现: Few-shot 存在\"示例太多反而降低效果\"的 U 型曲线，但 Many-shot(50-100 个)可能带来第二轮提升。Few-shot 的关键技巧: ① 示例的多样性和代表性比数量更重要 ② 示例格式必须与期望输出格式一致 ③ 标签平衡(不要所有示例都是同一类别) ④ 把最像测试样本的示例放在最后。<br><br><b>关键要点</b><br>① Few-shot 不需要微调，不修改模型 ② 输入 token 消耗 = 示例的 tokens + 实际问题的 tokens ③ 小模型(如 GPT-2)没有 Few-shot 能力(这是涌现) ④ 面试时能区分 Few-shot(给示例) vs Fine-tuning(改参数)是基础要求<br><br><b>延伸节点</b><br>§1.1.1 上下文工程(Context Engineering) | §1.2.1 GPT 进化史 | Emergent Ability | In-Context Learning 论文(Brown et al. 2020)"
+  },
+  {
+    "Word": "Streaming",
+    "Pronunciation": "/ˈstriːmɪŋ/",
+    "Audio": "",
+    "Definition": "Streaming（流式输出）——LLM逐token返回生成结果而非等全部生成完再返回，提升用户交互体验的\"打字机效果\"",
+    "ExampleEN": "Streaming with stream=True delivers tokens as they are generated, giving users instant feedback similar to watching someone type.",
+    "ExampleCN": "使用stream=True的流式输出在token生成时即时送达，给用户一种类似看人打字的即时反馈体验。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Streaming(流式输出)将 LLM 的生成从\"等全部写完再给你\"变为\"写一个字给一个字\"，是聊天应用体验的关键——用户不用盯着空白的对话框等待。<br><br><b>核心概念</b><br>LLM 是自回归生成: 每次预测一个 token，然后基于新序列预测下一个。非流式模式: 模型生成完所有 token 后一次性返回——用户等待 5 秒看到完整答案。流式模式: 每生成一个 token 就立即返回——用户在 0.3 秒内看到第一个字(打字机效果)。这就是\"感知延迟\"vs\"真实延迟\"的心理学差异: 真实 TTFT 相同(都是等第一个 token 生成好)，但流式输出让用户觉得\"AI 已经开始回应了\"。API 实现: 设置 stream=True，遍历 response 的 chunk 事件。每个 chunk 包含 delta(当前生成的一个或几个 token)和 finish_reason(是否结束)。流式输出的工程要点: ① 前端需要实现\"逐字追加\"的 UI(不能用 loading spinner) ② 断网/错误处理: 流中断时需清空已显示的部分或标记为不完整 ③ 流式+Function Calling 的组合需要特殊处理(等 tool_calls 完整才能执行)。<br><br><b>关键要点</b><br>① API 参数: stream=True(OpenAI)、stream=True(vLLM) ② 前端: SSE(Server-Sent Events)协议 ③ TTFT 不变但体感加速 70%+ ④ 长回答(>200 token)强烈建议流式，短回答(<50 token)意义不大 ⑤ 面试中能解释流式与 TTFT 的关系是加分项<br><br><b>延伸节点</b><br>§1.2.1 API 调用参数 | §1.3.2 TTFT/TPOT | SSE 协议 | Max Tokens"
+  },
+  {
+    "Word": "DashScope",
+    "Pronunciation": "/dæʃ skoʊp/",
+    "Audio": "",
+    "Definition": "DashScope（阿里云灵积模型服务）——阿里云提供的大模型API平台，支持通义千问系列模型的调用，含Function Calling和免费额度",
+    "ExampleEN": "DashScope provides API access to Qwen models with competitive pricing and free tier quotas, making it a popular choice for domestic developers.",
+    "ExampleCN": "DashScope 以有竞争力的定价和免费额度提供通义千问模型的API访问，是国内开发者的热门选择。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。DashScope(阿里云灵积模型服务)是中国开发者调用大模型 API 的核心渠道之一，提供通义千问(Qwen)系列模型的云端推理服务，是 OpenAI API 在国内的主要替代方案。<br><br><b>核心概念</b><br>DashScope 由阿里云运营，提供多种大模型的 API 访问。主要模型: ① qwen-turbo: 速度最快、价格最低，适合简单对话和文本处理 ② qwen-plus: 效果和速度平衡的版本，支持 32K 上下文 ③ qwen-max: 效果最强版本，适合复杂推理和创意写作 ④ qwen-long: 长上下文版本(10M tokens) ⑤ 多模态模型: qwen-vl-plus/qwen-vl-max(图文理解)、通义万相(文生图)。DashScope 的接入方式: pip install dashscope，设置 DASHSCOPE_API_KEY 环境变量。接口风格: 与 OpenAI API 类似但不完全兼容，使用 dashscope.Generation.call() 或 dashscope.MultiModalConversation.call()。支持 Function Calling: 在 Generation.call() 中传入 tools 参数，模型返回 tool_calls JSON。免费额度: 新用户通常有几十万 token 的免费额度，适合学习和小型项目。定价: 显著低于 GPT-4o(约 1/5-1/10)，对于国内项目是性价比最好的选择之一。<br><br><b>关键要点</b><br>① 安装: pip install dashscope ② 认证: export DASHSCOPE_API_KEY=sk-xxx ③ 调用: dashscope.Generation.call(model=\"qwen-plus\", messages=[...]) ④ 支持 tools 参数实现 Function Calling ⑤ 百炼平台(阿里云 AI 平台)也支持可视化操作<br><br><b>延伸节点</b><br>§1.2.1 API 调用代码示例 | §2.2.1 Function Calling 与 MCP | §1.3.1 vLLM 部署 Qwen | OpenAI API"
+  },
+  {
+    "Word": "DeepSeek",
+    "Pronunciation": "/diːp siːk/",
+    "Audio": "",
+    "Definition": "DeepSeek（深度求索）——国产开源大模型系列，以其极低的API价格和强大的推理能力在开发者社区获得广泛关注",
+    "ExampleEN": "DeepSeek offers API pricing significantly lower than GPT-4 while achieving competitive performance on reasoning and coding benchmarks.",
+    "ExampleCN": "DeepSeek 的API定价远低于GPT-4，同时在推理和编码基准测试上取得有竞争力的性能。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。DeepSeek(深度求索)是 2024-2025 年最受开发者关注的国产大模型之一，以极低的 API 价格和强大的推理能力在竞争中脱颖而出，被称为\"AI 领域的拼多多\"。<br><br><b>核心概念</b><br>DeepSeek 是一家中国 AI 公司，推出了 DeepSeek-V2/V3/R1 等模型系列。核心特点: ① 极致低价: DeepSeek-V2 的 API 价格仅为 GPT-4o 的 1/10-1/30，得益于 MoE(Mixture of Experts)架构和多头潜在注意力(MLA)的创新设计，大幅降低推理成本 ② 开源: 大部分模型权重开源(HuggingFace 可下载)，支持本地部署 ③ 强推理能力: DeepSeek-R1 在数学和编程基准上接近 GPT-4o 水平 ④ 长上下文: DeepSeek-V2 支持 128K 上下文窗口 ⑤ 中文优化: 中文理解和生成质量高于多数国际模型。技术亮点: MLA(Multi-head Latent Attention)——将 KV Cache 压缩到低维潜在空间存储再解压回高维，大幅减少推理时的显存占用；MoE 架构——模型有 236B 总参数但每次推理只激活 21B，用较小的计算量获得大模型的效果。API 兼容性: DeepSeek API 使用了 OpenAI 兼容格式，只需要改 base_url 和 api_key 即可切换。<br><br><b>关键要点</b><br>① API 接入: base_url=\"https://api.deepseek.com\"，兼容 OpenAI SDK ② 本地部署: 用 vLLM 或 Ollama 部署开源版本 ③ 性价比极高，适合高频调用场景(如 Agent 循环、批量评估) ④ DeepSeek-R1 的推理能力是最大卖点(通过强化学习训练推理)<br><br><b>延伸节点</b><br>§1.2.1 国内 API 替代方案 | §1.3.1 vLLM 部署模型 | DashScope | Qwen | OpenAI API"
+  },
+  {
+    "Word": "Cursor",
+    "Pronunciation": "/ˈkɜːrsər/",
+    "Audio": "",
+    "Definition": "Cursor——基于VS Code的AI编程IDE，拥有强大的Rules系统和Agent模式，是专业开发者最常用的AI编程工具",
+    "ExampleEN": "Cursor's project-level rules define coding conventions, tech stack, and style preferences that the AI follows across all interactions.",
+    "ExampleCN": "Cursor 的项目级规则定义了编码约定、技术栈和风格偏好，AI在所有交互中都遵循这些规则。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。Cursor 是目前最流行的 AI 编程 IDE，基于 VS Code 构建，核心差异化在于强大的 Rules 系统和 Agent 模式，让 AI 能理解项目全局而非仅仅当前文件。<br><br><b>核心概念</b><br>Cursor = VS Code + AI 深度集成。三核心功能: ① Tab 补全(L1 层级): 行级/多行代码补全，类似 GitHub Copilot ② Cmd+K 编辑(L2 层级): 选中代码后用自然语言描述修改意图，AI 生成改动 ③ Composer/Agent 模式(L3 层级): 给定自然语言任务描述，AI 自行规划、多文件修改、运行终端命令。Cursor 的 Rules 系统是其最大差异化优势: 项目级规则(.cursorrules 文件)定义整个项目的编码规范、技术栈、目录结构；目录级规则(.cursor/rules/ 目录下)定义特定子目录的约定。AI 在所有交互中都遵循这些规则——相当于给 AI 写了一份\"项目说明书\"。底层模型: 默认使用 GPT-4o + Claude Sonnet 混合调度。Context 管理: Cursor 自动收集当前文件、相关文件、git 状态等上下文信息，Agent 模式还会主动探索代码库寻找相关文件。<br><br><b>关键要点</b><br>① Rules 写 AI 容易猜错的约定(如特定目录结构)，不写显而易见的通用规则 ② 100-500 行为佳 ③ 支持 @file/@folder/@web 等上下文引用 ④ Agent 模式能主动探索代码库(终端原生) ⑤ 专业开发者首选，适合中大型项目<br><br><b>延伸节点</b><br>§1.2.2 AI 编程三层境界 | §1.2.2 Cursor Rules 详解 | §4.1.1 确定性驾驭概率性 | Claude Code | GitHub Copilot"
+  },
+  {
+    "Word": "Cursor Rules",
+    "Pronunciation": "/ˈkɜːrsər ruːlz/",
+    "Audio": "",
+    "Definition": "Cursor Rules——Cursor中定义AI在整个项目中的行为规范，相当于项目的持久化System Prompt，分为项目级和目录级",
+    "ExampleEN": "Well-designed Cursor Rules focus on project-specific conventions like directory structure and non-standard tech choices that the AI would otherwise guess wrong.",
+    "ExampleCN": "设计良好的Cursor Rules聚焦于项目特有约定，如目录结构和非标准技术选型等AI容易猜错的地方。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。Cursor Rules 是 AI 编程中\"确定性驾驭概率性\"的关键工具——它给 AI 提供一个准确的项目共识文档，大幅降低 AI \"猜错\"导致的返工。<br><br><b>核心概念</b><br>Cursor Rules 相当于给 AI 写了一份\"项目说明书\"，每次 AI 做任何操作前都会读取这些规则作为上下文。规则分为两个层级: ① 项目级 .cursorrules(项目根目录下): 定义全局性约定，如技术栈(框架/库版本)、代码风格(格式化工具)、项目结构(目录约定)。所有交互都读取 ② 目录级 .cursor/rules/*.mdc(具体子目录): 定义局部约定，如某个模块的特殊架构、特定 API 的使用规范。只有当 AI 操作涉及该目录时才会读取。设计原则: 写 AI 容易猜错的约定，不写显而易见的通用规则。例如: \"数据库迁移使用 Alembic，禁止直接改表\"是应该写的(这是项目特有约束)；\"使用 PEP 8 代码风格\"不应该写(AI 默认就知道)。内容建议: ① 目录结构和各目录的作用 ② 非标准的技术选型(小众框架、特定版本号) ③ 项目特有的架构模式(如 DDD、CQRS) ④ 测试规范(用哪个测试框架) ⑤ 禁止的操作(如不直接改数据库)。长度建议: 100-500 行，太长 AI 可能\"遗忘\"中段内容。规则即文档: Rules 写好后本身也是最准确的开发文档。<br><br><b>关键要点</b><br>① .cursorrules 放项目根目录，.cursor/rules/*.mdc 放特殊子目录的规则 ② 只写 AI 容易猜错的(项目特有规则)，不写通用的(如 PEP 8) ③ 100-500 行为佳，太短没用太长 AI 遗忘 ④ AI 编程中\"正确性\"的锚点——减少幻觉和错误猜测<br><br><b>延伸节点</b><br>§1.2.2 AI 编程三层境界 | §4.1.1 确定性驾驭概率性 | Cursor | Claude Code"
+  },
+  {
+    "Word": "GitHub Copilot",
+    "Pronunciation": "/ˈɡɪthʌb ˈkoʊpaɪlət/",
+    "Audio": "",
+    "Definition": "GitHub Copilot——GitHub/Microsoft推出的最早、最成熟的AI代码补全工具，擅长行级代码补全而非任务级生成",
+    "ExampleEN": "GitHub Copilot excels at inline code completion, predicting the next lines as you type based on the current file context.",
+    "ExampleCN": "GitHub Copilot 擅长内联代码补全，根据当前文件上下文在输入时预测接下来的代码行。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。GitHub Copilot 是 AI 编程工具的开创者(2021 年发布)，在知识图谱的\"AI 编程三层境界\"中属于 L1(行级补全)的标杆，虽然功能广度不如 Cursor/Claude Code，但在行级补全的准确率和延迟上仍是行业基准。<br><br><b>核心概念</b><br>Copilot 由 GitHub 与 OpenAI 联合推出，基于 OpenAI Codex 模型。核心功能是\"内联代码补全\": 开发者写代码时，Copilot 在编辑器内以灰色文本建议下一行或几行代码，按 Tab 接受。它只分析当前文件上下文(打开的其他 tab 和光标前后的代码)来预测开发者接下来想写什么。技术演进: 初代基于 Codex(GPT-3 的代码微调版)，现在已升级到 GPT-4o/Claude 等更强的模型后端。知识图谱的 AI 编程三层境界框架中，Copilot 定位在 L1(补全层): 擅长\"接下一句代码\"，但不擅长\"完成一个任务\"(L2)或\"自主探索代码库解决复杂问题\"(L3)。Copilot 的价值: 减少 40-60% 的打字量，加速日常编码效率。局限性: 不跨文件、不主动探索项目结构、不运行终端命令——这是与 Cursor/Claude Code 的根本区别。<br><br><b>关键要点</b><br>① 安装: VS Code 扩展 + GitHub 账号登录 ② 付费: 个人版约 $10/月，学生免费 ③ L1 行级补全的行业标杆(速度和准确率) ④ 不跨文件、不运行命令——仅限当前文件内补全 ⑤ 适合: 已有清晰思路，只需要加速打字 ⑥ 不适合: 探索新项目、跨文件重构<br><br><b>延伸节点</b><br>§1.2.2 AI 编程三层境界(L1/L2/L3) | §1.2.2 主流 AI 编程工具对比 | Cursor | Claude Code"
+  },
+  {
+    "Word": "Claude Code",
+    "Pronunciation": "/klɔːd koʊd/",
+    "Audio": "",
+    "Definition": "Claude Code——Anthropic推出的终端原生Agent式AI编程工具，能主动探索整个代码库、跨文件修改并运行测试",
+    "ExampleEN": "Claude Code operates as an agent, exploring the entire codebase to understand architecture before making cross-file modifications.",
+    "ExampleCN": "Claude Code 像Agent一样运行，在进行跨文件修改前主动探索整个代码库以理解架构。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。Claude Code 是 Anthropic 推出的终端原生 Agent 式 AI 编程工具，在知识图谱的\"AI 编程三层境界\"中代表了 L3(Agent 式编程)的终极形态——AI 不再只是补全代码或按指令修改，而是主动探索完整代码库、自行规划任务、跨文件修改并运行测试。<br><br><b>核心概念</b><br>Claude Code 与传统 AI 编程工具的根本区别: ① 终端原生(vs IDE 插件): 在终端中使用，不绑定特定编辑器/IDE，灵活度最高 ② Agent 式主动探索: 接到任务后不会只看当前文件，而是用 grep/glob/read 等工具主动搜索整个代码库，理解项目架构后再行动 ③ 跨文件复杂修改: 能在一次任务中同时修改多个文件(新增+修改+删除+重构) ④ 执行验证闭环: 修改代码后会运行 linter、测试、甚至启动服务验证 ⑤ 多步推理: 复杂任务自动分解为子任务，逐步执行并自我检查。Claude Code 的 Agent 工作流: 理解需求 → 搜索代码库定位相关文件 → 读取关键文件理解架构 → 制定修改计划 → 逐步执行修改 → 验证结果 → 报告完成。它使用了 Claude 模型的强大代码理解和生成能力，配合工具调用(search/read/write/edit/bash)形成完整的 Agent 循环。<br><br><b>关键要点</b><br>① 终端原生(npm install 或直接运行)，不依赖任何 IDE ② L3(Agent 式编程)的顶级代表 ③ 主动探索代码库，理解架构而非只读当前文件 ④ 可通过 CLAUDE.md 文件配置项目规则(类似 Cursor Rules) ⑤ 复杂项目的代码探索和重构场景是其最佳应用<br><br><b>延伸节点</b><br>§1.2.2 AI 编程三层境界 | §4.1.1 AI Coding 范式 | Cursor | GitHub Copilot | Agent 自主规划"
+  },
+  {
+    "Word": "GPU",
+    "Pronunciation": "/ˌdʒiːˌpiːˈjuː/",
+    "Audio": "",
+    "Definition": "Graphics Processing Unit（图形处理器）——AI推理和训练的核心硬件，强大的并行计算能力和高显存带宽使其成为深度学习的主力计算平台",
+    "ExampleEN": "Modern LLM inference requires GPUs with sufficient VRAM to hold both model weights and KV cache for concurrent requests.",
+    "ExampleCN": "现代LLM推理需要具有足够显存的GPU，以同时容纳模型权重和并发请求的KV缓存。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.3.1 企业级AI部署 的硬件基础。GPU 是大模型训练和推理的核心硬件，选型直接影响成本、速度和可行性。<br><br><b>GPU vs CPU</b><br>CPU: 少量强核心(8-64核)，擅长复杂逻辑和串行任务。GPU: 数千个弱核心(CUDA Cores)，擅长大规模并行矩阵运算。大模型的 Transformer 计算(矩阵乘法+Softmax)天然适合GPU并行。<br><br><b>关键指标</b><br>显存(VRAM): 决定能装多大的模型。7B模型FP16需~14GB，70B需~140GB<br>算力(TFLOPS): 每秒浮点运算次数。A100 BF16=312 TFLOPS，H100=756 TFLOPS<br>显存带宽: 数据在显存和计算单元间传输速度。大模型推理瓶颈通常在带宽而非算力<br>功耗(TDP): A100=400W，H100=700W。功耗=电费+散热成本<br><br><b>主流型号</b><br>消费级: RTX 4090(24GB, $1600)，适合微调7B模型。RTX 3090(24GB)性价比之选<br>数据中心: A100 80GB(经典，$10K+)，H100 80GB(当前旗舰)。H200 141GB(显存翻倍)<br>国产替代: 昇腾910B(64GB, 320TFLOPS BF16)，昇腾910C(128GB)<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署方案设计 | §1.3.2 高并发原理 | §5.8 昇腾部署DeepSeek"
+  },
+  {
+    "Word": "VRAM",
+    "Pronunciation": "/viː ræm/",
+    "Audio": "",
+    "Definition": "Video RAM（显存）——GPU上的高速内存，决定能加载多大的模型和支撑多少并发请求，是LLM推理部署的首要考虑因素",
+    "ExampleEN": "VRAM is the primary bottleneck in LLM deployment, as both model weights and per-request KV cache compete for the same limited memory.",
+    "ExampleCN": "显存是LLM部署的主要瓶颈，因为模型权重和每个请求的KV缓存都要竞争同一块有限内存。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1, §1.3.2。VRAM(显存)是 LLM 推理部署的最关键硬件约束——模型权重和 KV Cache 共享同一块有限的显存，显存大小直接决定了能跑多大的模型和能支撑多少并发。<br><br><b>核心概念</b><br>VRAM(Video RAM)是 GPU 上的专用高速内存，与系统 DDR 内存分离。LLM 推理中显存的三大占用: ① 模型权重(model weights): 固定占用，FP16 精度下 ≈ 模型参数量 × 2 bytes。7B → 14GB, 70B → 140GB ② KV Cache: 动态占用，与并发数和序列长度成正比。公式: KV Cache ≈ 2 × layers × seq_len × d_model × num_requests × 2(FP16) ③ 框架开销: vLLM/SGLang 等推理框架自身的内存占用(约 1-3GB)。显存估算公式: 所需显存 ≈ 模型参数量 × 2(FP16) + KV Cache × 并发数。例子: 部署 7B 模型，单请求 4096 tokens 上下文 → 模型占用 14GB + 单请求 KV Cache 0.5GB = 14.5GB。并发 10 请求 → 14 + 5 = 19GB，勉强装入 RTX 4090(24GB)。显存不足的应对优先级: ① 量化(最有效) INT8 减半/INT4 减 3/4 ② 减小 max_model_len ③ 限制并发数 ④ 换更大显存的 GPU ⑤ 张量并行(多卡)。<br><br><b>关键要点</b><br>① 显存监控: nvidia-smi 看 Memory-Usage ② OOM 错误是显存不足的最常见表现 ③ 推荐显存占用率控制在 85-95%(留余量) ④ 量化是最经济有效的显存优化手段 ⑤ QLoRA 技术让 7B 模型微调仅需 6GB 显存<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型 | §1.3.2 显存占用率监控 | §1.3.1 量化(Quantization) | KV Cache | OOM"
+  },
+  {
+    "Word": "Throughput",
+    "Pronunciation": "/ˈθruːpʊt/",
+    "Audio": "",
+    "Definition": "Throughput（吞吐量）——AI推理服务每秒能处理的请求量或token数，衡量系统整体处理能力，越高越好",
+    "ExampleEN": "vLLM achieves 10-20x higher throughput than Ollama through PagedAttention and continuous batching optimizations.",
+    "ExampleCN": "vLLM 通过 PagedAttention 和连续批处理优化，实现了比 Ollama 高 10-20 倍的吞吐量。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1, §1.3.2。Throughput(吞吐量)是 LLM 推理服务的核心性能指标之一——衡量系统单位时间内能处理的 token 数或请求数，决定了\"能同时服务多少人\"。<br><br><b>核心概念</b><br>Throughput 的单位: ① tokens/s(每秒生成的总 token 数): 衡量 GPU 的实际计算产出 ② requests/s(每秒完成的请求数): 衡量并发服务能力。Throughput 受两个因素约束: ① GPU 算力上限(compute-bound): 生成速度受 FP16 TFLOPS 物理限制，算力越高每秒产出的 token 越多 ② 显存瓶颈(memory-bound): 显存不够只能拒绝请求或排队，实际吞吐量低于理论值。两大推理框架的吞吐量对比: vLLM 通过 PagedAttention(消除显存碎片)和 Continuous Batching(动态调度)实现了远超传统推理的吞吐量——相比 Ollama 的简单请求排队，vLLM 吞吐量可提升 10-20 倍。SGLang 在 RAG/Agent 场景下通过 RadixAttention(前缀复用)能进一步节省 30-50% 显存，提升有效吞吐量。优化方向: ① 换更高算力的 GPU(H100 vs A100) ② 增加并发数(直到显存打满) ③ 量化(INT8/INT4 降低显存占用 → 更多并发) ④ 优化框架参数(max_num_seqs 等)。<br><br><b>关键要点</b><br>① 监控: vLLM 输出包含 tokens/s 和 requests/s ② 吞吐量与延迟的 tradeoff: 追求高吞吐可通过增大 batch → 但每个请求的延迟(特别是 TTFT)会上升 ③ 聊天场景优先延迟，批量翻译/生成场景优先吞吐 ④ 评测时需明确指标是 tokens/s 还是 requests/s，两者不可直接比较<br><br><b>延伸节点</b><br>§1.3.1 推理框架对比(Ollama/vLLM/SGLang) | §1.3.2 关键性能指标 | §1.3.2 Latency/延迟 | vLLM/PagedAttention"
+  },
+  {
+    "Word": "Latency",
+    "Pronunciation": "/ˈleɪtənsi/",
+    "Audio": "",
+    "Definition": "Latency（延迟）——单个请求从发起到开始收到响应的时间，TTFT(首token延迟)和TPOT(每token延迟)是其中两个关键子指标",
+    "ExampleEN": "Chat applications prioritize low TTFT latency under 500ms, while batch translation optimizes for throughput over latency.",
+    "ExampleCN": "聊天应用优先保证500ms以下的低TTFT延迟，而批量翻译则优先优化吞吐量而非延迟。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。Latency(延迟)是衡量 LLM 服务\"响应快不快\"的核心指标——用户能接受等多久看到第一个字？能接受多快的阅读速度？不同应用场景对延迟的要求完全不同。<br><br><b>核心概念</b><br>AI 推理服务的延迟不是单一数值，而是由多个子指标组成: ① TTFT(Time To First Token): 从发送请求到收到第一个 token 的时间。决定\"用户觉得 AI 在思考\"还是\"AI 卡死了\"。实时聊天场景目标 < 300-500ms ② TPOT(Time Per Output Token): 每两个输出 token 之间的平均间隔时间。决定\"阅读体验是否流畅\"。目标 < 50ms(比大多数人阅读速度快) ③ End-to-End Latency: 从发请求到收到完整回复的总时间 = TTFT + TPOT × 输出 token 数。Latency vs Throughput 的 tradeoff: 这是系统优化的核心矛盾。增大 batch size → 提高吞吐量(同时处理更多请求) → 但每个请求的 TTFT 增加(需要等待 batch 凑满)。解决方案: Continuous Batching(不等待，来一个处理一个)和 Priority Scheduling(聊天请求高优先级保证低延迟，批量任务低优先级)。场景决定的优化方向: 聊天应用优先优化 TTFT(≤500ms)，批量翻译/生成场景优先优化 Throughput(对每个请求的延迟不敏感)。<br><br><b>关键要点</b><br>① TTFT < 500ms 是实时交互的行业基准 ② TPOT < 50ms 确保流畅阅读体验 ③ 延迟受 GPU 算力、batch 策略、模型大小共同影响 ④ 面试常问: \"如何优化聊天应用的延迟？\"→ 减少 batch、提高调度优先级、用更快的 GPU<br><br><b>延伸节点</b><br>§1.3.2 TTFT/TPOT 详解 | §1.3.1 关键术语 | §1.3.2 Continuous Batching | Throughput"
+  },
+  {
+    "Word": "TTFT",
+    "Pronunciation": "/ˌtiːˌtiːˌefˈtiː/",
+    "Audio": "",
+    "Definition": "Time To First Token（首Token时间）——用户发出请求到收到第一个token的时间，是衡量LLM服务响应速度的关键指标",
+    "ExampleEN": "TTFT below 300ms is the industry benchmark for real-time chat applications to maintain a natural conversation feel.",
+    "ExampleCN": "TTFT低于300毫秒是实时聊天应用保持自然对话感的行业基准。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1, §1.3.2。TTFT(Time To First Token)是衡量 LLM 推理服务\"响应速度\"的最关键用户体验指标——用户点击发送后，需要等多久才能看到 AI 的第一个字。<br><br><b>核心概念</b><br>TTFT 由两个阶段组成: ① Prompt Processing 阶段(prefill): 将用户输入的 prompt tokens 逐层通过 Transformer 做一次完整的前向计算，生成所有位置的 KV Cache。这个阶段是一次性的，计算量正比于 prompt 长度 ② Token Generation 阶段开始(decode): 开始自回归生成第一个 token。TTFT 就是这两个阶段的时间之和。TTFT 在聊天场景中的极端重要性: 这是心理学上的\"响应性错觉\"——用户对系统快慢的判断，80% 取决于 TTFT 而非总生成时间。TTFT < 300ms 用户感觉\"即时响应\"，300-500ms\"快速响应\"，>1000ms\"卡顿\"。影响 TTFT 的主要因素: ① Prompt 长度(长 prompt → 更多 prefill 计算) ② GPU 算力(更高 TFLOPS → 更快 prefill) ③ batch 大小(正在处理其他请求 → 当前请求需排队等 prefill 计算资源) ④ 模型大小(更多参数、更多层 → prefill 计算时间更长)。Streaming(流式输出)与 TTFT 的关系: streaming 不降低 TTFT，但降低\"感知延迟\"——用户看到第一个字后，等待后面的字就没有焦虑感了。<br><br><b>关键要点</b><br>① 目标: TTFT < 300-500ms(实时交互) ② 长 System Prompt 会显著增加 TTFT ③ 优化方向: 减少 prompt 长度、提高 GPU 优先级、预加载热门 prompt ④ 区别于 TPOT: TTFT 看\"多久开始回\"，TPOT 看\"回得多快\"<br><br><b>延伸节点</b><br>§1.3.2 TTFT/TPOT | §1.3.1 关键术语 | §1.3.2 Continuous Batching | Streaming | Latency"
+  },
+  {
+    "Word": "TPOT",
+    "Pronunciation": "/ˌtiːˌpiːˌoʊˈtiː/",
+    "Audio": "",
+    "Definition": "Time Per Output Token（每输出Token时间）——生成阶段中每个token之间的平均时间间隔，影响阅读流畅度",
+    "ExampleEN": "Maintaining TPOT under 50ms ensures smooth streaming output where text appears faster than the user can comfortably read.",
+    "ExampleCN": "将TPOT保持在50毫秒以下可确保流式输出流畅，文本出现的速度比用户舒适阅读速度更快。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。TPOT(Time Per Output Token)衡量 LLM 在生成阶段每个 token 的平均输出速度——TPOT 越低，文字\"涌出\"越快，阅读体验越流畅。<br><br><b>核心概念</b><br>TPOT 是自回归生成阶段(decode phase)的性能指标: 每生成一个 token，模型需要做一次完整的前向传播(所有层的 attention + FFN)，然后从 logits 中采样得到下一个 token。TPOT = 这一轮计算的时间。影响因素: ① GPU 算力(算力越高，每轮计算越快 → TPOT 越低) ② KV Cache 大小(历史 token 越多，attention 计算越长 → TPOT 逐渐增加) ③ 量化精度(INT4 计算比 FP16 快，但精度有损) ④ batch 大小(大 batch 下 GPU 算力被分摊，每个请求分到的算力减少 → TPOT 上升)。TPOT 的体验标准: < 50ms 体验极佳(比人阅读速度快)，50-100ms 可接受，> 100ms 有\"卡顿感\"。与 TTFT 的关系: 聊天应用优先优化 TTFT(用户等待第一个字的耐心有限)，批量翻译/生成场景优先优化 TPOT(生成大量 token，总时间 = TTFT + TPOT × n，TPOT 主导总耗时)。Continuous Batching 对 TPOT 的影响: 新请求加入 batch 会分走一部分 GPU 算力 → 现有请求的 TPOT 略微升高，但整体 GPU 利用率大幅提升。<br><br><b>关键要点</b><br>① 目标: TPOT < 50ms(流畅阅读) ② 生成过程中 TPOT 不是恒定的——context 越长 KV Cache 越大，TPOT 逐渐升高 ③ 优化方向: 换更好 GPU、减 batch 大小、量化推理、用更小的模型 ④ 面试常问: \"用户反馈输出卡顿\"→ 先查 TPOT 和 GPU 利用率<br><br><b>延伸节点</b><br>§1.3.2 TTFT/TPOT | §1.3.2 Continuous Batching | §1.3.1 关键术语 | Latency | Throughput"
+  },
+  {
+    "Word": "QPS",
+    "Pronunciation": "/ˌkjuːˌpiːˈes/",
+    "Audio": "",
+    "Definition": "Queries Per Second（每秒查询数）——AI推理服务每秒完成的完整请求数，是衡量系统并发吞吐能力的关键指标",
+    "ExampleEN": "When QPS exceeds 100, multi-GPU deployment with load balancing becomes necessary to maintain acceptable latency.",
+    "ExampleCN": "当QPS超过100时，需要多GPU部署配合负载均衡来维持可接受的延迟水平。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。QPS(Queries Per Second)是每秒完成的完整请求数——衡量 LLM 服务能扛住多大的用户流量。<br><br><b>核心概念</b><br>QPS 与 Throughput 的区别: Throughput 以 token/s 为单位(关注计算产出)，QPS 以 requests/s 为单位(关注业务处理能力)。例如: 一个模型每秒能生成 1000 个 token(Throughput)，如果每个请求平均生成 100 个 token，那么 QPS = 10。如果每个请求只生成 10 个 token，QPS = 100。这表明 QPS 高度依赖于实际的任务类型和平均输出长度。估算单 GPU 的 QPS: 假设 A100(312 TFLOPS) 运行 13B 模型，实测平均生成速度 2000 tokens/s，每个请求平均 200 token 输出 → QPS ≈ 10。影响因素: ① 模型大小(越大越慢) ② GPU 算力(H100 的 QPS 约是 A100 的 3 倍) ③ 输入/输出长度(长输入增加 TTFT，长输出增加总时间) ④ 并发策略(Continuous Batching 能显著提升有效 QPS)。扩展策略: 单 GPU QPS 不够 → 数据并行(Data Parallelism): 多个 GPU 各自运行完整模型副本，前端加负载均衡分发请求 → QPS 线性扩展(2 张 A100 → QPS×2)。当 QPS > 100 时要考虑多机部署，涉及网络延迟(RDMA/InfiniBand)和负载均衡策略。<br><br><b>关键要点</b><br>① 目标: 根据业务预期并发用户数设定 QPS 目标 ② QPS 与请求复杂度密切相关(简单问答 vs 长文章生成) ③ 单机扛不住时优先数据并行(多卡各自跑完整模型) ④ 需要配合负载均衡(Load Balancing)和健康检查实现高可用<br><br><b>延伸节点</b><br>§1.3.2 关键性能指标 | §1.3.1 多机部署 | Data Parallelism | Load Balancing | Throughput"
+  },
+  {
+    "Word": "KV Cache",
+    "Pronunciation": "/ˌkeɪˈviː kæʃ/",
+    "Audio": "",
+    "Definition": "Key-Value Cache（键值缓存）——LLM推理时将每个token的注意力计算Key和Value结果缓存起来，避免自回归生成时重复计算全部历史token",
+    "ExampleEN": "KV Cache grows linearly with the number of concurrent requests, making it the dominant consumer of GPU memory during inference.",
+    "ExampleCN": "KV缓存随并发请求数线性增长，使其成为推理期间GPU显存的主要消耗者。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.3.1 和 §1.3.2 的核心推理优化技术。KV Cache是大模型推理性能的关键——没有它，每个token都要重新计算整个历史序列。<br><br><b>为什么需要KV Cache</b><br>自回归生成: 每生成一个新token，模型需要关注之前所有token的信息。如果不缓存，每个新token都要重新计算前面所有位置的Key和Value矩阵——计算量O(n^2)而非O(n)。KV Cache存储已计算过的K和V，新token只需计算自己的Q并和缓存的K做注意力。<br><br><b>显存占用</b><br>KV Cache = 2(Key+Value) × layers × seq_len × d_model × precision。7B模型(32层,4096维,FP16): 1K上下文约0.5GB，32K上下文约16GB，128K上下文可占50GB+——比模型权重本身还大。<br><br><b>优化技术</b><br>PagedAttention(vLLM): 分页管理，消除碎片，显存利用率从30%到90%<br>Prefix Caching: 共享相同前缀(System Prompt)的KV Cache，避免重复计算<br>GQA/MQA: 多Query分组共享KV头，减少存储量<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §1.3.2 高并发原理 | §1.3.3 SGLang RadixAttention | vLLM PagedAttention论文"
+  },
+  {
+    "Word": "Ollama",
+    "Pronunciation": "/oʊˈlɑːmə/",
+    "Audio": "",
+    "Definition": "Ollama——轻量级本地LLM部署工具，一条命令即可拉取和运行模型，底层基于llama.cpp，适合个人开发和学习",
+    "ExampleEN": "Ollama makes running local LLMs trivial with just 'ollama run qwen2.5:7b', ideal for development and prototyping.",
+    "ExampleCN": "Ollama 只需一条 'ollama run qwen2.5:7b' 命令即可运行本地LLM，非常适合开发与原型制作。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.3.1 企业级AI部署 的本地推理工具。Ollama 是最简单的本地大模型运行方案——一条命令下载运行，无需配置 CUDA/cuDNN。<br><br><b>核心特点</b><br>零配置：下载即用，自动检测GPU。基于 llama.cpp(C++推理引擎)，支持 CPU+GPU 混合推理<br>Modelfile: 类似 Dockerfile 的模型配置，定义模型/系统提示词/参数<br>REST API: 本地 http://localhost:11434，兼容 OpenAI API 格式<br>模型管理: ollama pull/push/list/rm 管理模型<br><br><b>常用命令</b><br>ollama pull qwen2.5:7b   # 下载模型<br>ollama run qwen2.5:7b    # 交互式运行<br>ollama serve              # 启动API服务(端口11434)<br>ollama list               # 查看已下载模型<br><br><b>vs vLLM</b><br>Ollama: 简单易用，适合开发/个人使用。性能一般(CPU混合推理)<br>vLLM: 高性能，适合生产环境。需要GPU+配置。支持PagedAttention等优化<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §1.2.1 AI大模型基本原理及API使用 | llama.cpp | Ollama GitHub"
+  },
+  {
+    "Word": "vLLM",
+    "Pronunciation": "/viː ˌelˌelˈem/",
+    "Audio": "",
+    "Definition": "vLLM——高性能LLM推理框架，核心创新PagedAttention实现显存分页管理，Continuous Batching实现连续批处理，吞吐量比Ollama高10-20倍",
+    "ExampleEN": "vLLM's PagedAttention achieves ~90% GPU memory utilization by managing KV Cache in pages, compared to ~30% with traditional contiguous allocation.",
+    "ExampleCN": "vLLM的PagedAttention通过分页管理KV缓存实现了约90%的GPU显存利用率，而传统连续分配仅约30%。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.3.1 企业级AI部署 的核心推理引擎。vLLM 是当前最流行的高性能 LLM 推理框架，被 OpenAI、Anthropic 等广泛采用。<br><br><b>核心创新: PagedAttention</b><br>传统 KV Cache 管理: 预分配连续大块显存，造成严重浪费(内部碎片+外部碎片)。PagedAttention 借鉴操作系统虚拟内存的分页思想: 将 KV Cache 切成固定大小 block，按需分配，不连续存储。效果: 显存利用率从20-40%提升到90%+，吞吐量提升2-4倍。<br><br><b>Continuous Batching</b><br>传统 batching: 等一批请求全部完成才返回。一个长请求拖慢整个 batch。Continuous Batching: 动态增减 batch——任何请求完成立即返回，新请求立即加入。实现毫秒级调度，吞吐再提升10倍。<br><br><b>关键参数</b><br>gpu-memory-utilization: GPU显存使用比例(0.8-0.95)。设太高OOM，太低浪费<br>max-model-len: 最大上下文长度。越大消耗越多KV Cache显存<br>max-num-seqs: 最大并发序列数。越大吞吐越高但延迟可能增加<br>tensor-parallel-size: 张量并行卡数。7B模型1卡，70B模型4-8卡<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §1.3.2 高并发原理 | §5.8 昇腾部署DeepSeek | vLLM官方文档"
+  },
+  {
+    "Word": "SGLang",
+    "Pronunciation": "/ˌesˈdʒiː læŋ/",
+    "Audio": "",
+    "Definition": "SGLang——专为复杂LLM工作流设计的推理框架，核心创新RadixAttention和结构化DSL编程模型，擅长RAG/Agent/CoT等需多步推理的场景",
+    "ExampleEN": "SGLang's RadixAttention automatically detects and reuses shared prompt prefixes across requests, saving 30-50% GPU memory in RAG scenarios.",
+    "ExampleCN": "SGLang的RadixAttention自动检测并复用请求间的共享前缀，在RAG场景中节省30-50%的GPU显存。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.3.3 的核心推理框架。SGLang 是新一代 LLM 推理引擎，主打结构化生成和前缀共享优化。<br><br><b>核心创新: RadixAttention</b><br>vLLM 的 PagedAttention 解决显存碎片问题。SGLang 的 RadixAttention 进一步解决前缀冗余问题: 多个请求共享相同 System Prompt→这些请求的 KV Cache 完全一样→Radix Tree 自动检测并共享前缀 KV Cache→避免重复计算。对于多轮对话和批量API场景，吞吐可再提升数倍。<br><br><b>Radix Tree</b><br>基数树，空间优化的前缀树(Trie)。每个节点存储一段共享前缀的 KV Cache。新请求到达时自动匹配最长公共前缀→复用已计算的 KV Cache→只计算剩余部分。LRU 淘汰不活跃分支。<br><br><b>结构化生成 DSL</b><br>SGLang 提供 Python 领域特定语言: @sgl.function 装饰器定义生成流程，sgl.gen() 控制生成步骤。支持 Choices(约束输出选项)、Regex(正则约束)、JSON(结构化输出)。比手写 prompt 更可控。<br><br><b>延伸节点</b><br>§1.3.3 SGLang深度优化 | §1.3.1 企业级AI部署 | §1.3.2 高并发原理 | §3.5 PyTorch分布式训练"
+  },
+  {
+    "Word": "PagedAttention",
+    "Pronunciation": "/peɪdʒd əˈtenʃən/",
+    "Audio": "",
+    "Definition": "PagedAttention（分页注意力）——vLLM的核心创新，将KV Cache像操作系统虚拟内存一样分页管理，显存利用率从~30%提升到~90%",
+    "ExampleEN": "PagedAttention eliminates KV Cache fragmentation by allocating memory in fixed-size pages that don't need to be contiguous.",
+    "ExampleCN": "PagedAttention通过按固定大小的页不连续地分配内存，消除了KV缓存的碎片化问题。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1, §1.3.2。PagedAttention 是 vLLM 推理框架的核心创新——借鉴操作系统虚拟内存的分页思想管理 KV Cache，将 GPU 显存利用率从约 30% 提升到 90%+，是 LLM 推理性能优化的里程碑式技术。<br><br><b>核心概念</b><br>传统 KV Cache 管理的问题: 每个请求预分配一大块连续显存用于存储 KV Cache。问题一: 预分配但是实际用不了那么多(生成可能提前结束)→ 内部碎片(allocated but unused)。问题二: 不同请求的分配和释放导致显存碎片化 → 外部碎片(free memory scattered in small blocks)。整体利用率只有 20-40%。PagedAttention 的解决方案: 将 KV Cache 切分为固定大小的 block(类似 OS 的 4KB page)。三个核心优势: ① 不连续分配: KV Cache blocks 不需要连续存储，通过页表(page table)映射。碎片大幅减少 ② 按需分配: 需要时才分配新 block，不用预分配最大值。实际利用率接近 100% ③ 前缀共享: 两个请求有相同的 System Prompt → 这些 prefix tokens 的 KV Cache blocks 完全相同 → 直接共享(写时复制 COW)。内存复制(当某个请求开始生成不同内容时)。效果: 显存利用率从 20-40% → 90%+，同样硬件下能支撑的并发数翻 2-4 倍，吞吐量提升 2-4 倍。SGLang 的 RadixAttention 在此基础上进一步创新: 用 Radix Tree(VS 简单页表)实现更灵活的任意前缀共享，不要求完全相同的前缀。<br><br><b>关键要点</b><br>① vLLM 的核心技术，类比 OS 虚拟内存分页 ② 显存利用率: ~30% → ~90% ③ 同类硬件下并发提升 2-4 倍 ④ 与 RadixAttention 的区别: PagedAttention 靠页表和 COW，RadixAttention 靠 Radix Tree 匹配任意前缀<br><br><b>延伸节点</b><br>§1.3.2 KV Cache 瓶颈 | §1.3.3 RadixAttention/Radix Tree | vLLM 论文(Kwon et al. 2023) | Continuous Batching"
+  },
+  {
+    "Word": "Continuous Batching",
+    "Pronunciation": "/kənˈtɪnjuəs ˈbætʃɪŋ/",
+    "Audio": "",
+    "Definition": "Continuous Batching（连续批处理）——不等一批请求全部完成就动态插入新请求的调度策略，让GPU几乎不空转等待",
+    "ExampleEN": "Continuous batching improves GPU utilization by inserting new requests immediately when any in-progress request completes, rather than waiting for the whole batch.",
+    "ExampleCN": "连续批处理通过在任何进行中的请求完成时立即插入新请求来提高GPU利用率，而不是等待整批完成。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。Continuous Batching(连续批处理)是 vLLM/SGLang 等高性能推理框架的调度核心——让 GPU 几乎不空转等待，任何请求完成立即返回，新请求立即加入，实现毫秒级动态调度。<br><br><b>核心概念</b><br>传统批处理(Static Batching)的做法: 收集一批请求 → 一起处理 → 等所有请求全部完成 → 返回结果 → 收下一批。致命问题: \"一个慢请求拖死全组\"。想象一批 10 个请求中，9 个只需要生成 20 个 token(1 秒完成)，有 1 个需要生成 500 个 token(25 秒完成)。传统批处理下，那 9 个快请求需要干等 24 秒不能返回结果。Continuous Batching 的做法: LLM 自回归生成 token 是逐 token 迭代的。每生成完一轮 token(所有 in-progress 的请求各自生成一个新 token)，检查: ① 有没有请求已经完成了(生成了 EOS 或达到 max_tokens)？→ 立即从 batch 中移除并返回 ② 有没有新请求到达？→ 立即加入 batch ③ 继续下一轮。这样\"短请求不等待长请求\"——完成就返回，GPU 始终保持尽可能满的 batch。效果: GPU 空闲时间大幅减少，平均 TTFT 降低(新请求不用等凑满 batch)，吞吐量提升 5-10 倍。这是 vLLM 相比 Ollama(基本不做 batch 优化)能实现 10-20 倍吞吐提升的核心原因之一。<br><br><b>关键要点</b><br>① vs 传统批处理: 不等最慢的请求 ② 每轮 token 生成后检查: 哪些完成？有新请求吗？ ③ 效果: GPU 利用率提升，延迟/吞吐双优化 ④ 面试中能精确描述\"不等最慢那个\"的调度逻辑是加分项<br><br><b>延伸节点</b><br>§1.3.2 原理讲解(高并发本质) | §1.3.1 vLLM 核心优化 | PagedAttention | vLLM 源码"
+  },
+  {
+    "Word": "RadixAttention",
+    "Pronunciation": "/ˈreɪdɪks əˈtenʃən/",
+    "Audio": "",
+    "Definition": "RadixAttention（基数注意力）——SGLang的核心创新，用Radix Tree管理KV Cache前缀，自动识别和复用所有请求的共同前缀",
+    "ExampleEN": "RadixAttention uses a Radix Tree to detect shared token prefixes across all requests, caching their KV Cache for reuse regardless of request order.",
+    "ExampleCN": "RadixAttention使用基数树检测所有请求的共享token前缀，缓存其KV Cache以供复用，不依赖请求顺序。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.3。RadixAttention 是 SGLang 推理框架的核心创新——在 PagedAttention 解决\"显存碎片\"问题的基础上，进一步解决\"前缀冗余\"问题，通过 Radix Tree 自动检测并复用任意请求间的共享前缀 KV Cache。<br><br><b>核心概念</b><br>前缀冗余问题: 在实际 API 服务中，大量请求都包含相同的 System Prompt(如\"你是一个知识助手\"的开头几百个 token)。传统方案(vLLM PagedAttention)需要两个请求的完整前缀完全相同才能共享 KV Cache。RadixAttention 用 Radix Tree(基数树)存储所有活跃请求的 token 序列。当新请求到达时，系统遍历 Radix Tree 寻找\"最长公共前缀\"——即使两个请求的 System Prompt 不完全相同(比如一个是\"你是助手\"一个是\"你是助手，请用中文回答\")，它们共享的前缀部分(\"你是助手\")的 KV Cache 可以复用。匹配到的节点自动复用已计算的 KV Cache，只计算剩余差异部分。LRU(Least Recently Used)策略淘汰不活跃的分支。RAG 场景的效果: 当大量用户问同一个知识库的不同问题时，检索到的参考资料有大量重叠文本——RadixAttention 自动检测并复用重叠部分的 KV Cache，节省 30-50% 的 GPU 显存，吞吐量再提升数倍。<br><br><b>关键要点</b><br>① vs PagedAttention: vLLM 要求前缀完全相同才共享，RadixAttention 任何共同前缀都自动共享(更灵活) ② RAG 场景最受益(大量重叠的检索结果) ③ 技术基础是 Radix Tree(基数树，前缀树的压缩变体) ④ SGLang 的核心差异化优势<br><br><b>延伸节点</b><br>§1.3.3 Radix Tree 原理 | §1.3.3 SGLang vs vLLM | PagedAttention | KV Cache"
+  },
+  {
+    "Word": "Radix Tree",
+    "Pronunciation": "/ˈreɪdɪks triː/",
+    "Audio": "",
+    "Definition": "Radix Tree（基数树）——一种空间优化的前缀树(Trie)，在SGLang中用于管理KV Cache的前缀共享，实现按token序列前缀的自动匹配和复用",
+    "ExampleEN": "A Radix Tree compresses prefix storage by merging nodes with common prefixes, creating parent nodes for shared tokens and branches for divergent ones.",
+    "ExampleCN": "基数树通过合并有共同前缀的节点来压缩前缀存储，为共享token创建父节点，为分歧部分创建分支。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.3。Radix Tree(基数树)是 RadixAttention 的底层数据结构——一种空间优化的前缀树(Compressed Trie)，用于高效存储和匹配 token 序列的前缀，实现 KV Cache 的自动复用。<br><br><b>核心概念</b><br>Radix Tree 是 Trie(前缀树)的压缩版本。普通 Trie: 每个节点存一个字符或 token，路径代表完整的字符串。缺点: 节点数量多，存储冗余。Radix Tree 的优化: 合并只有一个子节点的节点——将单链路径压缩为一个节点，直接存储完整的子串。例如 token 序列 [A, B, C, D] 和 [A, B, C, E] 在普通 Trie 中需要 5 个节点，在 Radix Tree 中只需 3 个: root→[ABC]→分支 D 和 E。在 SGLang 中的应用: 每个节点存储一段共享前缀 token 的 KV Cache blocks。当新请求到达时，从根节点遍历 Radix Tree 寻找最长公共前缀路径——路径上的节点已缓存了 KV Cache，直接复用。然后从第一个不同 token 开始计算新的 KV Cache，并在对应位置创建/分裂节点。LRU 淘汰: 每个节点记录最后访问时间，当显存紧张时淘汰最久未使用的分支。这是计算机科学与 AI 推理的交叉创新——将经典数据结构(前缀树)应用于最前沿的 GPU 显存优化。<br><br><b>关键要点</b><br>① 压缩 Trie: 合并单子节点减少存储 ② 节点合并规则: 共同前缀 → 父节点，差异部分 → 分支子节点 ③ 匹配时从根遍历，沿途复用 KV Cache ④ LRU 淘汰不活跃分支 ⑤ O(k) 查找(k=最大树深度)<br><br><b>延伸节点</b><br>§1.3.3 RadixAttention | §1.3.3 SGLang 深度优化 | Trie(前缀树) | 数据结构"
+  },
+  {
+    "Word": "Token Healing",
+    "Pronunciation": "/ˈtoʊkən ˈhiːlɪŋ/",
+    "Audio": "",
+    "Definition": "Token Healing（Token缝合）——SGLang DSL将连续生成拆成多个sgl.gen()节点时，在边界注入前段末尾token确保生成连贯的技术",
+    "ExampleEN": "Token healing stitches together consecutive generation segments by exposing the previous segment's last token as context for the next.",
+    "ExampleCN": "Token Healing 通过将前一段的最后一个token暴露给下一段作为上下文，将连续的生成片段缝合在一起。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.3。Token Healing 是 SGLang 的结构化生成 DSL 中的关键技术——解决了将连续文本生成拆分成多个 sgl.gen() 节点时，段与段之间语义断裂的问题。<br><br><b>核心概念</b><br>SGLang 的结构化生成 DSL 允许开发者将一次生成拆分成多个 gen() 节点。例如: sgl.gen(name=\"title\", max_tokens=20) + sgl.gen(name=\"body\", max_tokens=500)。问题: 第一个 gen() 生成\"The quick brown \"在最后一个 token \"fox\"还没生成时就停止了(因为达到了 max_tokens)。第二个 gen() 开始生成时，它的上下文知道第一个 gen() 的输出内容，但不知道模型内部状态——它看到一个以空格结尾的句子，可能接\"The quick brown fox\"变得不连贯。Token Healing 的解决方案: 在生成第二个 gen() 之前，把第一个 gen() 末尾的那个 token 作为上下文\"注入\"到第二个 gen() 的输入中。具体做法: 取前段输出文本，做 tokenize，取最后一个 token，将其作为下一段生成的\"起始 token\"。这样模型在生成下一段时就知道\"我刚刚说到 fox\"这个 token，能自然延续。这是一种在结构化生成边界的\"上下文缝合\"技术，确保语义流畅性不受程序化切分的影响。<br><br><b>关键要点</b><br>① SGLang DSL 多个 sgl.gen() 拆分导致的 token 断裂问题 ② Token Healing 在段边界注入前段末位 token 作为上下文 ③ 核心: 保证语义流畅(类似自然语言中前后句的承上启下) ④ 面试中被问到 SGLang 时，能提到 token healing 是理解深度的体现<br><br><b>延伸节点</b><br>§1.3.3 SGLang 结构化编程 | §1.3.3 SGLang DSL | SGLang 论文 | Token"
+  },
+  {
+    "Word": "llama.cpp",
+    "Pronunciation": "/ˈlɑːmə dɒt siː plʌs plʌs/",
+    "Audio": "",
+    "Definition": "llama.cpp——高性能C++ LLM推理引擎，支持CPU和GPU混合推理，Ollama的底层引擎，以低资源消耗和易用性著称",
+    "ExampleEN": "llama.cpp enables running quantized LLMs efficiently on consumer hardware, including laptops without dedicated GPUs.",
+    "ExampleCN": "llama.cpp 使得在消费级硬件上高效运行量化LLM成为可能，包括没有独立GPU的笔记本电脑。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。llama.cpp 是 Ollama 的底层推理引擎——一个纯 C++ 实现的 LLM 推理库，让大模型能在没有 GPU 的 CPU 上也能运行，是\"AI 民主化\"的关键基础设施。<br><br><b>核心概念</b><br>llama.cpp 由 Georgi Gerganov 开发，核心目标: 在消费级硬件上高效运行量化后的 LLM。技术特点: ① C++ 实现: 不依赖 PyTorch/CUDA，直接在 CPU 上做矩阵运算(通过 BLAS 库加速)。推理速度比 Python 实现快 10-100 倍 ② CPU+GPU 混合推理: 可以将部分层(如 attention)放在 GPU 上，其余在 CPU 上。支持 Apple Metal(苹果 M 系列芯片 GPU 加速)、CUDA、Vulkan ③ GGUF 格式: llama.cpp 自创的模型文件格式，将模型权重、tokenizer、元数据打包在一个二进制文件中。支持多种量化级别(FP16/Q8/Q6/Q5/Q4/Q2) ④ 内存映射: 模型文件直接 mmap 到内存，支持多进程共享(一个模型文件多个推理进程共享)，节省物理内存。llama.cpp 的生态: Ollama 基于它构建 REST API 和模型管理；LM Studio 基于它构建 GUI 推理工具；GPT4All 基于它运行本地模型。局限: GPU 加速不如纯 GPU 推理(vLLM)，主要用于本地开发和个人使用，不是生产级 API 服务的选择。<br><br><b>关键要点</b><br>① C++ 实现，CPU 友好，不依赖 PyTorch ② Ollama 的底层引擎 ③ GGUF 是 llama.cpp 专用的量化模型格式 ④ 适合本地开发/个人使用/嵌入式设备，不适合高并发 API 服务 ⑤ Apple M 系列芯片的 Metal 加速效果显著<br><br><b>延伸节点</b><br>§1.3.1 Ollama | §1.3.1 推理框架对比(vLLM/SGLang) | §1.3.1 量化(Quantization) | GGUF 格式"
+  },
+  {
+    "Word": "Quantization",
+    "Pronunciation": "/ˌkwɒntɪˈzeɪʃən/",
+    "Audio": "",
+    "Definition": "Quantization（量化）——将模型参数从高精度（如FP16/FP32）压缩到低精度（如INT8/INT4），以显著减少显存占用和加速推理，代价是微小精度损失",
+    "ExampleEN": "INT8 quantization reduces model size by ~50% with negligible accuracy loss, while INT4 achieves ~75% reduction with 1-3% performance degradation.",
+    "ExampleCN": "INT8量化将模型体积减少约50%且精度损失可忽略，而INT4量化实现约75%的缩减但性能下降1-3%。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.3.1 和 §1.3.2 的核心压缩技术。量化是大模型部署的经济学——用精度换显存，让大模型能在小GPU上运行。<br><br><b>基本原理</b><br>神经网络权重默认FP16(2字节)或FP32(4字节)。量化将权重映射到更低精度: INT8(1字节, 缩小2-4倍), INT4(0.5字节, 缩小4-8倍)。核心tradeoff: 精度损失vs显存节省。现代量化技术(如GPTQ, AWQ)可将损失控制在1%以内。<br><br><b>主流方案</b><br>GPTQ: 基于OBQ(最优脑量化)，逐列量化+权重补偿。INT4精度损失<1%。适合GPU推理。<br>AWQ: 激活感知量化。分析哪些通道对激活影响最大→重点保护→其余激进量化。速度更快。<br>GGUF(GGML): llama.cpp使用的格式。支持CPU+GPU混合推理，苹果M系列芯片友好。<br>bitsandbytes: QLoRA背后的量化库。支持FP4/NF4/INT8/FP8多种格式。<br><br><b>NF4(NormalFloat4)</b><br>不是均匀量化: 假设权重服从正态分布→在高密度区域分配更多量化级别→信息损失更少。配合双重量化(Double Quantization)进一步节省0.4bits/参数。<br><br><b>延伸节点</b><br>§1.3.1 企业级AI部署 | §2.3.1 LLM微调原理 | §3.5 PyTorch | HuggingFace Transformers量化文档"
+  },
+  {
+    "Word": "FP16",
+    "Pronunciation": "/ˌefˌpiː sɪksˈtiːn/",
+    "Audio": "",
+    "Definition": "16-bit Floating Point（半精度浮点数）——16位浮点数格式，LLM推理的标准精度，相比FP32将模型体积减半，精度损失极小",
+    "ExampleEN": "Running models in FP16 halves the required VRAM compared to FP32, making it the default precision for most LLM deployments.",
+    "ExampleCN": "相比FP32，以FP16运行模型将所需显存减半，使其成为大多数LLM部署的默认精度。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。FP16(半精度浮点数)是 LLM 推理和训练的标准数值精度——用 16 bits 而非 32 bits 存储每个权重，将模型体积减半，但精度损失可忽略不计(对 LLM 任务来说)。<br><br><b>核心概念</b><br>浮点数精度等级: FP32(单精度): 32 bits = 1 符号位 + 8 指数 + 23 尾数。训练时代的默认精度。FP16(半精度): 16 bits = 1 符号 + 5 指数 + 10 尾数。推理的标准精度。BF16(Brain Float 16): 16 bits = 1 符号 + 8 指数 + 7 尾数。与 FP32 相同指数范围，精度略低于 FP16 但数值稳定性更好。FP8: 8 bits，最新的精度格式(H100 支持)。显存与精度的关系: 每个参数 × precision_bytes = 模型显存占用。FP32: 7B 模型 = 28GB；FP16/BF16: 7B = 14GB；INT8: 7B = 7GB；INT4: 7B = 3.5GB。大部分现代 GPU(Volta 架构以上)都有 FP16 Tensor Core 硬件加速——FP16 计算速度是 FP32 的 2-8 倍。BF16 vs FP16: BF16 指数范围大(防溢出)，尾数精度低。在训练中比 FP16 更稳定(不需要 loss scaling)，是 Google TPU 和 NVIDIA H100 的标准训练精度。业界实践: 训练用 BF16(稳定)，推理用 FP16(效果好且硬件支持好)，微调用 FP16/BF16。混合精度训练: 权重存 FP16，某些敏感计算(如 softmax)用 FP32 保精度。<br><br><b>关键要点</b><br>① FP16/BF16 是 LLM 推理的标准精度 ② 显存估算: 参数量 × 2 bytes(FP16) ③ FP16 有 Tensor Core 硬件加速 ④ BF16 训练更稳定(指数范围大)，FP16 推理更常用 ⑤ FP8 是下一代精度趋势(H100 支持)<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型 | §1.3.1 量化(Quantization) | TFLOPS | VRAM | H100"
+  },
+  {
+    "Word": "Tensor Parallelism",
+    "Pronunciation": "/ˈtensər ˈpærəlelɪzəm/",
+    "Audio": "",
+    "Definition": "Tensor Parallelism（张量并行）——将单个模型层的参数矩阵切分到多张GPU上并行计算，解决单卡放不下大模型的问题",
+    "ExampleEN": "Tensor parallelism splits a 70B model across 4 GPUs by sharding weight matrices, enabling inference on hardware that couldn't fit the model on a single card.",
+    "ExampleCN": "张量并行通过切分权重矩阵将70B模型分布到4张GPU上，使得单卡装不下的模型也能推理。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。Tensor Parallelism(张量并行)是解决\"单卡放不下模型\"的核心技术——将神经网络层的权重矩阵切分到多张 GPU 上并行计算，让 70B 模型能在多张消费级 GPU 上运行。<br><br><b>核心概念</b><br>张量并行的切分粒度是\"层内\"(intra-layer): 将 Transformer 一层的权重矩阵(如 attention 的 QKV 投影、FFN 的线性层)按列或行切分到多张 GPU。例如: 一个 4096×4096 的权重矩阵，切分到 4 张 GPU 上，每张 GPU 只存 4096×1024 的部分。前向传播时: 每张 GPU 各自计算自己那部分 → all-reduce 汇集(通信)。反向传播时: 每张 GPU 各自计算梯度 → all-reduce 汇集。这样就实现了\"多卡合力算一层\"。与数据并行的区别: 数据并行(Distributed Data Parallel)不切模型——每卡持有完整模型副本，各自处理不同的数据 batch，然后同步梯度(训练时)或独立推理(推理时)。解决不同的问题: 张量并行解决\"单卡装不下\"(模型太大)，数据并行解决\"单卡算不完\"(并发太高)。张量并行的关键挑战: 多卡间通信是瓶颈——每层计算后都需要 all-reduce 交换数据。如果 GPU 间通信延迟高(如普通 PCIe 而非 NVLink)，加速效果会被通信开销吃掉。因此张量并行通常用于同机多卡(NVLink 连接)场景，跨机张量并行需要 RDMA/InfiniBand。<br><br><b>关键要点</b><br>① 切分粒度: 层内(每层权重按列/行切到多卡) ② vs 数据并行: 不切模型 vs 切模型 ③ 显存放不下单卡时首先考虑张量并行 ④ 通信是关键瓶颈——需要 NVLink(同机)或 RDMA/InfiniBand(跨机) ⑤ vLLM 参数: tensor-parallel-size=N<br><br><b>延伸节点</b><br>§1.3.1 多机部署 | §1.3.1 网络要求(RDMA/InfiniBand/NVLink) | Data Parallelism | GPU 选型"
+  },
+  {
+    "Word": "Data Parallelism",
+    "Pronunciation": "/ˈdeɪtə ˈpærəlelɪzəm/",
+    "Audio": "",
+    "Definition": "Data Parallelism（数据并行）——将请求分发到多台各自拥有完整模型副本的GPU/节点上，通过负载均衡提升整体并发吞吐量",
+    "ExampleEN": "Data parallelism scales throughput linearly with the number of replicas, with each GPU handling a subset of incoming requests independently.",
+    "ExampleCN": "数据并行让吞吐量随副本数量线性扩展，每张GPU独立处理一部分传入请求。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。Data Parallelism(数据并行)是解决\"单卡扛不住并发量\"的扩展方案——不切模型，每张 GPU 保有完整模型副本，靠负载均衡将请求分发到多张卡上，实现 QPS 线性扩展。<br><br><b>核心概念</b><br>数据并行在推理场景中的应用: 前端放一个负载均衡器(如 Nginx/Envoy/API Gateway)，将客户端请求均匀分发到多个推理实例。每个推理实例 = 一张 GPU + 运行其上的 vLLM/SGLang 服务 + 完整的模型副本。每个实例完全独立: 不需要相互通信(因为是完整副本)，不需要知道你分到了哪个请求，也不需要等其他人。训练场景(Data Parallel Training): 每卡独立算梯度 → all-reduce 同步 → 累加平均 → 所有卡更新相同的模型。推理场景更简单: 因为不需要梯度同步，所以可以直接水平扩展(QPS 线性增长)。数据并行 vs 张量并行: ① 数据并行每卡有完整模型(7B → 每卡 14GB)，张量并行每卡只有模型的一部分(7B 4 卡 → 每卡 3.5GB) ② 数据并行解决并发不足，张量并行解决单卡放不下 ③ 数据并行无 GPU 间通信(推理)，张量并行需要密集通信。最常见组合: 张量并行 + 数据并行——先用张量并行把大模型分布式在多卡上(形成\"虚拟大 GPU\")，再用数据并行把多个虚拟 GPU 组通过负载均衡扩展。<br><br><b>关键要点</b><br>① 不切模型，每卡完整副本 ② 解决并发不足(QPS 不够)而非单卡放不下 ③ 推理场景下 GPU 间无需通信(完全独立) ④ 前端需负载均衡(Load Balancing)配合 ⑤ 可线性扩展: N 张卡 → N×QPS<br><br><b>延伸节点</b><br>§1.3.1 多机部署 | §1.3.1 负载均衡(Load Balancing) | Tensor Parallelism | QPS"
+  },
+  {
+    "Word": "TFLOPS",
+    "Pronunciation": "/ˌtiːˌefˈlɒps/",
+    "Audio": "",
+    "Definition": "Tera Floating-point Operations Per Second（每秒万亿次浮点运算）——衡量GPU算力的核心指标，数值越高推理和训练速度越快",
+    "ExampleEN": "The H100 delivers 989 TFLOPS of FP16 compute, roughly 3x the 312 TFLOPS of the previous generation A100.",
+    "ExampleCN": "H100提供989 TFLOPS的FP16算力，约为上一代A100的312 TFLOPS的3倍。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。TFLOPS(Tera Floating-point Operations Per Second)是衡量 GPU 算力的核心指标——数值越高，矩阵乘法和神经网络计算越快，直接影响推理速度(TTFT、TPOT)和训练时间。<br><br><b>核心概念</b><br>FLOPS = Floating-point Operations Per Second(每秒浮点运算次数)。TFLOPS = 万亿次/秒(10^12)。PFLOPS = 千万亿次/秒(10^15)。在 LLM 推理中，TFLOPS 直接决定了: TTFT(prompt processing 的 prefill 计算量)、TPOT(每个 decode 步骤的计算量)、最大 batch size(并发请求的算力分配)。注意区分: ① 理论峰值 TFLOPS(芯片规格书上的数字)——实际场景中通常达不到 ② 不同精度的 TFLOPS 不同——FP16 TFLOPS 是 LLM 推理最常用的参考值，FP8 TFLOPS(H100 支持)更高但需要模型/框架适配 ③ Tensor Core TFLOPS(矩阵专用加速)远高于普通 CUDA Core TFLOPS。GPU 算力梯队: RTX 4090: 82 TFLOPS(FP16)，L40S: 91 TFLOPS，A100: 312 TFLOPS(FP16 Tensor Core)，H100: 989 TFLOPS(FP16 Tensor Core)。H100 是 A100 的约 3 倍算力——意味着同样 batch/模型下，H100 比 A100 推理快约 3 倍。选择 GPU 时，TFLOPS 决定了\"速度\"，VRAM 决定了\"能跑多大的模型\"——两者都重要，但通常显存更先成为瓶颈。<br><br><b>关键要点</b><br>① FP16 TFLOPS 是 LLM 推理的最常用算力参考值 ② 梯队: 消费级(82)→ 入门企业(91)→ 主流企业(312)→ 旗舰(989) ③ Tensor Core TFLOPS >> CUDA Core TFLOPS(矩阵加速) ④ 实际性能受显存带宽限制—算力高但数据喂不过来也是瓶颈<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型决策 | §1.3.2 性能监控 | A100 | H100 | FP16"
+  },
+  {
+    "Word": "Semantic Cache",
+    "Pronunciation": "/sɪˈmæntɪk kæʃ/",
+    "Audio": "",
+    "Definition": "Semantic Cache（语义缓存）——对相似问题（而非仅完全相同问题）返回缓存结果，通过向量相似度判断问题是否\"语义相同\"",
+    "ExampleEN": "A semantic cache can match 'What's the return policy?' with a cached answer for 'How do I return an item?', saving LLM calls.",
+    "ExampleCN": "语义缓存可以将\"退货政策是什么？\"与已缓存的\"如何退货？\"匹配，节省LLM调用。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。Semantic Cache(语义缓存)是 AI 推理服务的成本优化利器——传统缓存只能命中\"完全相同的请求\"，语义缓存用 Embedding 相似度来判断两个问题\"意思是不是一样的\"，大幅提升缓存命中率。<br><br><b>核心概念</b><br>传统缓存(如 Redis key-value): 必须 key 完全相同才能命中。\"退货政策是什么？\"和\"如何退货？\"是不同的 key → 缓存未命中 → 需要重新调用 LLM。语义缓存: 将用户问题转为 Embedding 向量存入向量数据库。新请求到达时，用向量相似度(如 cosine similarity > 0.95 阈值)判断是否有\"意思相同但表述不同\"的缓存结果。如果有 → 直接返回缓存的 LLM 回复，节省一次 API 调用(钱+延迟)。两阶段语义缓存: ① 相似度匹配: 用轻量 Embedding 模型(如 all-MiniLM-L6-v2)快速匹配 ② 验证/可选: 用更强的模型(如 Cross-Encoder)验证是否真的语义相同。适用场景: FAQ 系统(高频问题)、客服机器人(相似投诉)、教育问答(多人问类似题目)。不适用场景: 高度个性化问题、每次结果不同的任务(如实时翻译)。缓存收益计算: 假设 API 调用成本 $0.01/次，缓存命中率 30%，日请求 10 万 → 日省 $300，年省 $10 万+。<br><br><b>关键要点</b><br>① 核心: 用 Embedding 相似度替代精确字符串匹配 ② 阈值设置: cosine similarity > 0.95 可视为语义相同 ③ 推荐阈值根据场景调优(太高命中率低，太低结果不准) ④ 配合 RAG 缓存层效果更佳 ⑤ 面试常问: \"如何降低 LLM API 成本？\"<br><br><b>延伸节点</b><br>§1.1.1 RAG 缓存层 | §1.3.1 工业界最佳实践 | Embedding | Cosine Similarity | Vector Database"
+  },
+  {
+    "Word": "A100",
+    "Pronunciation": "/eɪ wʌn ˈhʌndrəd/",
+    "Audio": "",
+    "Definition": "NVIDIA A100——基于Ampere架构的企业级GPU，80GB显存，312 TFLOPS FP16算力，大规模推理和70B模型训练的标准选择",
+    "ExampleEN": "The A100 80GB remains the workhorse GPU for production LLM deployments, balancing cost with the ability to serve 70B models.",
+    "ExampleCN": "A100 80GB 仍然是生产环境LLM部署的主力GPU，在成本与服务70B模型的能力之间取得了平衡。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。NVIDIA A100 是基于 Ampere 架构的企业级 GPU 标杆——80GB 显存和 312 TFLOPS FP16 算力，是 2020-2024 年 LLM 推理和训练的主力 GPU，也是企业 GPU 选型的最常见参照。<br><br><b>核心概念</b><br>A100 的核心规格: 架构 Ampere(2020 年发布)，显存 80GB HBM2e，显存带宽 2TB/s，算力 312 TFLOPS(FP16 Tensor Core)，功耗 400W TDP，NVLink 600 GB/s(GPU 间通信)。适用场景: ① 推理: 单卡可运行 7B/13B 模型(FP16)，多卡张量并行可运行 70B 模型 ② 训练: 7B-13B 模型训练的首选卡片(单卡或 2-4 卡)，70B 模型训练需 8+ 卡 ③ 微调: QLoRA 可在单卡上微调 70B 模型。成本: 官方售价约 $15,000/张，云租用约 $2-4/小时。在 cloud GPU 市场(AWS/阿里云/华为云)中，A100 是最常见的推理 GPU 型号。A100 80GB vs 40GB: 显存翻倍的 80GB 版本更适合大模型推理(多出来的 40GB 可以支撑更多 KV Cache 和并发)。A100 的时代局限: 2024 年后被 H100 全面超越(3 倍算力)，但不支持 FP8 加速。对于预算有限的中小型企业，A100 仍然是性价比最高的企业级 GPU 选择。<br><br><b>关键要点</b><br>① 架构: Ampere(2020) ② 显存 80GB，FP16 算力 312 TFLOPS ③ 可单卡跑 7B/13B 推理，多卡跑 70B ④ 参考价 15 万人民币/张 ⑤ 适合推理+训练混合使用场景 ⑥ 被 H100 取代中但仍性价比高<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型决策表 | §1.3.2 性能监控 | H100 | TFLOPS | VRAM"
+  },
+  {
+    "Word": "H100",
+    "Pronunciation": "/eɪtʃ wʌn ˈhʌndrəd/",
+    "Audio": "",
+    "Definition": "NVIDIA H100——基于Hopper架构的新一代GPU，80GB显存，989 TFLOPS FP16算力，大规模训练和最高吞吐推理的首选",
+    "ExampleEN": "H100 GPUs deliver 3x the inference performance of A100, making them essential for training frontier models and high-throughput serving.",
+    "ExampleCN": "H100 GPU 提供 A100 三倍的推理性能，是训练前沿模型和高吞吐推理服务的必需品。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。NVIDIA H100 是基于 Hopper 架构的当前旗舰 GPU——989 TFLOPS FP16 算力(A100 的 3 倍)和 FP8 支持，是 2024-2026 年训练前沿模型和最高吞吐推理的首选。<br><br><b>核心概念</b><br>H100 的压倒性规格(基于 Hopper 架构，2022 发布): 显存 80GB HBM3，显存带宽 3.35 TB/s(1.7 倍于 A100)，算力 989 TFLOPS(FP16 Tensor Core) = 3.2 倍于 A100 的 312 TFLOPS，FP8 算力 1979 TFLOPS(Tensor Core 翻倍)，功耗 700W TDP，NVLink 900 GB/s。核心新特性: ① FP8 支持: 比 FP16 精度低但速度翻倍，是新时代的训练趋势(配合 Transformer Engine 自动混合精度) ② Transformer Engine: 硬件加速 Transformer 计算的专用单元 ③ 更大的 L2 Cache 和寄存器文件。成本: 官方售价约 $25,000-$30,000/张。云租用约 $5-8/小时。适用场景: 训练 70B+ 模型(FP8 精度，速度快 2 倍+)，高吞吐推理服务(需要最大 QPS)，Sora 等视频生成模型(算力和显存需求巨大)。H100 的下一代 H200: 2024 发布，显存升级到 141GB HBM3e(1.7 倍)，显存带宽 4.8 TB/s。对于推理场景，H200 的更大显存可能比 H100 的高算力更有用。<br><br><b>关键要点</b><br>① 架构: Hopper(2022) ② 算力 989 TFLOPS = A100 的 3.2 倍 ③ FP8 支持是关键优势(训练速度翻倍) ④ 参考价 25-30 万人民币/张 ⑤ 训练前沿模型的标配(Llama 3、GPT-5 class 训练) ⑥ 下一代 H200 显存 141GB<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型决策 | §1.1.3 Sora 算力需求 | A100 | FP16/FP8 | TFLOPS | VRAM"
+  },
+  {
+    "Word": "RDMA",
+    "Pronunciation": "/ˌɑːrˌdiːˌemˈeɪ/",
+    "Audio": "",
+    "Definition": "Remote Direct Memory Access（远程直接内存访问）——允许一台计算机直接访问另一台计算机内存的网络技术，多机张量并行的关键通信基础设施",
+    "ExampleEN": "RDMA over Converged Ethernet (RoCE) provides the low-latency, high-bandwidth communication required for efficient tensor parallelism across nodes.",
+    "ExampleCN": "RoCE（融合以太网上的RDMA）提供跨节点高效张量并行所需的低延迟、高带宽通信。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。RDMA(Remote Direct Memory Access)是多机 GPU 通信的关键网络技术——让一台 GPU 服务器能直接读写另一台 GPU 服务器的内存，无需 CPU 中转、无需 TCP/IP 协议栈开销，是实现高效跨机张量并行的基础设施。<br><br><b>核心概念</b><br>普通 TCP/IP 网络通信的问题: 数据在源 GPU 显存 → CPU 内存 → 网络协议栈(多次复制+协议封装) → 网卡 → 网络 → 目标网卡 → 协议栈解包 → CPU 内存 → GPU 显存。延迟高(毫秒级)、CPU 参与度高、不能直接用 GPU 显存地址通信。RDMA 的解决方案: 网卡直接读取远端内存(绕过 CPU，零拷贝) → 延迟低至微秒级(比 TCP 低 10-100 倍)。张量并行为什么需要 RDMA: 每层计算后需要 all-reduce 在多卡间同步数据。如果使用普通 TCP，通信延迟可能比计算时间还长——\"算 1ms，传 10ms\"，并行加速效果被吃掉。实现 RDMA 的两种方案: ① InfiniBand: 专用高性能互连，需要专门的 IB 交换机和网卡。性能最好但成本高 ② RoCE(融合以太网上的 RDMA): 在标准以太网上实现 RDMA(需要支持 RoCE 的网卡和交换机)。性能略低于 InfiniBand 但成本低很多。RoCE v2 支持路由(可跨子网)，是大多数中小规模多机部署的首选。<br><br><b>关键要点</b><br>① 零拷贝: 网卡直读远端内存，绕过 CPU 和 OS 协议栈 ② 延迟: 微秒级(vs TCP 毫秒级) ③ 张量并行(跨机)的必需基础设施 ④ 两种实现: InfiniBand(高性能高价)和 RoCE(实用价低) ⑤ 普通 TCP 因延迟过高不适合张量并行<br><br><b>延伸节点</b><br>§1.3.1 多机部署 | §1.3.1 网络要求 | RoCE | InfiniBand | Tensor Parallelism"
+  },
+  {
+    "Word": "InfiniBand",
+    "Pronunciation": "/ɪnˈfɪnibænd/",
+    "Audio": "",
+    "Definition": "InfiniBand（无限带宽）——高性能计算互连技术，提供极低延迟和极高带宽，是GPU集群多机训练和推理的顶级网络方案",
+    "ExampleEN": "InfiniBand interconnects are standard in NVIDIA DGX systems, providing the ultra-low latency required for multi-GPU tensor parallelism.",
+    "ExampleCN": "InfiniBand 互连是NVIDIA DGX系统的标配，提供多GPU张量并行所需的超低延迟。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。InfiniBand 是高性能计算(HPC)领域的顶级网络互连技术——提供极低延迟(亚微秒级)和极高带宽，是训练 GPT-4 级别模型时 GPU 集群通信的标准选择。<br><br><b>核心概念</b><br>InfiniBand 是专用互连标准，需要专门的 IB 交换机、IB 网卡(HCA/Host Channel Adapter)和 IB 线缆。核心性能指标: 带宽 200-400 Gbps(HDR/NDR 代)，延迟 < 1 微秒(比 TCP 低 1000 倍+)，支持 RDMA 原生——不需要像 RoCE 那样在以太网上套 RDMA 层。在 LLM 训练中的关键作用: 前沿模型(如 GPT-4、Llama 3 405B)的训练需要数千张 GPU(如 10,000 张 H100)的集群协作。这么大的集群中，GPU 间通信是最大瓶颈——NVIDIA 使用 InfiniBand 构建 NVSwitch 和 NVLink Network 实现整集群的 GPU-to-GPU 直接通信。NVIDIA DGX 系统标配 InfiniBand 互连。InfiniBand 的代价: 交换机成本是同等端口数以太网交换机的 3-5 倍，网卡也贵。因此仅在超大规模集群(100+ GPU)和\"每一毫秒都重要\"的场景使用。中型部署通常用 RoCE 替代。国内替代方案: 部分国产 GPU 集群使用华为自研互连或 RDMA over RoCE。<br><br><b>关键要点</b><br>① 极度高性能互连(延迟 < 1us，带宽 200-400 Gbps) ② NVIDIA DGX 系统标配 ③ 训练 GPT-4 级别模型的必需基础设施 ④ 成本是 RoCE 的数倍 ⑤ 国内超算/GPU 集群也被广泛采用 ⑥ 与 RDMA 的区别: InfiniBand 是一种实现 RDMA 的物理层方案<br><br><b>延伸节点</b><br>§1.3.1 多机部署网络 | §1.3.1 RDMA | §2.3 模型训练 | NVLink | GPU 选型"
+  },
+  {
+    "Word": "nvidia-smi",
+    "Pronunciation": "/enˈvɪdiə ˌesˌemˈaɪ/",
+    "Audio": "",
+    "Definition": "NVIDIA System Management Interface（NVIDIA系统管理界面）——NVIDIA GPU的命令行监控工具，实时显示GPU利用率、显存占用和温度",
+    "ExampleEN": "nvidia-smi is the first tool to check when debugging GPU issues, showing utilization, memory usage, temperature, and running processes.",
+    "ExampleCN": "nvidia-smi 是排查GPU问题时的首选工具，显示利用率、显存使用量、温度和运行中的进程。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。nvidia-smi(NVIDIA System Management Interface)是排查 GPU 问题的第一工具——一行命令即可看到 GPU 利用率、显存占用、温度、运行的进程，是 LLM 推理调试的\"仪表盘\"。<br><br><b>核心概念</b><br>nvidia-smi 是 NVIDIA 驱动自带的命令行工具(无需安装)，调用 GPU 管理库(NVML)获取实时硬件状态。最常用命令: ① nvidia-smi(基础信息): 显示每张 GPU 的型号、驱动版本、利用率、显存使用、温度、功耗、运行进程列表 ② nvidia-smi -l 1(每秒刷新): 实时监控，按 Ctrl+C 退出 ③ nvidia-smi --query-gpu=timestamp,utilization.gpu,memory.used,memory.total,temperature.gpu --format=csv -l 1(CSV 格式): 适合导入 Prometheus 做长期监控。核心监控指标: GPU 利用率(utilization.gpu): 目标 > 80% 表明 GPU 在高效工作，< 30% 表明 GPU 空闲或等待(可能是 batch 太小或显存瓶颈) 显存占用(memory.used/memory.total): 目标 85-95%，太高(>95%)OOM 风险，太低浪费硬件 温度(temperature.gpu): > 85°C 触发降频(throttling)，严重影响性能 功耗(power.draw): 接近 TDP 表明 GPU 在高负荷运行。生产环境监控三件套: nvidia-smi(数据采集) + Prometheus(汇聚存储) + Grafana(可视化仪表盘)。<br><br><b>关键要点</b><br>① 无需安装，驱动自带 ② nvidia-smi -l 1 实时监控每秒刷新 ③ 核心指标: GPU 利用率(>80%)、显存占用(85-95%)、温度(< 85°C) ④ -q 参数可输出详细 JSON ⑤ 配合 Prometheus+Grafana 做长期监控和告警<br><br><b>延伸节点</b><br>§1.3.2 GPU 监控 | §1.3.2 性能监控调优 | Prometheus | Grafana | OOM"
+  },
+  {
+    "Word": "OOM",
+    "Pronunciation": "/ˌoʊˌoʊˈem/",
+    "Audio": "",
+    "Definition": "Out of Memory（内存溢出）——GPU显存耗尽错误，当模型权重+KV Cache+其他开销超出可用显存时触发，导致推理失败",
+    "ExampleEN": "OOM errors are the most common GPU deployment issue, typically resolved by reducing batch size, enabling quantization, or using a larger GPU.",
+    "ExampleCN": "OOM错误是最常见的GPU部署问题，通常通过减小批处理大小、启用量化或使用更大GPU来解决。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。OOM(Out of Memory)是 LLM 推理部署中最常见的报错——当模型权重 + KV Cache + 框架开销超过 GPU 可用显存时，CUDA 抛出 OOM，推理进程崩溃。<br><br><b>核心概念</b><br>OOM 的错误表面形式: RuntimeError: CUDA out of memory. Tried to allocate XX MiB. 三种常见触发场景: ① 模型太大装不下: 例如想在 24GB 显存的 RTX 4090 上跑 70B 模型(需~140GB) → 必然 OOM ② 并发太多: 单请求 OK，但 request #11 到达时 KV Cache 扩张超出剩余显存 → OOM ③ context 太长: 用户发送超长 prompt(如 64K tokens)，KV Cache 急剧膨胀 → OOM。排查步骤: 先跑 nvidia-smi 看当前显存占用 → 用 torch.cuda.memory_summary() 看 PyTorch 显存分配详情 → 分析哪个组件占内存最多(模型权重 vs KV Cache vs 框架开销) → 针对性优化。解决方案(按优先级): ① 降低 max_model_len(减少上下文长度上限) ② 降低 max_num_seqs(减少最大并发) ③ 启用量化(INT8 减半，INT4 减 3/4) ④ 使用 gpu_memory_utilization 参数(如 vLLM 设置 0.85 留余量) ⑤ 换更大显存的 GPU ⑥ 张量并行(多卡)。预防: 显存占用率目标 85-95%，留 5-15% 余量应对突发。<br><br><b>关键要点</b><br>① 最严重的部署错误(进程直接崩溃) ② 三个原因: 模型太大 / 并发太多 / context 太长 ③ 排查用 nvidia-smi + torch.cuda.memory_summary() ④ 优先调参数(降长度/并发)而非直接加 GPU ⑤ 显存占用率监控: 85-95% 预警线<br><br><b>延伸节点</b><br>§1.3.2 显存占用率监控 | §1.3.1 GPU 选型 | VRAM | KV Cache | nvidia-smi | Quantization"
+  },
+  {
+    "Word": "LoRA",
+    "Pronunciation": "/ˈloʊrə/",
+    "Audio": "",
+    "Definition": "Low-Rank Adaptation（低秩适配）——高效的模型微调方法，通过在预训练权重旁添加低秩矩阵来适配新任务，显著减少可训练参数量",
+    "ExampleEN": "LoRA fine-tunes a 7B model by training only a few million adapter parameters instead of all 7 billion, making fine-tuning feasible on a single consumer GPU.",
+    "ExampleCN": "LoRA 仅训练几百万个适配器参数而非全部70亿参数来微调7B模型，使得在单张消费级GPU上微调成为可能。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.3 多模态前沿 和 §2.3.1 LLM微调原理 的核心微调技术。LoRA 是大模型时代的革命性创新——让个人开发者用消费级GPU也能微调大模型。<br><br><b>核心原理</b><br>全参数微调: 更新模型所有参数(W)。7B模型需56GB显存(7B×4bytes×2(优化器+梯度))。LoRA: 冻结原始权重W，在旁路加两个低秩矩阵A(r×d)和B(d×r)，只训练A和B。前向: h=Wx+α/r·BAx。秩r通常取8-64，参数量仅为原始的0.1%-1%。<br><br><b>数学基础: SVD</b><br>任意矩阵M可分解为UΣV^T。Σ的奇异值从大到小排列，前r个(如r=16)奇异值已包</b>含95%+信息。这就是LoRA低秩假设的数学证明——微调所需的变化可以被低秩空间有效表达。<br><br><b>QLoRA</b><br>在LoRA基础上进一步量化: 原始权重W用4-bit NormalFloat4存储→显存再降4倍→7B模型仅需~6GB显存。双重量化(Double Quantization): 量化常数本身也量化，节省额外0.4bits/参数。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §2.3.3 模型蒸馏与微调实操 | §3.3 HuggingFace生态 | Unsloth"
+  },
+  {
+    "Word": "DSL",
+    "Pronunciation": "/ˌdiːˌesˈel/",
+    "Audio": "",
+    "Definition": "Domain-Specific Language（领域特定语言）——针对特定问题域设计的编程语言，SGLang的@sgl.function和sgl.gen()构成LLM推理的DSL",
+    "ExampleEN": "SGLang's DSL structures multi-step LLM workflows as programmable functions with typed generation nodes, constraints, and stop conditions.",
+    "ExampleCN": "SGLang的DSL将多步骤LLM工作流结构化为可编程函数，具有类型化的生成节点、约束条件和停止条件。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.3。DSL(Domain-Specific Language)在 SGLang 中特指其结构化生成编程模型——用 Python 装饰器(@sgl.function)和生成函数(sgl.gen())构建 LLM 工作流，替代传统\"写一大段 prompt\"的手工作坊式做法。<br><br><b>核心概念</b><br>SGLang DSL 的核心思想: LLM 生成不是一个黑盒调用，而是一系列可编程、可约束、可中断的生成步骤。关键组件: ① @sgl.function 装饰器: 定义一个结构化生成函数(类似定义一个 Flask 路由)。函数内部通过 sgl.gen() 调用控制模型的生成行为 ② sgl.gen(name, max_tokens, temperature, stop, regex, choices): 定义一个生成节点——name 用于后续引用生成的文本，temperature/stop 独立控制这个节点的生成参数，regex/choices 约束输出格式(如只输出 JSON、只选 A/B/C) ③ sgl.select(name, choices): 约束模型从给定选项中选一个(分类/选择场景) ④ 变量引用: 前一个 gen() 的输出可被后一个 gen() 的 prompt 引用(如 \"{title}\")。DSL vs 手写 Prompt: 手写 prompt 是\"写一大段文本说请写 Python 代码\"——模型可能不听话、格式不对、遗漏步骤。DSL 是\"编程式控制生成过程\"——强制每个步骤的格式、内容、顺序，大幅提高可控性和结构化输出的可靠性。适用场景: RAG 增强生成、多步 Agent 推理、工具调用链接、约束格式输出。<br><br><b>关键要点</b><br>① @sgl.function 定义流程 ② sgl.gen() 定义独立生成节点 ③ 每个 gen() 节点可独立设置参数(温度/停止词/约束) ④ regex/choices 约束输出格式 ⑤ 变量引用: 前段输出作为后段输入<br><br><b>延伸节点</b><br>§1.3.3 SGLang 结构化编程 | §1.3.3 Token Healing | SGLang 论文 | RadixAttention"
+  },
+  {
+    "Word": "GPT-4V",
+    "Pronunciation": "/ˌdʒiːˌpiːˈtiː fɔːr viː/",
+    "Audio": "",
+    "Definition": "GPT-4 Vision——OpenAI GPT-4的多模态视觉版本，能理解和分析图像内容，支持图文混合输入",
+    "ExampleEN": "GPT-4V can analyze a restaurant menu photo, extract item names and prices, and answer questions about dietary restrictions.",
+    "ExampleCN": "GPT-4V 可以分析餐厅菜单照片，提取菜品名称和价格，并回答关于饮食限制的问题。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。GPT-4V(4 Vision)是 OpenAI GPT-4 的多模态视觉版本——能理解和分析图像内容，支持图文混合输入，是多模态 Agent 的核心视觉能力组件。<br><br><b>核心概念</b><br>GPT-4V 的能力边界: 可以识别图片中的物体、文字、场景、人物表情，理解图表和数据可视化内容，分析 UI 截图并指出设计问题，读取手写笔记和文档扫描件。输入方式: 通过 API 的 messages 中的 content 数组，混合 text 和 image_url 类型。图片以 base64 编码(前缀 data:image/jpeg;base64,)传输，或直接提供可访问的图片 URL。多图支持: 可以在一次请求中同时分析多张图片(如前后的对比图、多页文档)。限制: 不支持视频输入(只有静态图片)，不能生成图片(只理解不创作)，对极低分辨率图片或极度模糊的细节理解有限。在多模态 Agent 中的应用: 作为视觉 Tool 供 Agent 调用——Agent 收到用户发来的图片后，调用 GPT-4V(或 GPT-4o)分析图片内容，然后将分析结果作为上下文继续推理。应用场景: 医疗影像辅助分析、电商商品图信息提取、UI 自动化测试、文档 OCR+结构化提取。<br><br><b>关键要点</b><br>① GPT-4V 是 GPT-4 的视觉增强版(图片理解) ② 图片通过 base64 编码传输 ③ 支持一次多图分析 ④ 是多模态 Agent 的核心视觉 Tool ⑤ 已于 2024 年被 GPT-4o(GPT-4 Omni)取代<br><br><b>延伸节点</b><br>§1.1.3 多模态 Agent 代码实战 | §2.3.4 视觉与多模态模型 | GPT-4o | Base64 | Multimodal"
+  },
+  {
+    "Word": "GPT-4o",
+    "Pronunciation": "/ˌdʒiːˌpiːˈtiː fɔːr oʊ/",
+    "Audio": "",
+    "Definition": "GPT-4o（GPT-4 Omni）——OpenAI的原生多模态模型，\"o\"代表omni(全能)，在速度、成本和多模态能力上相比GPT-4有大幅优化",
+    "ExampleEN": "GPT-4o is natively multimodal, processing text, images, and audio in a single unified model rather than separate components.",
+    "ExampleCN": "GPT-4o是原生多模态的，在单一统一模型中处理文本、图像和音频，而非通过分离的组件。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。GPT-4o(GPT-4 Omni)是 OpenAI 2024 年 5 月发布的原生多模态模型——\"o\"代表 omni(全能)，在同一个模型内统一处理文本、图像、音频，速度翻倍、价格减半，是目前性价比最高的旗舰多模态模型。<br><br><b>核心概念</b><br>GPT-4o 的核心突破: ① 原生多模态: GPT-4V 是通过拼接文本编码器+视觉编码器+LLM 组成的 pipeline，GPT-4o 是单一模型内部统一处理所有模态(文本/图像/音频) ② 实时语音对话: 平均语音响应时间 232ms(接近人类对话速度 200-250ms)，支持语音情绪感知和唱歌 ③ 速度和成本: 速度是 GPT-4 Turbo 的 2 倍，输入价格 $2.5/百万 token(GPT-4 Turbo 的 1/4)，输出价格 $10/百万 token(GPT-4 Turbo 的 1/3) ④ 多语言性能提升: 对非英语语言(特别是中文)的理解和生成质量显著提升。GPT-4o mini: 轻量版，速度更快(便宜 60%+)，适合高频调用和基础对话。GPT-4o 取代了什么: 取代了 GPT-4V(纯视觉能力 GPT-4o 更强)、取代了部分 TTS 需求(内置语音合成)。GPT-4o 的局限性: 目前不支持视频生成(只能理解静态图片)，复杂推理任务 GPT-4 仍有微弱优势。<br><br><b>关键要点</b><br>① 原生多模态(文本+图像+音频的统一模型) ② 速度 2x GPT-4 Turbo，价格 1/4 ③ 实时语音对话(232ms 平均延迟) ④ GPT-4o-mini 是最具性价比的变体($0.15/百万输入 token) ⑤ 是当前多模态 Agent 项目的推荐模型<br><br><b>延伸节点</b><br>§1.2.1 GPT 进化史 | §1.1.3 多模态 Agent | GPT-4V | Multimodal | AIGC"
+  },
+  {
+    "Word": "all-MiniLM-L6-v2",
+    "Pronunciation": "/ɔːl ˈmɪni ˌelˈem el sɪks viː tuː/",
+    "Audio": "",
+    "Definition": "all-MiniLM-L6-v2——轻量级句子向量模型，384维向量输出，中英文可用，ChromaDB的默认embedding模型，适合入门和快速原型",
+    "ExampleEN": "all-MiniLM-L6-v2 is ChromaDB's default embedding model, offering a good balance of speed and quality for prototyping RAG applications.",
+    "ExampleCN": "all-MiniLM-L6-v2 是 ChromaDB 的默认向量嵌入模型，为RAG应用原型开发提供了速度与质量的良好平衡。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。all-MiniLM-L6-v2 是 ChromaDB 默认使用的 Embedding 模型——384 维轻量级句子向量，速度快、资源消耗少，是 RAG 原型开发阶段的标配。<br><br><b>核心概念</b><br>all-MiniLM-L6-v2 由 Sentence-Transformers 团队发布，基于 Microsoft MiniLM 架构(6 层 Transformer，约 22M 参数)。核心参数: 输出 384 维向量，最大序列长度 256 tokens，通过平均池化(mean pooling)将 token embeddings 聚合成句子向量。为什么是 ChromaDB 的默认模型: ① 轻量快速: 22M 参数，CPU 上编码速度约 500-1000 句/秒 ② 中英文适用: 虽然训练数据以英文为主，但对中文也有基本效果 ③ 384 维: 存储占用小，向量检索速度快。何时需要换掉它: ① 中文场景——中文语义理解效果远不如 bge-large-zh-v1.5 ② 生产环境——384 维表达能力有限，检索精度有天花板 ③ 长文档——256 token 限制会把长段落截断，信息丢失。升级建议: 中文 → BAAI/bge-large-zh-v1.5(1024 维) 或 bge-small-zh-v1.5(512 维)，英文 → all-mpnet-base-v2(768 维) 或 BGE-large-en(1024 维)。<br><br><b>关键要点</b><br>① 22M 参数，384 维 ② ChromaDB 默认 embedding 模型 ③ 适合快速原型验证(零配置) ④ 中文场景必须替换(准确率低) ⑤ 基于 Sentence-Transformers 库<br><br><b>延伸节点</b><br>§1.1.1 RAG 代码实战(simple_rag.py) | §2.1.1 Embeddings 和向量数据库 | BAAI/bge-large-zh-v1.5 | Sentence Transformer | MTEB"
+  },
+  {
+    "Word": "BAAI/bge-large-zh-v1.5",
+    "Pronunciation": "/biː eɪ eɪ aɪ biː dʒiː iː lɑːrdʒ ziː eɪtʃ viː wʌn pɔɪnt faɪv/",
+    "Audio": "",
+    "Definition": "BAAI/bge-large-zh-v1.5——智源研究院(BAAI)开源的中文embedding旗舰模型，1024维向量，在中文MTEB榜单排名靠前",
+    "ExampleEN": "BAAI/bge-large-zh-v1.5 achieves state-of-the-art performance on Chinese semantic search benchmarks, making it the go-to choice for production RAG systems.",
+    "ExampleCN": "BAAI/bge-large-zh-v1.5 在中文语义搜索基准上达到最先进水平，是生产环境RAG系统的首选。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。BAAI/bge-large-zh-v1.5 是北京智源人工智能研究院(BAAI)开源的中文 Embedding 旗舰模型——在中文 MTEB 榜单上长期占据前列，是生产环境中文 RAG 系统的首选 Embedding 方案。<br><br><b>核心概念</b><br>BGE(BAAI General Embedding)是 BAAI 的 Embedding 模型系列。bge-large-zh-v1.5 的核心参数: 1024 维向量输出，基于 BERT-large 架构(24 层，约 326M 参数)，最大序列长度 512 tokens，通过 CLS token(首 token)输出句子向量。在中文 MTEB 多项任务上表现 SOTA: 语义相似度、问答检索、聚类分类。轻量替代方案: bge-small-zh-v1.5: 512 维向量，约 102M 参数(约 1/3 大小)，编码速度快约 3 倍，精度损失约 5-10%。bge-m3: 多语言版本(中文+英文+多语言)，8192 tokens 上下文(长文档友好)。使用方式: pip install sentence-transformers → model = SentenceTransformer('BAAI/bge-large-zh-v1.5') → embedding = model.encode(texts, normalize_embeddings=True)(Note: BGE 模型需要 normalize)。与 all-MiniLM-L6-v2 的对比: BGE 在中文语义理解上领先 20-40%(根据 MTEB 中文榜单)，维度更高(1024 vs 384)存储和检索略慢，但精度提升远超成本增加。<br><br><b>关键要点</b><br>① 智源开源，1024 维 ② 中文 MTEB 榜首常客 ③ 使用时必须 normalize_embeddings=True ④ 轻量版 bge-small-zh-v1.5(512 维，快 3 倍) ⑤ 生产环境中文 RAG 首选<br><br><b>延伸节点</b><br>§1.1.1 RAG QA | §2.1.1 Embeddings 和向量数据库 | §1.1.3 视频检索 | MTEB | all-MiniLM-L6-v2 | Sentence Transformer"
+  },
+  {
+    "Word": "MTEB",
+    "Pronunciation": "/ˌemˌtiːˌiːˈbiː/",
+    "Audio": "",
+    "Definition": "Massive Text Embedding Benchmark（大规模文本向量基准）——评估embedding模型质量的权威公开榜单，覆盖分类、聚类、语义相似度等多项任务",
+    "ExampleEN": "Models ranked high on the MTEB leaderboard demonstrate superior embedding quality across tasks like retrieval, clustering, and semantic similarity.",
+    "ExampleCN": "在MTEB榜单上排名靠前的模型，在检索、聚类和语义相似度等任务上展现出卓越的向量嵌入质量。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。MTEB(Massive Text Embedding Benchmark)是 HuggingFace 维护的 Embedding 模型质量评估体系——选 Embedding 模型时第一参考榜单，让你避免\"用了一个看起来很火但实际效果很差的模型\"。<br><br><b>核心概念</b><br>MTEB 不是单一任务，而是覆盖 7 大类、58 个数据集的综合基准测试: ① Classification(分类): 情感分析、主题分类 ② Clustering(聚类): 文档主题自动分组 ③ Pair Classification(对分类): 判断两个句子是否同义 ④ Reranking(重排序): 给定 query-document 对排序 ⑤ Retrieval(检索): 从候选集中找到最相关的 documents(RAG 最关键的任务) ⑥ STS(Semantic Textual Similarity): 评估两个句子的语义相似度分数 ⑦ Summarization(摘要): 评估生成的摘要质量。MTEB 排名分为英文榜和中文榜两个独立榜单。中文 MTEB 榜上 BGE 系列(bge-large-zh-v1.5)长期位居前列。如何用 MTEB 选模型: 看主排行榜 → 根据你的场景选相关任务 → 过滤语言(中/英/多语言) → 在精度和模型大小间 tradeoff 选择。常见排名: 英文榜 TOP: intfloat/e5-mistral-7b-instruct(7B)、BAAI/bge-large-en-v1.5(326M)；中文榜 TOP: BAAI/bge-large-zh-v1.5、stella-mrl-large-zh-v3.5-1792d。<br><br><b>关键要点</b><br>① HuggingFace 维护的权威 Embedding 基准 ② 覆盖 7 大类 58 个数据集 ③ 中文有独立榜单(bge 系列居前) ④ 选模型时先看 Retrieval 和 STS 这两类任务的排名 ⑤ Model size 和 score 的 tradeoff: 大模型精度高但慢<br><br><b>延伸节点</b><br>§2.1.1 Embeddings 和向量数据库 | BAAI/bge-large-zh-v1.5 | MTEB 官网(huggingface.co/spaces/mteb)"
+  },
+  {
+    "Word": "Cosine Similarity",
+    "Pronunciation": "/ˈkoʊsaɪn ˌsɪmɪˈlærəti/",
+    "Audio": "",
+    "Definition": "Cosine Similarity（余弦相似度）——衡量两个向量方向一致度的指标，范围[-1,1]，值越大表示语义越相近，是向量检索的基础度量",
+    "ExampleEN": "Cosine similarity between query and document embeddings determines retrieval ranking, with higher scores indicating semantic closeness.",
+    "ExampleCN": "查询向量与文档向量之间的余弦相似度决定检索排序，分数越高表示语义越接近。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Cosine Similarity(余弦相似度)是向量检索中最核心的数学工具——通过计算两个向量夹角的余弦值来衡量语义相似度，值越接近 1 表示语义越相似。<br><br><b>核心概念</b><br>余弦相似度的数学原理: 对于两个向量 a 和 b，cosine(a,b) = (a·b) / (|a| × |b|) = 点积除以模长的乘积。值域: [-1, 1]——1 表示方向完全相同(语义完全相同)，0 表示正交(无关)，-1 表示方向完全相反(语义截然相反，实际中很少出现)。为什么不用欧氏距离: 向量检索中向量长度可能受到文本长度、embedding 模型等因素的\"污染\"——相同语义的长文本和短文本，embedding 的模长可能不同。余弦相似度只看\"方向\"不看\"长度\"，因此对文本长度不敏感。为什么 normalize embeddings: 将向量 L2 归一化(|a|=1)后，cosine(a,b) 就变成了简单的点积 a·b——计算更快(省去除法)，效果相同。Python 实现: from sklearn.metrics.pairwise import cosine_similarity → scores = cosine_similarity([query_vec], doc_vecs)。在 RAG 检索中的应用: 计算 query embedding 与知识库中所有 document embedding 的 cosine similarity，取 Top-K 最大值对应的 documents。<br><br><b>关键要点</b><br>① 公式: (a·b)/(|a|×|b|)，值域 [-1,1] ② 只看方向不看长度(对文本长度不敏感) ③ normalize 后简化为点积 ④ RAG 检索的默认距离度量 ⑤ sklearn.metrics.pairwise.cosine_similarity 现成工具<br><br><b>延伸节点</b><br>§1.1.3 视频检索代码 | §2.1.1 向量检索原理 | Embedding | Vector Database"
+  },
+  {
+    "Word": "Sentence Transformer",
+    "Pronunciation": "/ˈsentəns trænsˈfɔːrmər/",
+    "Audio": "",
+    "Definition": "Sentence Transformers（句子转换器）——将句子/段落转为固定长度向量embedding的Python库，支持多种预训练模型",
+    "ExampleEN": "Sentence Transformers makes it trivial to encode paragraphs into dense vectors with just model.encode(['text']), powering most RAG and search systems.",
+    "ExampleCN": "Sentence Transformers 只需 model.encode(['文本']) 即可轻松将段落编码为稠密向量，驱动了大多数RAG和搜索系统。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1, §1.1.3。Sentence Transformers 是 Python 生态中最重要的 Embedding 工具库——只需 model.encode(['text']) 一行代码即可将文本转为向量，是 RAG、语义搜索、聚类等应用的基础。<br><br><b>核心概念</b><br>Sentence Transformers 是一个基于 HuggingFace Transformers 的高层封装库，专注于\"将句子/段落转为固定长度的稠密向量\"。它解决了传统 BERT 的直接问题: BERT 的输出是每个 token 一个向量，需要手工做池化(pooling)才能得到句子向量。Sentence Transformers 通过训练时使用 Siamese(孪生)或 Triplet 网络结构，让 CLS token 或 mean pooling 后的向量直接具备语义含义(相似句子的向量距离近)。使用方式: ① 安装: pip install sentence-transformers ② 加载模型: model = SentenceTransformer('模型名')，模型名可以是 HuggingFace Hub 上的任何 S-BERT 模型 ③ 编码: embeddings = model.encode(['文本1', '文本2', ...], normalize_embeddings=True) ④ 返回 numpy 数组(shape: [N, dim])，可直接用于 cosine_similarity 计算。支持的模型系列: BAAI/bge-*、sentence-transformers/all-MiniLM-*、intfloat/e5-*、thenlper/gte-*。多语言: 需要用支持对应语言的模型。多 GPU: 设置 device='cuda' 或 device='cuda:0' 使用 GPU 加速。<br><br><b>关键要点</b><br>① pip install sentence-transformers ② model.encode(texts) 一行编码 ③ 支持所有 HuggingFace 上的 S-BERT 模型 ④ normalize_embeddings=True(用于 cosine similarity 计算) ⑤ 输出 numpy 数组可直接计算相似度 ⑥ 支持 GPU 加速(device='cuda')<br><br><b>延伸节点</b><br>§1.1.1 simple_rag.py 代码 | §2.1.1 Embeddings 和向量数据库 | §1.1.3 视频检索代码 | BAAI/bge | all-MiniLM-L6-v2 | Cosine Similarity"
+  },
+  {
+    "Word": "Blue-Green Deployment",
+    "Pronunciation": "/bluː ɡriːn dɪˈplɔɪmənt/",
+    "Audio": "",
+    "Definition": "Blue-Green Deployment（蓝绿部署）——模型热更新的零停机部署策略：先启动新模型(绿)，验证通过后切换流量，旧模型(蓝)再下线",
+    "ExampleEN": "Blue-green deployment enables model hot-swapping without service interruption by running old and new versions simultaneously during the transition.",
+    "ExampleCN": "蓝绿部署通过在过渡期间同时运行新旧版本，实现了无服务中断的模型热切换。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。Blue-Green Deployment(蓝绿部署)是 AI 推理服务的零停机模型热更新策略——旧模型(蓝)继续服务，新模型(绿)启动后并行接受验证，验证通过后一键切换流量，是实现\"模型更新不停服\"的标准运维实践。<br><br><b>核心概念</b><br>蓝绿部署是源自微服务运维的策略，在 AI 推理场景的适配: 蓝环境(Blue) = 当前运行的生产模型(如 vLLM 加载 qwen2.5:7b)，正在处理所有用户流量。绿环境(Green) = 新部署的模型(如 vLLM 加载 qwen2.5:7b-instruct-v2)，已启动但无流量。流程: ① 在新 GPU/节点上启动绿环境(加载新模型) ② 发送测试请求到绿环境进行验证(输出质量、延迟、准确性) ③ 验证通过后，负载均衡器将流量从蓝切到绿(逐步或一刀切) ④ 等待蓝环境的活跃请求全部完成 ⑤ 关闭蓝环境(释放 GPU 资源)。关键资源问题: 切换期间需要双倍显存(蓝+绿同时在线)。因此通常部署在有富余 GPU 的集群中，或使用 2 组独立的 GPU 节点。流量切换策略: ① 一刀切(蓝→绿 100% 瞬间切换)，风险: 绿出问题全部用户受影响 ② 金丝雀发布(10%→50%→100% 逐步放量)，风险可控但需要更复杂的流量控制。回滚: 如果绿环境发现 bug，流量直接切回蓝即可——因为蓝还在运行。<br><br><b>关键要点</b><br>① 零停机模型更新 ② 需要双倍显存(新旧同时加载) ③ 验证→切换→关闭旧环境 ④ 回滚简单(蓝还在) ⑤ 配合负载均衡(Load Balancing)和健康检查<br><br><b>延伸节点</b><br>§1.3.1 工业界最佳实践 | §1.3.1 负载均衡(Load Balancing) | §5.6 算力分配 | VRAM"
+  },
+  {
+    "Word": "Load Balancing",
+    "Pronunciation": "/loʊd ˈbælənsɪŋ/",
+    "Audio": "",
+    "Definition": "Load Balancing（负载均衡）——将请求分发到多台推理服务器，使各节点负载均匀，提升整体并发能力和可用性",
+    "ExampleEN": "A load balancer distributes inference requests across multiple vLLM instances, enabling horizontal scaling beyond single-GPU capacity.",
+    "ExampleCN": "负载均衡器将推理请求分发到多个vLLM实例，实现超越单GPU容量的水平扩展。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。Load Balancing(负载均衡)是 AI 推理数据并行的前置基础设施——将客户端请求按策略分发到多台推理服务器，实现水平扩展和高可用。<br><br><b>核心概念</b><br>负载均衡在 AI 推理中的作用: 前端 LB(Load Balancer)接收所有客户端请求，然后根据策略将请求分发到后端的多个推理实例(每个实例 = 一个 vLLM 实例 + 一张 GPU + 完整模型副本)。常见分发策略: ① Round Robin(轮询): 依次分配给每个实例，简单均匀 ② Least Connections(最少连接数): 分配给当前活跃请求最少(即负载最轻)的实例——适合长任务场景 ③ Weighted(权重): 不同 GPU 算力不同，分配不同权重(H100 权重 > A100 权重) ④ Consistent Hash(一致性哈希): 相同 user_id 的请求总是路由到同一实例(缓存友好)。健康检查(Health Check): LB 定期探测后端实例的 /health 端点，如果某个实例挂了(如 GPU OOM)或响应超时 → 自动从负载池中移除 → 流量自动避让。服务恢复后自动加回。故障切换(Failover): 主实例故障 → LB 自动将请求转发到备用实例。常见 LB 方案: Nginx(反向代理模式)、Envoy(云原生 Service Mesh)、HAProxy、Kubernetes Service(容器化部署)、各大云厂商的 Load Balancer。<br><br><b>关键要点</b><br>① 数据并行的必需前端组件 ② 分发策略: Round Robin/Least Connections/Weighted/Consistent Hash ③ 健康检查实现自动故障切换 ④ 常见工具: Nginx, Envoy, HAProxy, K8s Service ⑤ 配合监控(Grafana)实现可视化流量分布<br><br><b>延伸节点</b><br>§1.3.1 多机部署 | §1.3.1 Data Parallelism | §5.6 算力分配 | Blue-Green Deployment"
+  },
+  {
+    "Word": "API Key",
+    "Pronunciation": "/ˌeɪˌpiːˈaɪ kiː/",
+    "Audio": "",
+    "Definition": "API Key（API密钥）——访问大模型API的身份凭证，应通过环境变量或.env文件管理，严禁硬编码在代码中提交版本控制",
+    "ExampleEN": "Never hardcode API keys in source files; use environment variables or .env files excluded from git to prevent credential leaks.",
+    "ExampleCN": "绝不要在源文件中硬编码API密钥；使用环境变量或.env文件(排除在git之外)来防止凭证泄露。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。API Key 是访问大模型 API 的身份凭证——字符串格式如 sk-xxx，用于 API 服务端验证调用者身份和计费。管理 API Key 是 LLM 开发的第一步安全课。<br><br><b>核心概念</b><br>API Key 的安全隐患: 如果硬编码在源代码中被提交到 GitHub，会被恶意爬虫自动扫描并盗用——损失可能从几百到数万美金(API Key 被盗用后用于挖矿、刷量等)。安全管理铁律: ① 永远不硬编码在源码中 ② 通过环境变量传递: export OPENAI_API_KEY=sk-xxx，代码中 os.getenv('OPENAI_API_KEY') ③ 通过 .env 文件管理(推荐): .env 文件中写 OPENAI_API_KEY=sk-xxx，代码中用 dotenv 库读取。.env 文件必须加入 .gitignore 排除 ④ 不同项目用不同 Key: 限制每个 Key 的使用范围和月消费上限 ⑤ 定期轮换: 每月更换一次 Key。API Key 在哪里获取: OpenAI Platform(platform.openai.com) → API Keys 页面创建；DashScope(阿里云灵积控制台)；DeepSeek(官网 API Keys 页面)。免费/测试 Key: 一些服务提供有限免费额度(如 DashScope 新用户几十万 token)，适合学习和小项目。<br><br><b>关键要点</b><br>① 绝不硬编码 × ② .env 文件 + .gitignore 排除 √ ③ 环境变量传递 √ ④ 提交到 GitHub 必被盗用(自动扫描机器人 24/7 运行) ⑤ 不同项目用不同 Key 隔离风险 ⑥ 定期轮换(Rotate) ⑦ 注意配置 .gitignore 规则: **.env 或 .env<br><br><b>延伸节点</b><br>§1.2.1 API 调用基础代码 | §1.3.1 Ollama(本地部署无需 Key) | .env File | OpenAI API | DashScope"
+  },
+  {
+    "Word": "OpenAI API",
+    "Pronunciation": "/ˈoʊpən eɪ aɪ ˌeɪˌpiːˈaɪ/",
+    "Audio": "",
+    "Definition": "OpenAI API——OpenAI提供的云端LLM调用接口，支持GPT-4o/GPT-4o-mini等模型，以OpenAI兼容格式成为行业事实标准",
+    "ExampleEN": "The OpenAI API uses a chat completions endpoint with role-based messages (system/user/assistant) that has become the de facto interface standard.",
+    "ExampleCN": "OpenAI API 使用基于角色的消息(system/user/assistant)的对话补全端点，已成为事实上的接口标准。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。OpenAI API 是 LLM 调用接口的行业事实标准——它的 Chat Completions API 格式(role-based messages、tools、stream)被 Ollama、vLLM、DeepSeek、DashScope 等几乎所有服务兼容，学会 OpenAI API 就等于学会调用所有 LLM。<br><br><b>核心概念</b><br>OpenAI API 的核心端点和参数: ① chat/completions 端点: 所有对话式 LLM 调用的入口。请求体: model(模型名)、messages(角色消息数组)、temperature(随机性)、max_tokens(输出长度)、tools(Function Calling 工具定义)、stream(流式输出) ② Response 结构: id(请求 ID)、choices[0].message.content(模型回复文本)、usage.prompt_tokens/completion_tokens(消耗统计)、choices[0].message.tool_calls(Function Calling 的工具调用) ③ 错误处理: 4xx(客户端错误，如 API Key 无效)、5xx(服务端错误，需重试)、429(速率限制，需指数退避)。成为行业标准的关键: OpenAI 定义了 messages 的 role 规范(system/user/assistant/tool)，定义了 tools 的 JSON Schema 规范，定义了 streaming 的 SSE 协议。这些规范被几乎所有 LLM 提供商采纳——用 OpenAI SDK 配不同 base_url 就能调用不同模型。OpenAI API 的中国限制: 需要信用卡和海外手机号验证，国内直接调用需要科学上网。替代方案: DashScope(阿里)、DeepSeek、Ollama(本地部署)。<br><br><b>关键要点</b><br>① 行业事实标准(接口格式被广泛采纳) ② 核心: chat.completions.create(model, messages) ③ Ollama/vLLM/DeepSeek 都兼容 OpenAI API 格式 ④ 国内直接调用需解决网络和注册问题 ⑤ 学习一个 SDK 即可调用所有 LLM<br><br><b>延伸节点</b><br>§1.2.1 API 调用代码示例 | §1.3.1 Ollama 兼容 API | DashScope | DeepSeek | API Key"
+  },
+  {
+    "Word": "Base64",
+    "Pronunciation": "/beɪs sɪksti fɔːr/",
+    "Audio": "",
+    "Definition": "Base64——将二进制数据（如图片）编码为ASCII字符串的方法，多模态API通过它传输图片数据",
+    "ExampleEN": "Images sent to multimodal APIs are base64-encoded with a data URI prefix like data:image/jpeg;base64, followed by the encoded bytes.",
+    "ExampleCN": "发送到多模态API的图片使用base64编码，前缀为data:image/jpeg;base64,并附带编码后的字节数据。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Base64 是将二进制数据(图片/音频)编码为 ASCII 字符串的方法——在多模态 LLM API 调用中用于传输图片数据。但由于编码后体积膨胀约 33%，生产环境应优先使用图片 URL 直传。<br><br><b>核心概念</b><br>Base64 编码的本质: 每 3 个字节(24 bits)映射为 4 个可打印 ASCII 字符(64 个字符集: A-Z, a-z, 0-9, +, /)。编码后体积增加约 33%(3 bytes → 4 chars)。在多模态 API 中的应用: 将本地图片编码为 base64 字符串，拼接到 image_url.url 字段中(data:image/jpeg;base64,{encoded})，作为 content 数组的一部分发送给 GPT-4V/4o。Python 代码: import base64 → with open(img_path, 'rb') as f: encoded = base64.b64encode(f.read()).decode('utf-8')。Base64 vs URL 直传: base64 编码会使请求体体积膨胀 33%——一张 10MB 的图变成约 13.3MB 的请求体，增加网络传输时间和内存占用。生产环境最佳实践: 先将图片上传到对象存储(OSS/S3)获得可访问 URL，再用 URL 传参。Base64 的优势是零依赖(不需要 OSS)，适合原型开发和少量图片场景。请求体大小限制: 部分 API 对请求体有大小限制(如 OpenAI 约 20MB)，大图需用 URL 传。<br><br><b>关键要点</b><br>① base64.b64encode(f.read()).decode() 编码 ② 编码后体积增加约 33% ③ 前缀: data:image/jpeg;base64, ④ 生产环境优先 URL 直传(减小请求体) ⑤ API 请求体通常限制在 10-20MB<br><br><b>延伸节点</b><br>§1.1.3 多模态 Agent 代码 | §1.2.1 API 调用 | GPT-4V | GPT-4o"
+  },
+  {
+    "Word": "Web Service vs AI Inference",
+    "Pronunciation": "/web ˈsɜːrvɪs vɜːrsəs eɪ aɪ ˈɪnfərəns/",
+    "Audio": "",
+    "Definition": "Web服务与AI推理的架构差异——传统Web服务消耗CPU+内存(加桌子即可)，AI推理消耗大量GPU显存(手术室调度)，并发模型根本不同",
+    "ExampleEN": "Unlike traditional web services that scale by adding servers, AI inference must carefully manage GPU memory where each concurrent request consumes dedicated VRAM.",
+    "ExampleCN": "与传统Web服务通过添加服务器扩展不同，AI推理必须精细管理GPU显存，每个并发请求都需要消耗独立的显存空间。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。Web Service 与 AI Inference 的架构差异是理解 LLM 部署\"为什么不能简单加服务器扩展\"的核心——传统 Web 用 CPU+内存(加桌子即可)，AI 推理用 GPU 显存(手术室调度)，并发模型根本不同。<br><br><b>核心概念</b><br>传统 Web 服务(如 Nginx+Node.js/Python): 无状态请求处理，每个请求消耗少量 CPU+内存(几 MB)，扩展方式: 加服务器 → 线性提升并发能力。10 台服务器处理能力 = 10×单台。AI 推理服务(如 vLLM): 有状态推理执行，每个请求独立占用 GPU 显存(特别是 KV Cache)，且显存总量固定(如 80GB A100)。扩展方式: 加 GPU 可以扩展，但有上限(单机 8 卡)。这三重差异导致 AI 推理的并发管理完全不同: ① 显存是刚性约束(不能超卖) ② 每个请求的显存占用随上下文长度动态变化(不可预知) ③ GPU 间的通信延迟限制了分布式扩展效率。知识图谱用\"餐厅 vs 手术室\"的比喻: 传统 Web 像餐厅——客人多了加桌子就行。AI 推理像手术室——设备(GPU)只有一套，多台手术(请求)同时做需要精密调度(PagedAttention + Continuous Batching)。面试中常被问\"为什么不用 K8s + HPA 直接 scale？\"——因为 GPU 显存是粘性资源(sticky)，模型加载慢(几十秒)，不能像 Web 服务那样快速启停。<br><br><b>关键要点</b><br>① 传统 Web: CPU+内存，无状态，加服务器即可扩展 ② AI 推理: GPU 显存，有状态(KV Cache)，扩展受显存硬约束 ③ 比喻: 餐厅 vs 手术室 ④ 这是\"为什么 LLM 部署难\"的根本答案 ⑤ 面试高频考点<br><br><b>延伸节点</b><br>§1.3.2 高并发本质 | §1.3.1 四大决策维度 | vLLM | PagedAttention | VRAM | KV Cache"
+  },
+  {
+    "Word": "Seed",
+    "Pronunciation": "/siːd/",
+    "Audio": "",
+    "Definition": "Seed（随机种子）——配合Temperature=0使用的API参数，进一步提升输出的确定性可复现性，弥补GPU浮点精度导致的微小差异",
+    "ExampleEN": "Even at temperature=0, GPU floating-point non-determinism can cause slight output variations; setting a seed parameter ensures reproducible results.",
+    "ExampleCN": "即使在temperature=0时，GPU浮点非确定性仍可能导致输出有微小差异；设置seed参数可确保结果可复现。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Seed(随机种子)是 LLM API 中保障输出可复现性的参数——配合 temperature=0 使用，确保多次调用相同 prompt 得到完全相同的输出，是测试和评估场景的标配。<br><br><b>核心概念</b><br>即使 temperature=0(理论最大确定性)，LLM 的输出也可能有微小差异。原因: GPU 浮点计算是非确定性的——不同 GPU、不同 CUDA 版本、甚至同一 GPU 的不同运行之间，矩阵乘法的浮点累加顺序可能不同，导致结果在最后一位小数有差异。这些微小差异经过 Softmax 放大后可能导致不同的 token 被选中(如果两个 token 的概率极其接近)。Seed 参数强制固定随机数生成器的初始状态——模型内部所有随机操作(如 dropout 虽然推理时通常关闭)都使用这个种子。效果: temperature=0 + seed=固定值 → 可复现的结果。这是确保测试稳定性和性能基准(benchmark)一致性的关键。使用场景: ① 自动化测试(期望输出必须一致) ② 模型评测(不同模型的对比需在同一条件下) ③ 生产环境中的确定性任务(如分类)。OpenAI API: seed 参数传入整数即可。注意: 并非所有 LLM API 都支持 seed 参数(目前 OpenAI/Anthropic 等主流支持，Ollama 不完全支持)。<br><br><b>关键要点</b><br>① Temperature=0 + seed=固定值 → 最大确定性和可复现性 ② 解决 GPU 浮点非确定性导致的微小差异 ③ 测试和评估场景的标配 ④ 非所有 API 都支持(主流支持) ⑤ seed 配合 stream=False 使用<br><br><b>延伸节点</b><br>§1.2.1 Temperature 参数 | §1.2.1 API 参数 | Softmax | Top-P"
+  },
+  {
+    "Word": "Softmax",
+    "Pronunciation": "/ˈsɒftmæks/",
+    "Audio": "",
+    "Definition": "Softmax（归一化指数函数）——将原始分数(logits)转换为概率分布的数学函数，Temperature通过调整logits除以温度系数改变其输出分布",
+    "ExampleEN": "Temperature modifies the softmax distribution: lower temperatures sharpen probabilities toward the most likely token, higher temperatures flatten them.",
+    "ExampleCN": "温度参数通过修改softmax分布来改变输出：低温让概率向最可能的token集中，高温让概率分布更平坦。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Softmax(归一化指数函数)是 LLM 将原始 logits 分数转换为概率分布的数学函数——softmax(logits/Temperature) 就是 Temperature 控制输出随机性的全部秘密。<br><br><b>核心概念</b><br>Softmax 的数学原理: 对向量 z(原始分数/logits)，Softmax(z)_i = exp(z_i) / sum(exp(z_j))。效果: ① 将任意实数向量映射为概率分布(所有值 ∈ [0,1]，和为 1) ② 指数函数放大差异——logits 中的微小差异被指数函数放大为显著的概率差异 ③ 保持相对顺序——logits 中排名第 1 的 token，在概率分布中仍是第 1。LLM 中 Softmax 的位置: Transformer 最后一层输出 logits(词表大小的向量，每个值代表该 token 的\"未归一化分数\")→ Softmax → 概率分布 → 采样得到下一个 token。Temperature 如何修改 Softmax: softmax(logits/T)。T<1(logits 除以小数→值变大→指数后差异更大→概率更集中): 高温→锯齿状分布，几乎只选最高概率 token → 确定性输出。T>1(logits 除以大数→值变小→指数后差异更小→概率更平): 低温→柔和分布，低概率 token 也有机会 → 随机性输出。面试中能现场写出 softmax 公式并用代码解释 Temperature 原理，代表理解扎实。<br><br><b>关键要点</b><br>① 公式: Softmax(z)_i = exp(z_i)/sum(exp(z_j)) ② LLM 最后一层: logits → Softmax → 概率 → 采样 ③ Temperature 等于 logits/T 后再 Softmax ④ T<1 概率集中(确定)，T>1 概率平坦(随机) ⑤ 这是 Temperature 参数的全部数学原理<br><br><b>延伸节点</b><br>§1.2.1 Temperature 原理 | §2.3 模型训练 | Top-P"
+  },
+  {
+    "Word": "Exponential Backoff",
+    "Pronunciation": "/ˌekspəˈnenʃəl ˈbækɒf/",
+    "Audio": "",
+    "Definition": "Exponential Backoff（指数退避）——API调用失败时的重试策略，每次重试的等待时间翻倍（1s→2s→4s→8s），避免对服务器造成压力雪崩",
+    "ExampleEN": "Implement exponential backoff for API retries to gracefully handle rate limits and transient network errors without overwhelming the server.",
+    "ExampleCN": "为API重试实现指数退避策略，以优雅地处理速率限制和临时网络错误，避免压垮服务器。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Exponential Backoff(指数退避)是 LLM API 调用中优雅处理临时错误的策略——每次重试的等待时间翻倍(1s→2s→4s→8s)，避免对已繁忙的服务器造成雪崩式压力。<br><br><b>核心概念</b><br>API 调用失败的常见原因: ① 429 Too Many Requests(速率限制): 短时间内请求过多，服务器要求你减速 ② 503 Service Unavailable(服务临时过载): 服务器高峰期的暂时不可用 ③ Network Timeout(网络超时): 网络抖动导致的请求超时。这些错误通常是临时的(几秒到几十秒后恢复)——直接报错不行(用户体验差)，立即重试也不行(可能加剧服务器压力)。Exponential Backoff 的做法: 第 1 次失败 → 等 1 秒重试 → 第 2 次失败 → 等 2 秒重试 → 第 3 次失败 → 等 4 秒 → 第 4 次 → 等 8 秒 → ... 直到 Max Retries(通常在 3-5 次)。为什么是\"指数\"而非\"固定间隔\"或\"线性间隔\": 防止\"雪崩\"(thundering herd)。假设 1000 个并发请求同时失败——固定间隔(1 秒)会让 1000 个请求在 1 秒后同时重试 → 服务器瞬间承受二次冲击。指数退避让各请求的等待时间快速差异化(1,2,4,8...秒) → 重试时机分散 → 服务器压力平滑。OpenAI Python SDK 内置自动重试(默认 2 次)，但建议生产环境自定义重试逻辑并加上 jitter(随机抖动)。<br><br><b>关键要点</b><br>① 等待时间翻倍: 1s→2s→4s→8s ② 配合最大重试次数(Max Retries: 3-5 次) ③ 防止\"雪崩\"效应 ④ 只对临时错误重试(429/503/Timeout)，不做对 4xx 客户端错误重试 ⑤ 加 jitter: actual_wait = base_wait + random(0, base_wait)<br><br><b>延伸节点</b><br>§1.2.1 工业界最佳实践 | §1.3.2 高并发 | OpenAI API 错误处理 | Rate Limiting"
+  },
+  {
+    "Word": "AnimateDiff",
+    "Pronunciation": "/ˈænɪmeɪt dɪf/",
+    "Audio": "",
+    "Definition": "AnimateDiff——开源视频生成方案，基于Stable Diffusion扩展时序注意力模块实现，可在消费级GPU(如RTX 4090)上运行",
+    "ExampleEN": "AnimateDiff adds temporal attention layers to Stable Diffusion, enabling short video generation on a single RTX 4090 with 24GB VRAM.",
+    "ExampleCN": "AnimateDiff 在 Stable Diffusion 基础上添加时序注意力层，使得单张 RTX 4090(24GB显存)即可生成短视频。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。AnimateDiff 是开源视频生成的最低门槛方案——基于 Stable Diffusion 扩展时序注意力模块，在消费级 GPU(如 RTX 4090)上即可生成短视频，是个人开发者进入视频 AIGC 领域的最佳入门选择。<br><br><b>核心概念</b><br>AnimateDiff 的核心思想: 不从头训练视频生成模型，而是在已有的文生图模型(Stable Diffusion)上\"嫁接\"时序模块。具体做法: ① 冻结 SD 的空间层(负责每帧图像的生成质量) ② 插入 Motion Module(运动模块): 在 SD 的每个 Transformer Block 中插入时序自注意力层，建模帧与帧之间的运动关系 ③ 只在视频数据上训练 Motion Module，原始 SD 权重不变。效果: SD 负责每帧画质，Motion Module 负责帧间运动。训练成本极低: 在 WebVid-10M 等视频数据集上只需几张 GPU 训练几天。推理需求: 消费级 GPU 可运行(RTX 4090 24GB 即可生成 16 帧短视频)。生成结果: 几秒的短视频(16-32 帧)，画面质量取决于底层的 SD 模型。AnimateDiff 的扩展: 结合 ControlNet(AnimateDiff+ControlNet = 可控运动)，结合 Motion LoRA(微调特定运动模式)，结合 IP-Adapter(加入图片引导)，组合形成丰富的控制能力。局限: 生成时长短(几秒)，人物一致性不如 Sora/可灵，复杂运动可能产生闪烁。<br><br><b>关键要点</b><br>① 基于 Stable Diffusion + Motion Module ② 最低 GPU 门槛: RTX 4090(24GB) ③ 生成时长短(几秒) ④ 开源免费(社区版本丰富) ⑤ 是 Sora 不可用时的开源替代<br><br><b>延伸节点</b><br>§1.1.3 视频生成 | §2.3.4 多模态模型 | Stable Diffusion | Sora | CogVideoX"
+  },
+  {
+    "Word": "Stable Diffusion",
+    "Pronunciation": "/ˈsteɪbəl dɪˈfjuːʒən/",
+    "Audio": "",
+    "Definition": "Stable Diffusion——开源文生图扩散模型，由Stability AI发布，支持在消费级GPU上运行，是图像生成领域最流行的开源方案之一",
+    "ExampleEN": "Stable Diffusion democratized image generation by running efficiently on consumer GPUs, spawning an ecosystem of fine-tuned variants and tools.",
+    "ExampleCN": "Stable Diffusion 通过能在消费级GPU上高效运行，使图像生成大众化，催生了微调变体和工具的生态系统。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Stable Diffusion 是图像生成领域最具影响力的开源模型——由 Stability AI 发布，支持在消费级 GPU 上运行高质量文生图，催生了庞大的社区生态和微调模型。<br><br><b>核心概念</b><br>Stable Diffusion(SD)的核心架构: 在 Latent Diffusion 框架下，使用 VAE(Variational Autoencoder)将图像压缩到 1/8 尺寸的潜在空间 → 在潜在空间中做扩散(去噪) → VAE 解码回图像。这大大降低了计算量(在 64×64 潜在空间而非 512×512 像素空间做扩散)。最流行的版本: SD 1.5(512×512，约 860M UNet)、SDXL 1.0(1024×1024，约 2.6B UNet)、SD 3(基于 DiT 架构)。SD 的社区生态: Civitai(模型分享平台，数万个微调模型)、ControlNet(精确控制生成内容，如 pose/深度/线稿)、LoRA 微调(训练小矩阵适配特定风格/人物/场景)、ComfyUI(节点式可视化工作流工具)。SD 的商业模式: 基础模型免费开源，通过 DreamStudio(官方在线生成服务)和 API 服务收费。SD 的开源特性使其成为学术研究、个人创作、中小企业创意工作流的首选方案。AnimateDiff 和 CogVideoX 等视频生成方案都基于 SD 扩展。<br><br><b>关键要点</b><br>① 开源文生图代表 ② 在 Latent Space 做扩散(1/8 压缩，降低计算量) ③ 版本: SD1.5/SDXL/SD3 ④ 社区生态庞大(Civitai, ControlNet, ComfyUI) ⑤ 支持在消费级 GPU 上运行(6GB+ VRAM) ⑥ AnimateDiff 的视频生成基础<br><br><b>延伸节点</b><br>§1.1.3 扩散模型原理 | §2.3.4 多模态模型 | Diffusion Model | AnimateDiff | ControlNet"
+  },
+  {
+    "Word": "DALL-E",
+    "Pronunciation": "/ˈdæliː/",
+    "Audio": "",
+    "Definition": "DALL-E——OpenAI的文生图模型，能够根据自然语言描述生成高质量、创意性的图像",
+    "ExampleEN": "DALL-E 3 integrated with ChatGPT allows users to refine image generations through natural conversation, iterating on prompts collaboratively.",
+    "ExampleCN": "DALL-E 3 与 ChatGPT 集成，允许用户通过自然对话逐步优化图像生成，协作式地迭代提示词。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。DALL-E 是 OpenAI 的文生图模型系列——从\"用一段文字描述创造一张图像\"出发，DALL-E 3 进一步通过 ChatGPT 深度集成实现了自然语言迭代式图像生成，让\"修改图片\"像\"聊天改稿\"一样简单。<br><br><b>核心概念</b><br>DALL-E 的版本演进: ① DALL-E 1(2021): 基于 VQ-VAE + Transformer，120 亿参数。首次证明 Transformer 可以从文本生成连贯图像 ② DALL-E 2(2022): 基于 CLIP + Diffusion，图像质量大幅提升。核心创新: CLIP 文本嵌入指导扩散模型生成(对比 SD 也需要 CLIP) ③ DALL-E 3(2023): 与 ChatGPT 深度集成。用户可以用自然对话的方式逐步优化图像——\"把猫的毛色变成橘色\"\"背景加上海边日落\"——ChatGPT 自动改写格式化之前的 prompt 发送给图像模型。这解决了文生图的\"提示词工程学习成本高\"的问题。DALL-E 的差异化优势: 与 ChatGPT 的深度集成(原生对话式图像创建)，无需学提示词工程，安全过滤强(防止生成暴力/色情内容)。局限: 闭源(无法本地部署)，不支持精细 ControlNet 式的空间控制(pose/depth 等)，图片风格更偏\"AI 感\"(不如 Midjourney 艺术性强)。<br><br><b>关键要点</b><br>① OpenAI 生态的商业闭源方案 ② DALL-E 3 与 ChatGPT 深度集成(对话式创作) ③ 免去提示词工程学习成本 ④ 安全过滤强 ⑤ 与 SD 的对比: DALL-E 易用但封闭，SD 开源灵活但学习曲线高<br><br><b>延伸节点</b><br>§1.1.3 多模态 | §1.1.3 AIGC | Stable Diffusion | Midjourney | Diffusion Model"
+  },
+  {
+    "Word": "Midjourney",
+    "Pronunciation": "/mɪdˈdʒɜːrni/",
+    "Audio": "",
+    "Definition": "Midjourney——独立AI图像生成服务，以艺术性画风著称，在设计和创意行业广泛应用",
+    "ExampleEN": "Midjourney is favored by designers for its distinctive artistic style, generating images with cinematic lighting and aesthetic composition.",
+    "ExampleCN": "Midjourney 以其独特的艺术风格受到设计师青睐，能生成具有电影感光影和美学构图的图像。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Midjourney 是独立 AI 图像生成服务——不绑定任何大厂 AI 生态，以独特的艺术画风和审美取向著称，在设计和创意行业是最受欢迎的文生图工具。<br><br><b>核心概念</b><br>Midjourney 的独特定位: 不像 DALL-E(实用)、Stable Diffusion(技术灵活)，Midjourney 的核心竞争力是\"美学\"——它的生成图像具有电影感光影、细腻的纹理、艺术性的构图，能让非专业用户也能产出\"好看\"的图片。交互方式: 最初基于 Discord Bot(在 Discord 聊天中输入 /imagine)，后来推出独立 Web 界面。订阅制付费(非 token 计费): 约 $10-60/月，按生成的图片数量分层。版本演进: V5 → V5.1 → V5.2 → V6(画质和prompt理解飞跃) → V6.1。参数控制: --ar(宽高比), --stylize(艺术化程度), --chaos(多样性), --seed(可复现), --cref(角色参考, V6新功能), --sref(风格参考)。Midjourney 与程序化开发的差异: 没有 API(2024 年前)，无法集成到自动化工作流中。适合: 概念设计、广告创意、产品视觉原型、社交媒体内容创作。不适合: 需要精确控制的图像生成(选 SD+ControlNet)、需要 API 集成的方案(选 DALL-E API 或 SD 自部署)。<br><br><b>关键要点</b><br>① 以艺术风格和美学著称 ② Discord/Web 交互(无传统 API) ③ 订阅制付费(非 token 计费) ④ 设计师和创意人员的首选图像工具 ⑤ vs DALL-E: 艺术性强但无 API；vs SD: 效果更好但不可自部署<br><br><b>延伸节点</b><br>§1.1.3 图像生成模态 | §1.1.3 AIGC | DALL-E | Stable Diffusion | Diffusion Model"
+  },
+  {
+    "Word": "CogVideoX",
+    "Pronunciation": "/kɒɡ ˈvɪdioʊ eks/",
+    "Audio": "",
+    "Definition": "CogVideoX——智谱AI开源的视频生成模型，支持文本生成视频，是开源视频生成方案之一",
+    "ExampleEN": "CogVideoX is one of the few open-source text-to-video models available, offering a viable alternative to proprietary solutions like Sora.",
+    "ExampleCN": "CogVideoX 是少数可用的开源文本到视频模型之一，为 Sora 等商业方案提供了可行的替代选择。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。CogVideoX 是智谱 AI 开源的文本生成视频模型——国内开源视频生成的代表作，与 AnimateDiff 同为消费级 GPU 可运行的开源方案。<br><br><b>核心概念</b><br>CogVideoX 由智谱 AI(清华大学团队初创)基于 CogView(文生图)技术积累开发。核心技术: 3D 因果 VAE(将视频压缩到时空潜在空间)+ Expert Transformer(基于 MoE 的 Transformer 生成)。支持生成 6 秒 720p 视频。开源策略: 模型权重和代码在 HuggingFace 开源(非商用友好)。与 AnimateDiff 的对比: CogVideoX 是端到端视频生成(直接从文本到视频)，AnimateDiff 是基于 SD 扩展(嫁接时序模块)。CogVideoX 的生成一致性通常优于 AnimateDiff(因为端到端训练而非嫁接)，但社区生态和可控性不如 AnimateDiff(没有 ControlNet 集成)。硬件需求: 推荐 24GB+ VRAM(如 RTX 4090)，支持 FP16 推理。当前局限: 生成时长短(6 秒)，分辨率不高(720p)，社区工具链不如 SD 生态成熟。与 Sora/可灵的差距: Sora(1 分钟 1080p)和可灵(2 分钟 1080p)的画质和时长远超开源方案。CogVideoX 的价值: 让研究者和开发者能在本地实验和定制视频生成管道。<br><br><b>关键要点</b><br>① 智谱 AI 开源(国内) ② 端到端文本→视频(非嫁接方案) ③ 6 秒 720p ④ 需 RTX 4090(24GB) ⑤ 社区生态不如 SD/AnimateDiff 成熟 ⑥ 国内开源视频生成的代表<br><br><b>延伸节点</b><br>§1.1.3 视频 AIGC | §1.1.3 视频生成本地部署 | AnimateDiff | Sora | Kling | Stable Diffusion"
+  },
+  {
+    "Word": "RoCE",
+    "Pronunciation": "/rɒk/",
+    "Audio": "",
+    "Definition": "RDMA over Converged Ethernet（融合以太网上的远程直接内存访问）——在标准以太网上实现RDMA的网络协议，多机GPU通信的实用方案",
+    "ExampleEN": "RoCE enables RDMA over standard Ethernet infrastructure, providing a cost-effective alternative to dedicated InfiniBand for multi-node GPU communication.",
+    "ExampleCN": "RoCE 在标准以太网基础设施上实现RDMA，为多节点GPU通信提供了比专用InfiniBand更经济的替代方案。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。RoCE(RDMA over Converged Ethernet)是在标准以太网上实现 RDMA 的实用方案——用普通以太网交换机跑出接近 InfiniBand 的性能，大幅降低多机 GPU 通信的成本门槛。<br><br><b>核心概念</b><br>RoCE 解决了 InfiniBand 的核心矛盾——性能好但贵。它利用以太网的 RDMA 能力(RDMA over Ethernet)，在标准以太网硬件上实现远程直接内存访问。RoCE 有两个版本: ① RoCE v1(Layer 2): 同一 VLAN 内的 RDMA 通信，不能跨子网 ② RoCE v2(Layer 3/UDP): 支持 IP 路由，可跨子网，是目前主流方案。技术要求: 支持 RoCE 的网卡(如 NVIDIA ConnectX 系列，较贵但比 IB 卡便宜)、支持 PFC(Priority Flow Control)等无损机制的交换机(数据中心级交换机，比普通交换机贵)。性能: 延迟略高于 InfiniBand(通常 1-3us vs <1us)，带宽与 IB 同级(100-400 Gbps)。RoCE vs InfiniBand 选型: 预算有限 + GPU 节点不多(<50) → RoCE 就够；顶级 AI 训练集群(100+ GPU) → InfiniBand。国内云厂商的 GPU 集群普遍使用 RoCE 方案(如阿里云高性能计算集群)。值得注意: RoCE 需要网络配置(DCB/PFC/ECN 等)，配置不当则丢包严重，RDMA 性能退化为普通 TCP。<br><br><b>关键要点</b><br>① 标准以太网上实现 RDMA ② RoCE v2(Layer 3/UDP)是当前主流版本 ③ 成本远低于 InfiniBand，性能接近 ④ 需要支持 RoCE 的网卡和交换机 ⑤ 多机张量并行的实用网络方案 ⑥ 配置不当性能退化严重<br><br><b>延伸节点</b><br>§1.3.1 多机部署网络 | §1.3.1 RDMA | InfiniBand | Tensor Parallelism"
+  },
+  {
+    "Word": "Whisper",
+    "Pronunciation": "/ˈwɪspər/",
+    "Audio": "",
+    "Definition": "Whisper——OpenAI开源的通用语音识别模型(ASR)，支持多语言语音转文字，是视频检索中ASR的首选方案之一",
+    "ExampleEN": "Whisper provides state-of-the-art multilingual speech recognition, converting audio tracks to searchable text for video retrieval pipelines.",
+    "ExampleCN": "Whisper 提供最先进的多语言语音识别，将音频轨道转换为可搜索文本用于视频检索管道。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Whisper 是 OpenAI 开源的多语言语音识别模型——在 68 万小时多语言语音数据上训练，支持 99 种语言，是视频检索、语音助手、会议转写等场景的首选 ASR 方案。<br><br><b>核心概念</b><br>Whisper 的核心架构: 基于 Encoder-Decoder Transformer(非纯 Encoder 如 BERT)。音频输入→ Log-Mel Spectrogram(声谱图，类似图像)→ 卷积层降采样 → Transformer Encoder编码 → Transformer Decoder 自回归生成文本 tokens。这种\"音频→声谱图→Transformer→文本\"的端到端方案取代了传统\"声学模型+语言模型+字典\"的多阶段管道。Whisper 提供五种模型尺寸: tiny(39M)、base(74M)、small(244M)、medium(769M)、large-v3(1.6B)。尺寸越大准确率越高，速度越慢。large 模型准确率与人类转写员相当。训练数据: 68 万小时从互联网爬取的多语言音频(弱监督)。因为是\"弱监督\"(自动从网络找的音频+对应文字)，而非人工标注，所以成本可控。多语言能力: 虽然以英文为主，但支持 99 种语言(包括中文)，对中文准确率低于英文但可用。视频检索中的应用: 提取视频音频轨道 → Whisper 转写为逐句文本 → 对文本做 Embedding → 存入向量数据库 → 实现\"搜说话内容\"的功能。<br><br><b>关键要点</b><br>① 安装: pip install openai-whisper ② whisper.load_model(\"base\").transcribe(\"audio.mp3\") ③ 五种尺寸: tiny(快)→large(准) ④ 支持 99 种语言(中文可用) ⑤ 视频检索\"文本路\"的 ASR 引擎 ⑥ 开源免费<br><br><b>延伸节点</b><br>§1.1.3 视频检索原理 | §2.3.4 多模态模型 | ASR | OpenAI Whisper GitHub | 通义听悟"
+  },
+  {
+    "Word": "Runway Gen-3",
+    "Pronunciation": "/ˈrʌnweɪ dʒen θriː/",
+    "Audio": "",
+    "Definition": "Runway Gen-3——Runway公司发布的视频生成模型，电影级画质，支持多模态控制，面向专业内容创作",
+    "ExampleEN": "Runway Gen-3 targets professional filmmakers with cinematic-quality video generation and fine-grained multimodal controls over camera movement and style.",
+    "ExampleCN": "Runway Gen-3 面向专业电影制作人，提供电影级画质的视频生成和对镜头运动与风格的细粒度多模态控制。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Runway Gen-3 是 Runway 公司发布的专业级视频生成模型——定位高端内容创作(电影、广告、MV)，提供电影级画质和细粒度的多模态控制(文本+图像+视频引导)，是创意行业的首选视频 AIGC 工具。<br><br><b>核心概念</b><br>Runway 是 AI 视频创作的先驱公司(早期是 Stable Diffusion 的资助方)。Gen-3 的核心特色: ① 多模态控制: 不仅支持文本生成视频，还支持图像引导(用一张图设定初始帧)、视频引导(用一段参考视频的风格或运动)、相机控制(虚拟镜头推拉摇移) ② 电影级画质: 4K 分辨率，物理模拟较好(运动模糊、光影效果) ③ 专业工作流集成: 提供 Web 界面和 API，适合嵌入影视后期制作流程(如 Premiere 插件)。与 Sora/可灵的对比: ① Runway Gen-3 已在市场上可购买使用，Sora 尚未公开 ② 画质: Runway ≈ Sora(都在专业级水平) ③ 可灵(1080p 2 分钟)在时长上占优 ④ Runway 更适合专业创作者(精细控制多)，可灵/简单方案更适合普通用户。Runway 的商业模式: 订阅制($15-95/月)，对专业制作来说成本合理。局限性: 需要较好的 GPU/云端算力，对普通用户价格偏高。<br><br><b>关键要点</b><br>① 专业级视频生成(电影/广告/MV) ② 多模态控制(文本+图+视频+相机) ③ 4K 电影级画质 ④ 已商用，订阅制($15-95/月) ⑤ 创意行业的首选视频 AIGC 工具 ⑥ 对比: Sora(未发布) > Kling(最长) > Runway(最专业控制)<br><br><b>延伸节点</b><br>§1.1.3 视频 AIGC | §1.1.3 主流视频生成方案 | Sora | Kling | AIGC | Diffusion Model"
+  },
+  {
+    "Word": "Kling",
+    "Pronunciation": "/klɪŋ/",
+    "Audio": "",
+    "Definition": "Kling（可灵）——快手发布的视频生成模型，国内可用，支持1080p最长2分钟的视频生成，支持图生视频和文生视频",
+    "ExampleEN": "Kling stands out as a domestically accessible video generation tool in China, supporting 1080p output up to 2 minutes with both text-to-video and image-to-video modes.",
+    "ExampleCN": "可灵作为国内可用的视频生成工具脱颖而出，支持1080p最长2分钟的输出，同时具备文生视频和图生视频模式。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Kling(可灵)是快手发布的视频生成模型——国内可用、1080p 最长 2 分钟、支持文生视频和图生视频，是 Sora 不可用时中国开发者最推荐的视频生成替代方案。<br><br><b>核心概念</b><br>Kling(可灵)的核心参数: 生成最长 2 分钟 1080p 视频(比 Sora 的 1 分钟更长)，支持文生视频(text-to-video)和图生视频(image-to-video——用一张图+文字描述让图中元素动起来)。核心技术: 3D 时空注意力机制(同时建模空间(appearance)和时序(motion)的关联)，物理规律模拟(物体运动、光影变化自然)。使用方式: 通过可灵官网或快手 AI 平台使用(无需 API Key，需要快手账号)；目前支持 Web 界面操作和部分 API 接口。定价: 免费用户每天有几次免费额度，付费版约几十元/月。可灵 vs Sora: ① 可灵已可公开使用，Sora 尚未开放 ② 可灵时长更长(2 分钟 vs 1 分钟) ③ Sora 物理理解更好(如吃汉堡留下咬痕这类的物理解释) ④ 可灵对中国用户更友好(无需科学上网)。可灵 vs Runway Gen-3: 可灵更长(2min vs 30s)，Runway 画质更高(4K vs 1080p)。可灵的典型应用: 短视频创作(快手/抖音生态)、广告创意原型、教育资源动画化。<br><br><b>关键要点</b><br>① 快手出品，国内可用(无需科学上网) ② 1080p 最长 2 分钟(当前公开方案中最长之一) ③ 文生视频 + 图生视频两种模式 ④ 免费额度(每天次数) ⑤ Sora 不可用时的首选国内替代 ⑥ 更偏大众化创作(非专业影视级)<br><br><b>延伸节点</b><br>§1.1.3 视频 AIGC | §1.1.3 国内可用性 | Sora | Runway Gen-3 | CogVideoX | Diffusion Model"
+  },
+  {
+    "Word": "Diffusion Transformer",
+    "Pronunciation": "/dɪˈfjuːʒən trænsˈfɔːrmər/",
+    "Audio": "",
+    "Definition": "Diffusion Transformer（扩散Transformer）——Sora采用的视频生成架构，将扩散模型的去噪过程与Transformer架构结合，展现更好的规模化特性",
+    "ExampleEN": "Diffusion Transformer architecture replaces the U-Net backbone in traditional diffusion models with Transformer blocks, enabling better scaling to video generation.",
+    "ExampleCN": "Diffusion Transformer 架构用 Transformer 模块替换了传统扩散模型中的 U-Net 骨干，使其能更好地扩展到视频生成。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Diffusion Transformer(DiT)是 Sora 采用的下一代生成架构——用 Transformer 替代 U-Net 作为扩散模型的去噪骨干，展现了更好的规模化特性，是\"Transformer 万物\"趋势在生成模型领域的体现。<br><br><b>核心概念</b><br>传统扩散模型(如 Stable Diffusion)的去噪骨干是 U-Net(卷积神经网络)——通过跳接(skip connections)融合不同尺度的特征。DiT 的核心替换: 将 U-Net 换成 Transformer(自注意力)模块。Transformer 替代 U-Net 的优势: ① 更好的规模化(scaling law): DiT 的性能随参数量和训练量持续提升，U-Net 在某个规模后饱和 ② 更强的长距离建模: 自注意力天然擅长捕捉远距离依赖(像素 A 与像素 B 无需接近也能交互) ③ 与 LLM 训练基础设施复用: Transformer 的分布式训练、内存优化等技术可直接复用到视觉生成。Sora 中的 DiT: 将视频视为时空 patch 序列(类似 ViT 将图像切 patch)，每个 patch 是一个时空块(包含一段小时空的信息) → 全部 patch 送入 DiT → 逐步去噪 → 组合为完整视频。DiT 的核心挑战: 计算量——视频的 token 数是图像的 100-1000 倍(3D patch)，对 GPU 显存和算力需求极大。Sora 能跑 DiT 是因为用了数万张 H100 训练。这种\"用 Transformer 替代一切\"的趋势也在其他领域出现: ViT(视觉)、AudioLM(音频)、Decision Transformer(强化学习)。<br><br><b>关键要点</b><br>① Transformer 替代 U-Net 作为去噪骨干 ② 更好的规模化(scaling law) ③ Sora 的核心架构 ④ 复用了 LLM 的训练基础设施 ⑤ 这是\"Transformer 统一一切\"趋势在生成模型的体现 ⑥ 挑战: 3D token 数量极多，计算量巨大<br><br><b>延伸节点</b><br>§1.1.3 Sora | §1.1.3 扩散模型 | Diffusion Model | ViT | Transformer | Stable Diffusion"
+  },
+  {
+    "Word": "Transformer",
+    "Pronunciation": "/trænsˈfɔːrmər/",
+    "Audio": "",
+    "Definition": "Transformer——2017年Vaswani等人提出的神经网络架构，以自注意力机制替代循环/卷积网络，是现代LLM和多模态模型的基础架构",
+    "ExampleEN": "The Transformer architecture revolutionized NLP with its self-attention mechanism, replacing recurrent networks and enabling parallel processing of sequences.",
+    "ExampleCN": "Transformer架构以其自注意力机制彻底改变了NLP，替代了循环网络并实现了序列的并行处理。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 的底层架构基础。Transformer 是当代 AI 最重要的架构发明——GPT、BERT、T5、ViT 全部基于它。理解 Transformer 是理解整个大模型领域的前提。<br><br><b>核心创新: 自注意力机制</b><br>RNN/LSTM 的问题: 串行处理，无法并行，长序列会遗忘早期信息。Transformer 用自注意力(Self-Attention)一次性计算序列中所有位置之间的关系权重，实现完全并行化。<br><br><b>架构组成</b><br>① 输入嵌入+位置编码: 将 token 转为向量，加入位置信息(原始用正弦函数，现代用 RoPE)<br>② 多头自注意力: Q(Query)×K(Key)^T 计算注意力分数→Softmax归一化→×V(Value)加权求和。多头=多组QKV并行，每组关注不同语义关系<br>③ 前馈网络(FFN): 两层全连接+激活函数，对每个位置独立处理<br>④ 残差连接+层归一化: 每层输出=LayerNorm(x+Sublayer(x))，防止梯度消失<br>⑤ 堆叠: Encoder×6+Decoder×6(原始论文)，现代LLM多用Decoder-only(GPT系列)<br><br><b>关键变体</b><br>BERT: Encoder-only，双向注意力，适合理解任务(分类、NER、问答)<br>GPT: Decoder-only，单向(因果)注意力，自回归生成<br>T5: Encoder-Decoder，适合翻译/摘要等序列转换任务<br>Vision Transformer(ViT): 将图像切patch当token，证明Transformer在视觉领域同样有效<br><br><b>延伸节点</b><br>§1.2.1 AI大模型基本原理 | §3.5 PyTorch核心概念 | §2.3 LLM微调原理"
+  },
+  {
+    "Word": "Self-Attention",
+    "Pronunciation": "/self əˈtenʃən/",
+    "Audio": "",
+    "Definition": "Self-Attention（自注意力机制）——Transformer的核心组件，让序列中每个位置都能直接关注所有其他位置，捕获长距离依赖关系",
+    "ExampleEN": "Self-attention computes relevance between every pair of tokens in a sequence, enabling the model to capture long-range dependencies regardless of distance.",
+    "ExampleCN": "自注意力机制计算序列中每对token之间的相关性，使模型能够捕获任意距离的长程依赖关系。",
+    "Notes": "<b>学习路径</b><br>本知识图谱 §1.1.1 中 Transformer 架构的核心机制。自注意力是整个大模型时代的数学基石。<br><br><b>计算过程</b><br>Step1: 输入 X(seq_len×d_model)→线性变换得 Q=XW_Q, K=XW_K, V=XW_V<br>Step2: 计算注意力分数 S=QK^T/√d_k (除以√d_k防止点积过大导致Softmax饱和)<br>Step3: 因果掩码(Decoder): 将未来位置设为-∞，确保当前位置只能看到之前的token<br>Step4: Softmax(S)得到注意力权重(每行和为1)<br>Step5: 加权求和 Output=Softmax(S)×V<br><br><b>直观理解</b><br>Q(Query):「我在找什么」——当前token想要查询的信息<br>K(Key):「我有什么」——每个token提供的索引标签<br>V(Value):「我是什么」——每个token的实际内容<br>Attention=用Query和Key的相似度，决定从各个Value取多少信息。<br><br><b>多头注意力</b><br>一组QKV只能关注一种关系(如语法)。多头=多组QKV并行，每组关注不同模式(语法/语义/指代/位置)。拼接后经线性变换融合。head数通常为8/16/32。<br><br><b>延伸节点</b><br>§1.1.1 Transformer架构 | §3.5 PyTorch核心概念 | Attention Is All You Need(Vaswani et al. 2017)"
+  },
+  {
+    "Word": "Qwen",
+    "Pronunciation": "/kjuː wen/",
+    "Audio": "",
+    "Definition": "Qwen（通义千问）——阿里巴巴开源的大语言模型系列，通过DashScope API提供服务，国内最主流的商业LLM之一",
+    "ExampleEN": "Qwen models range from qwen-turbo for cost-efficient tasks to qwen-plus for complex reasoning, accessible via Alibaba Cloud DashScope API.",
+    "ExampleCN": "通义千问模型系列从成本高效的qwen-turbo到复杂推理的qwen-plus，可通过阿里云DashScope API访问。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1, §1.3.1。Qwen(通义千问)是阿里巴巴开源的大语言模型系列——通过 DashScope API 提供云端服务，同时开源模型可供本地部署，是国内最主流、生态最完善的商业 LLM 之一。<br><br><b>核心概念</b><br>Qwen 模型家族: ① Qwen-Turbo: 速度最快、成本最低，适合高频简单对话(如客服) ② Qwen-Plus: 效果和速度平衡版，支持 32K 上下文，适合中等复杂度任务 ③ Qwen-Max: 旗舰版，最强推理和知识能力，适合复杂推理和创意写作 ④ Qwen-Long: 长上下文版(10M tokens)，适合处理整本书/超大文档 ⑤ Qwen2.5 系列: 开源版(0.5B-72B)，可在 HuggingFace 下载，用 vLLM/Ollama 本地部署 ⑥ Qwen-VL: 多模态版(图文理解) ⑦ 通义万相: 文生图。技术特色: 支持 Function Calling(tools 参数)，兼容 OpenAI API 格式(可无缝切换)，支持 System Prompt。开源生态: Qwen2.5 是最受欢迎的中文开源 LLM 之一，全球 HuggingFace 下载量位居前列。本地部署: vLLM 部署示例 python -m vllm.entrypoints.openai.api_server --model Qwen/Qwen2.5-7B-Instruct。适用场景: 中国市场的企业应用(数据合规要求)、中文对话系统、本地知识库问答。<br><br><b>关键要点</b><br>① 阿里开发，DashScope API 云端服务 ② 开源: Qwen2.5 系列(0.5B-72B) ③ 支持 Function Calling ④ 兼容 OpenAI API 格式 ⑤ 中文 LLM 的国内市场首选方案之一 ⑥ 本地部署: vLLM/Ollama 均可<br><br><b>延伸节点</b><br>§1.2.1 DashScope 调用 | §1.3.1 vLLM 部署 | §1.3.1 Ollama/llama.cpp | DeepSeek | OpenAI API"
+  },
+  {
+    "Word": "OpenAI SDK",
+    "Pronunciation": "/ˈoʊpən eɪ aɪ ˌesˌdiːˈkeɪ/",
+    "Audio": "",
+    "Definition": "OpenAI Python SDK——OpenAI官方Python客户端库，pip install openai安装，提供chat.completions.create()等API调用方法",
+    "ExampleEN": "The OpenAI Python SDK is the standard interface for LLM APIs, with Ollama, vLLM, and many other services implementing OpenAI-compatible endpoints.",
+    "ExampleCN": "OpenAI Python SDK 是LLM API的标准接口，Ollama、vLLM等众多服务都实现了OpenAI兼容端点。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。OpenAI Python SDK 是 LLM 开发的\"万能钥匙\"——通过修改 base_url 参数，一行代码切换不同的大模型服务(OpenAI、Ollama、vLLM、DeepSeek、DashScope)，学会它就等于学会调用所有 LLM。<br><br><b>核心概念</b><br>OpenAI SDK 安装: pip install openai。核心使用模式: from openai import OpenAI → client = OpenAI(api_key='...', base_url='...') → response = client.chat.completions.create(model='...', messages=[...])。base_url 魔法: 这是 SDK 连接不同 LLM 服务的关键。不同服务的 base_url 地址: OpenAI: https://api.openai.com/v1、Ollama: http://localhost:11434/v1、vLLM: http://localhost:8000/v1、DeepSeek: https://api.deepseek.com、通义千问/DashScope: https://dashscope.aliyuncs.com/compatible-mode/v1。SDK 的响应对象: response.choices[0].message.content(回答文本)、response.choices[0].message.tool_calls(Function Calling 的工具调用)、response.usage.prompt_tokens/completion_tokens(消耗统计)。SDK 的高级功能: stream(流式输出)、tools(Function Calling)、response_format(JSON 模式)、extra_headers、max_retries(自动重试)。其他主流 SDK: Anthropic Python SDK(Claude 专用)、google-generativeai(Gemini 专用)。<br><br><b>关键要点</b><br>① pip install openai ② base_url 参数切换不同服务 ③ client.chat.completions.create() 是核心入口 ④ Ollama/vLLM/DeepSeek 都兼容 OpenAI SDK ⑤ stream、tools、max_retries 等高级参数 ⑥ 行业\"事实标准\"地位<br><br><b>延伸节点</b><br>§1.2.1 API 调用代码 | §1.3.1 Ollama API | OpenAI API | Chat Completions API"
+  },
+  {
+    "Word": "Generative AI",
+    "Pronunciation": "/ˈdʒenərətɪv eɪ aɪ/",
+    "Audio": "",
+    "Definition": "Generative AI（生成式AI）——能创造新内容（文本/图像/音频/视频）的AI范式，与分析式AI（分类/识别/预测）相对",
+    "ExampleEN": "Generative AI represents a paradigm shift from analysis to creation, with models like ChatGPT, DALL-E, and Sora producing original content.",
+    "ExampleCN": "生成式AI代表了从分析到创造的范式转变，ChatGPT、DALL-E和Sora等模型能够产生原创内容。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Generative AI(生成式 AI)代表了 AI 从\"分析已有数据\"到\"创造新内容\"的范式转变——它不是做分类/识别/预测，而是从零生成文本、图像、音频、视频，是 ChatGPT/Midjourney/Sora 等所有明星产品的共同范式。<br><br><b>核心概念</b><br>AI 的两大分类: ① 分析式 AI(Discriminative/Analytical AI): 输入数据 → 输出标签或预测。例如: 图片→\"这是一只猫\"、交易记录→\"可能是欺诈\"、历史股价→\"下周价格\"。代表: 人脸识别、推荐系统、医疗影像诊断 ② 生成式 AI(Generative AI): 输入描述/条件 → 输出原创内容。例如: \"写一封邮件\"→ 邮件内容、\"画一只猫\"→ 猫咪图片、\"描述一个场景\"→ 视频。代表: ChatGPT、DALL-E、Midjourney、Sora。大语言模型(LLM)是生成式 AI 在文本领域的代表。生成式 AI 的底层原理: 学习数据的分布(而非分类边界)，采样出符合分布特征的新数据。例如从百万张猫图片学习\"猫的分布\"，然后从分布中采样出一张不存在于训练集的新猫图片。关键技术: 文本(自回归 Transformer)、图像(扩散模型/VAE/GAN)、视频(扩散 Transformer/3D 生成)。面试中常常被问到\"生成式 AI 和分析式 AI 的本质区别\"——本质区别在于模型学习的目标不同(数据分布 vs 决策边界)。<br><br><b>关键要点</b><br>① 生成式 AI 创造新内容，分析式 AI 识别/预测已有模式 ② LLM 是生成式 AI 的文本代表 ③ AIGC 是生成式 AI 的应用层概念 ④ 底层原理: 学习数据分布 → 采样新样本 ⑤ 关键技术: Transformer(文本)、Diffusion(图像/视频)、VAE/GAN<br><br><b>延伸节点</b><br>§1.1.3 AIGC | §1.2.1 LLM 训练 | §1.2.1 LLM 基本原理 | Diffusion Model | Transformer"
+  },
+  {
+    "Word": "Multi-turn Conversation",
+    "Pronunciation": "/ˈmʌlti tɜːrn ˌkɒnvərˈseɪʃən/",
+    "Audio": "",
+    "Definition": "Multi-turn Conversation（多轮对话）——LLM维护完整对话历史进行多轮交互的能力，每轮将之前的messages数组作为上下文传递",
+    "ExampleEN": "Multi-turn conversations maintain the full messages array including previous assistant responses and user inputs, enabling contextual follow-up questions.",
+    "ExampleCN": "多轮对话维护完整的messages数组，包括之前的助手回复和用户输入，实现具有上下文的后续追问。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Multi-turn Conversation(多轮对话)是 LLM 区别于单任务模型的核心能力——通过维护完整的消息历史(messages 数组)实现上下文相关的连续交互，但长对话历史也带来了成本膨胀和\"遗忘中间\"的隐患。<br><br><b>核心概念</b><br>LLM 本身是无状态的——每次 API 调用都是独立的，不记忆上一次调用的内容。多轮对话的实现方式: 每次调用时，将用户之前所有的提问和模型的回答拼接在 messages 数组中，一起发送给模型。例如第 3 轮对话的 messages = [System Prompt(第1轮), User(第1轮), Assistant(第1轮), User(第2轮), Assistant(第2轮), User(第3轮)]。这种方式的问题: ① 成本线性增长: 第 N 轮对话要重新发送前 N-1 轮的所有内容 → input tokens ≈ N × 每轮平均 token 数 → 第 10 轮的 API 费用可能是第 1 轮的几十倍 ② Context Window 溢出: 对话太长后前几轮的内容被截断(超过 Context Window) → 模型\"遗忘\"早期信息 ③ Lost in the Middle: 模型对窗口中间位置的信息关注度低，可能遗忘重要背景。优化方案: ① 滑动窗口: 只保留最近 K 轮对话 ② 对话摘要: 每隔 N 轮用 LLM 自动生成前面对话的摘要，扔掉原始对话 ③ 长期记忆: 将重要信息存入向量数据库(Agent 方案) ④ 只保留关键信息: 手动标注哪些轮次重要，其余丢弃。<br><br><b>关键要点</b><br>① LLM 无状态，多轮靠 messages 数组实现 ② 传入完整历史 = 每轮成本递增 ③ 历史太长 → Context Window 溢出 → 截断/遗忘 ④ 优化: 滑动窗口、对话摘要、长期记忆 ⑤ 面试问\"如何管理长对话\"时回答以上优化方案<br><br><b>延伸节点</b><br>§1.2.1 API messages 参数 | §1.1.1 上下文工程 | Context Window | Token | Agent 记忆管理"
+  },
+  {
+    "Word": ".env File",
+    "Pronunciation": "/dɒt env faɪl/",
+    "Audio": "",
+    "Definition": ".env File（环境变量文件）——存放API Key等敏感配置的文本文件，通过python-dotenv加载，必须加入.gitignore防止泄露",
+    "ExampleEN": "The .env file stores sensitive credentials like API keys separately from code, loaded at runtime via python-dotenv and excluded from version control.",
+    "ExampleCN": ".env 文件将API密钥等敏感凭据与代码分离存储，运行时通过python-dotenv加载，并排除在版本控制之外。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。.env File(环境变量文件)是 LLM 开发中管理敏感配置的最佳实践——将 API Key、数据库密码等从代码中分离到独立文件，运行时加载，文件排除在 Git 版本控制外，是保护密钥安全的第一课。<br><br><b>核心概念</b><br>.env 文件是一个纯文本文件，每行一个 KEY=VALUE 配置项。例如: OPENAI_API_KEY=sk-abc123、DASHSCOPE_API_KEY=sk-xyz789、DB_PASSWORD=mypassword。Python 中使用方式: ① pip install python-dotenv ② from dotenv import load_dotenv → load_dotenv()(默认加载当前目录的 .env 文件) ③ import os → api_key = os.getenv('OPENAI_API_KEY')。.env 文件必须加入 .gitignore: 在 .gitignore 中添加 .env 一行，确保不会被 git add 误提交。如果 .env 已经被提交过，需要: git rm --cached .env 从暂存区移除。最佳实践: ① 不同环境用不同的 .env 文件: .env.development(本地开发)、.env.production(生产环境) ② 提供 .env.example 文件(只含键名不清含真实值)作为模板 ③ 使用 os.getenv('KEY', 'default') 提供默认值 ④ 在 Docker 中用 --env-file 或 docker-compose 的 env_file 注入 ⑤ 在 CI/CD 中用平台的 Secret 变量功能(如 GitHub Actions Secrets)。<br><br><b>关键要点</b><br>① pip install python-dotenv ② load_dotenv() 加载 .env ③ os.getenv('KEY') 读取 ④ .env 必须在 .gitignore 中 ⑤ 提供 .env.example 模板文件 ⑥ Docker/K8s 用 Secret 注入 ⑦ 绝对禁止提交真实密钥到 Git<br><br><b>延伸节点</b><br>§1.2.1 API Key 安全 | §1.2.1 环境变量管理 | API Key | gitignore 最佳实践"
+  },
+  {
+    "Word": "prompt_tokens",
+    "Pronunciation": "/prɒmpt ˈtoʊkənz/",
+    "Audio": "",
+    "Definition": "Prompt Tokens（提示词token数）——API请求中输入部分的token消耗量，是计费的两个组成部分之一，可通过response.usage.prompt_tokens获取",
+    "ExampleEN": "Monitoring prompt_tokens helps optimize costs, as long conversation histories can accumulate substantial input token charges over multiple turns.",
+    "ExampleCN": "监控prompt_tokens有助于优化成本，因为长对话历史在多轮中会累积大量输入token费用。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。prompt_tokens 是 API 调用中输入的 token 消耗量——通过 response.usage.prompt_tokens 查看。它是多轮对话成本爆炸的元凶(每轮都要重发前面的全部历史)，总输入 token 往往远超输出 token。<br><br><b>核心概念</b><br>prompt_tokens 包含: System Prompt(全局规则) + 所有用户消息(当前+历史) + 所有Assistant历史回复 + Function Calling 的工具调用和结果。这个总和的含义是——API 对\"读取\"也收费(输入 token 虽然比输出便宜，但 3-5 倍于输出的量级差异使输入费用可能更高)。多轮对话中的倍增效应: 第 1 轮: System Prompt(100 tokens) + User Q1(20 tokens) = 120 input tokens。第 2 轮: 第 1 轮的全部(120) + Assistant A1(50 tokens) + User Q2(20 tokens) = 190 input tokens(增长 1.6 倍)。第 10 轮: 可能达到 2000+ input tokens(第 1 轮的 17 倍)。成本优化: ① 缩短 System Prompt ② 精简对话历史(Sliding Window) ③ 对话摘要(Summarize) ④ 给长内容(few-shot 示例、RAG 检索结果)精简 ⑤ 使用更便宜的模型(GPT-4o-mini 而非 GPT-4o)。查看方式: response.usage.prompt_tokens(返回整数)。监控: 在实际项目中记录每次调用的 input/output token 数，分析趋势。<br><br><b>关键要点</b><br>① 输入 token = System + User + Assistant + Tools 历史总和 ② 多轮对话中呈线性增长(每轮累加) ③ 输入比输出便宜 3-5 倍，但量级大很多 ④ 优化: 缩短 System Prompt、Summarize 对话历史、用便宜模型 ⑤ response.usage.prompt_tokens 查看 ⑥ 面试问\"LLM 成本优化\"时，优化 input token 是重点<br><br><b>延伸节点</b><br>§1.2.1 Token | §1.2.1 API 调用示例 | completion_tokens | Multi-turn Conversation | Context Window"
+  },
+  {
+    "Word": "completion_tokens",
+    "Pronunciation": "/kəmˈpliːʃən ˈtoʊkənz/",
+    "Audio": "",
+    "Definition": "Completion Tokens（补全token数）——API请求中模型生成输出部分的token消耗量，受max_tokens参数限制",
+    "ExampleEN": "completion_tokens count the model's output length, which is constrained by the max_tokens parameter to control both response length and cost.",
+    "ExampleCN": "completion_tokens 统计模型输出的长度，受max_tokens参数约束以同时控制回答长度和成本。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。completion_tokens 是 LLM 每次回复中模型输出的 token 数量——通过 response.usage.completion_tokens 查看，是 API 计费的主要组成部分(输出 token 比输入 token 贵 3-5 倍)。<br><br><b>核心概念</b><br>completion_tokens 统计的是模型\"说出来的\"所有 token 数量，包括: 正文回答、Function Calling 调用的 JSON、工具返回后的继续回答。API 计费公式: 总费用 = prompt_tokens × 输入单价 + completion_tokens × 输出单价。例如 GPT-4o: $2.5/百万输入 token + $10/百万输出 token。控制 completion_tokens 的方法: ① max_tokens 参数(硬限制，到达后截断) ② 在 prompt 中要求简洁回答(\"用 50 字以内回答\") ③ 设置 temperature=0(减少废话) ④ 用更便宜的模型(如 GPT-4o-mini 替代 GPT-4o)。但要注意: max_tokens 设置过小可能导致回答被截断(不完整)，影响用户体验。因此应该在 prompt 设计中\"引导简洁\"而非\"粗暴截断\"。Function Calling 的 completion_tokens 陷阱: Tool Call 的 JSON 输出也计入 completion_tokens——如果定义了过多或过复杂的工具(工具名、参数描述)，每次调用都可能产生几百 token 的工具调用开销。分析: response.usage.completion_tokens(查看)；记录历史分析哪个 Agent 步骤最消耗 token。<br><br><b>关键要点</b><br>① 输出 token 比输入贵 3-5 倍 ② max_tokens 硬限制，prompt 中引导法更人性 ③ Function Calling 的 JSON 也计为 completion_tokens ④ response.usage.completion_tokens 查看 ⑤ 总费用 = prompt_tokens×输入价 + completion_tokens×输出价<br><br><b>延伸节点</b><br>§1.2.1 Token | §1.2.1 API 调用示例 | prompt_tokens | Max Tokens | Temperature"
+  },
+  {
+    "Word": "Chat Completions API",
+    "Pronunciation": "/tʃæt kəmˈpliːʃənz ˌeɪˌpiːˈaɪ/",
+    "Audio": "",
+    "Definition": "Chat Completions API（对话补全API）——OpenAI的对话式API端点，使用role-based messages格式(system/user/assistant)，已成为行业标准接口",
+    "ExampleEN": "client.chat.completions.create() is the standard entry point for modern LLM APIs, accepting messages arrays with role-tagged entries.",
+    "ExampleCN": "client.chat.completions.create()是现代LLM API的标准入口，接受带角色标签的messages数组。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Chat Completions API 是几乎所有 LLM 服务的统一入口——使用 role-based messages 格式，已被 OpenAI、Ollama、vLLM、DeepSeek、DashScope 等所有服务采纳，学会它就是学会调用所有 LLM。<br><br><b>核心概念</b><br>Chat Completions API 的端点: /v1/chat/completions(POST)。请求体的核心字段: ① model(必填): 模型名，如 gpt-4o、qwen2.5:7b ② messages(必填): 对话消息数组，每条消息含 role(system/user/assistant/tool) 和 content(文本或内容数组) ③ temperature(可选，默认 1): 控制随机性 ④ max_tokens(可选): 限制输出长度 ⑤ top_p(可选): nucleus sampling 阈值 ⑥ stream(可选): 是否流式输出 ⑦ tools(可选): Function Calling 工具定义 ⑧ tool_choice(可选): 强制使用工具或自动决定 ⑨ response_format(可选): 强制 JSON 输出。响应体的核心字段: id(请求唯一 ID)、choices[0].message(助手消息，含 role=assistant、content、tool_calls)、choices[0].finish_reason(stop/length/tool_calls)、usage.prompt_tokens、usage.completion_tokens、usage.total_tokens。API 调用标准代码: client.chat.completions.create(**kwargs)。兼容性: Ollama localhost:11434/v1、vLLM localhost:8000/v1、DeepSeek api.deepseek.com、DashScope dashscope.aliyuncs.com/compatible-mode/v1。<br><br><b>关键要点</b><br>① 统一的 LLM 调用接口(行业事实标准) ② 必填: model + messages ③ 核心可选参数: temperature, max_tokens, stream, tools ④ 返回: choices[0].message.content ⑤ 通过 base_url 切换不同服务 ⑥ 所有主流 LLM 服务都兼容此格式<br><br><b>延伸节点</b><br>§1.2.1 OpenAI API | §1.3.1 兼容 API 调用( Ollama/vLLM) | OpenAI SDK | role-based Messages"
+  },
+  {
+    "Word": "role-based Messages",
+    "Pronunciation": "/roʊl beɪst ˈmesɪdʒɪz/",
+    "Audio": "",
+    "Definition": "Role-based Messages（基于角色的消息）——LLM API的消息格式，每条消息标注角色(system/user/assistant)，构成对话的结构化表示",
+    "ExampleEN": "Role-based messages structure the conversation with system defining the AI's persona, user posing questions, and assistant providing previous responses.",
+    "ExampleCN": "基于角色的消息将对话结构化：system定义AI人设，user提出问题，assistant提供之前的回答。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。Role-based Messages(基于角色的消息)是 Chat Completions API 的核心数据结构——通过 system/user/assistant/tool 四种角色标注每条消息，将对话组织为结构化的 messages 数组，是现代 LLM 的通用通信协议。<br><br><b>核心概念</b><br>四种角色的含义和用法: ① System(系统): 定义 AI 的角色、风格、行为边界。优先级最高。例如: \"你是专业的 Python 技术顾问，回答简洁，只提供代码和解释\"。重要技巧: System Prompt 末尾的信息最重要(模型的\"近期效应\"——更关注靠近生成位置的内容) ② User(用户): 当前轮次的实际提问。可以包含纯文本或 content 数组(图文混合) ③ Assistant(助手): 模型过去的回复(历史)或工具调用结果 ④ Tool(工具): Function Calling 中工具返回的结果，通过 tool_call_id 关联到对应的 tool_call。Messages 数组的构建逻辑: messages = [System Prompt] + [User Q1, Assistant A1, User Q2, Assistant A2, ..., User QN]。每次 API 调用都要发送完整的 messages 数组，这样模型才能\"记住\"之前的上下文。面试常问: \"System Prompt 和 User Prompt 有什么区别？\"——System 是给模型的角色指令(持久、全局)，User 是用户的具体问题(变化、具体)。它们从模型视角看都是一样的 token 序列，区别在于约定和用途。<br><br><b>关键要点</b><br>① 四种角色: system(规则)/user(问题)/assistant(回复)/tool(工具结果) ② System Prompt 末尾的重点信息最重要(近期效应) ③ Messages 数组需要维护完整历史 ④ 多轮对话每轮都传入完整 messages ⑤ 面试高频考点: 角色差异和 messages 构建<br><br><b>延伸节点</b><br>§1.1.1 System Prompt | §1.2.1 API 调用 | Chat Completions API | Multi-turn Conversation"
+  },
+  {
+    "Word": "Cross-Encoder",
+    "Pronunciation": "/krɒs ɪnˈkoʊdər/",
+    "Audio": "",
+    "Definition": "Cross-Encoder（交叉编码器）——将查询和文档同时输入模型的检索排序方法，精度高于双编码器(Bi-Encoder)但速度较慢，常用于RAG重排序阶段",
+    "ExampleEN": "Cross-encoders achieve higher re-ranking accuracy than bi-encoders by jointly encoding query-document pairs, at the cost of increased computation.",
+    "ExampleCN": "交叉编码器通过联合编码查询-文档对来获得比重排序更高的准确率，代价是增加了计算量。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。Cross-Encoder(交叉编码器)是 RAG 检索的第二阶段(重排序)的核心模型——将 Query 和 Document 同时输入一个 Transformer，输出精确的相关性分数，精度远高于 Bi-Encoder 但速度较慢。<br><br><b>核心概念</b><br>Bi-Encoder(如 Sentence-BERT): 独立编码 Query 和 Document → 两个独立的向量 → 计算 cosine similarity。速度快(文档向量可预计算)，但损失了 query-doc 交互信息。Cross-Encoder: 将 Query 和 Document 拼接成一个序列 → 同时输入 Transformer → CLS token 输出一个相关性分数。因为模型看到了 query 和 document 之间的所有交互(attention across query & doc)，所以精度高——能理解\"查询中的A与文档中的B是什么关系\"。代价: 每一对 (query, doc) 需要跑一次完整的 Transformer 前向传播 → O(N) 次编码(N = 初检 Top-K)。无法预计算(文档侧编码随 query 变化而变化)。典型的两阶段检索流程: ① 第一阶段(Bi-Encoder): 用 Embedding 向量从百万文档中检索 Top-20/50 ② 第二阶段(Cross-Encoder): 对 20 个候选逐对计算精确分数 → 重排取 Top-3/5 → 送入 LLM 生成答案。常用模型: BAAI/bge-reranker-v2-m3(多语言)、Cohere Rerank API(商业)。实际效果: 重排序后 RAG 答案准确率提升 10-20%。<br><br><b>关键要点</b><br>① Query+Doc 联合输入(精度高) ② 每对 (q,d) 一次前向传播(速度慢) ③ RAG 两阶段检索的第二阶段 ④ 典型 Top-20→Cross-Encoder→Top-5 ⑤ 常用: bge-reranker, Cohere Rerank ⑥ 检索准确率提升 10-20%<br><br><b>延伸节点</b><br>§1.1.1 Re-ranking 详解 | §2.1.4 RAG 调优 | Bi-Encoder | Embedding | Vector Database"
+  },
+  {
+    "Word": "Bi-Encoder",
+    "Pronunciation": "/baɪ ɪnˈkoʊdər/",
+    "Audio": "",
+    "Definition": "Bi-Encoder（双编码器）——分别独立编码查询和文档再计算相似度的检索方法，速度快但精度相对较低，用于RAG初步检索阶段",
+    "ExampleEN": "Bi-encoders encode queries and documents independently, enabling fast vector search over millions of documents through pre-computed embeddings.",
+    "ExampleCN": "双编码器独立编码查询和文档，通过预计算的向量嵌入实现对数百万文档的快速向量检索。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。Bi-Encoder(双编码器)是 RAG 检索第一阶段(向量检索)的标配架构——将 Query 和 Document 分别独立编码为向量，通过余弦相似度排名，速度快(文档向量可预计算)但精度不如 Cross-Encoder。<br><br><b>核心概念</b><br>Bi-Encoder 的工作流: ① 离线阶段: 将所有文档用 Encoder 编码为向量 → 存入向量数据库 → 构建索引 ② 在线阶段: 将用户查询用同一个 Encoder 编码为向量 → 在向量数据库中搜索 Top-K 相似向量 → 返回对应的文档。核心优势是速度: 因为文档向量已预计算并索引(如 FAISS 的 HNSW 索引)，在线只需编码一次 query(O(1)) 而非拼接 query+doc 后编码(O(N))。因此可以在百万/亿级文档上做到秒级检索。代价是精度: Bi-Encoder 只计算两个独立向量的余弦相似度，模型看不到 query 和 document 之间的交互。语义相近但实际不相关的文档容易被错误返回(如\"苹果公司\"和\"苹果水果\"的 embedding 可能很接近)。常用 Bi-Encoder 模型: all-MiniLM-L6-v2(轻量)、BAAI/bge-large-zh-v1.5(中文)、text-embedding-3-large(OpenAI)。与 Cross-Encoder 配合: Bi-Encoder 做初检(追求召回)，Cross-Encoder 做重排(追求精度)。<br><br><b>关键要点</b><br>① Query 和 Doc 独立编码(速度快) ② 文档向量可预计算和索引 ③ RAG 第一阶段检索的标配 ④ 精度低于 Cross-Encoder(缺少交互信息) ⑤ 常用: bge 系列、OpenAI embedding ⑥ 与 Cross-Encoder 配合形成两阶段检索<br><br><b>延伸节点</b><br>§1.1.1 RAG 检索 | §2.1.1 Embeddings 和向量数据库 | Cross-Encoder | Re-ranking | Embedding"
+  },
+  {
+    "Word": "Django REST Framework",
+    "Pronunciation": "/ˈdʒæŋɡoʊ rest ˈfreɪmwɜːrk/",
+    "Audio": "",
+    "Definition": "Django REST Framework（DRF）——Django的RESTful API扩展框架，AI编程实战中常用于构建API后端服务",
+    "ExampleEN": "Django REST Framework provides serializers, authentication, and pagination out of the box, making it a common choice for AI application backends.",
+    "ExampleCN": "Django REST Framework开箱即用地提供了序列化器、认证和分页功能，是AI应用后端的常见选择。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。Django REST Framework(DRF)在知识图谱的 AI 编程章节中作为后端框架示例出现——在 Cursor Rules 中声明使用 DRF 后，AI 会自动遵循其约定(Serializers/ViewSets/Routers/认证)生成规范代码。<br><br><b>核心概念</b><br>DRF 是 Django 的 RESTful API 扩展框架，提供开箱即用的序列化器(Serializer)、认证(Authentication)、权限(Permission)、分页(Pagination)、视图集(ViewSet)和路由器(Router)。在 AI 编程场景中，当 .cursorrules 文件中声明\"后端使用 Django REST Framework\"后，AI(Cursor/Claude Code)会自动理解: ① 数据模型定义在 models.py ② API 序列化在 serializers.py ③ 业务逻辑放在 views.py 或 ViewSets 里 ④ 路由使用 DefaultRouter 自动注册 ⑤ 认证使用 JWT(如果 Rules 中声明了)。这样就避免 AI 胡乱猜测技术栈，写出 Flask 风格的代码到 Django 项目中。声明 DRF 是为了在 AI 编程中给 LLM 提供\"项目约定锚点\"——让 AI 知道你用的是 Django+DRF 而不是 FastAPI 或 Flask。这也是 \"Cursor Rules 写 AI 容易猜错的约定\"的最佳实践示例。<br><br><b>关键要点</b><br>① Django 的 RESTful API 框架 ② Cursor Rules 中声明框架名称让 AI 自动遵循 ③ 核心: Serializer + ViewSet + Router 模式 ④ AI 编程中\"项目约定锚点\"的典型示例 ⑤ DRF vs FastAPI(后者更适合异步 AI 推理)<br><br><b>延伸节点</b><br>§1.2.2 Cursor Rules 示例 | §4.1.1 AI Coding | FastAPI | SQLAlchemy"
+  },
+  {
+    "Word": "FastAPI",
+    "Pronunciation": "/fæst ˌeɪˌpiːˈaɪ/",
+    "Audio": "",
+    "Definition": "FastAPI——高性能Python Web框架，支持异步处理和自动OpenAPI文档生成，常用于AI推理服务的API封装",
+    "ExampleEN": "FastAPI's async support and automatic OpenAPI schema generation make it ideal for wrapping vLLM or SGLang inference services as production APIs.",
+    "ExampleCN": "FastAPI的异步支持和自动OpenAPI文档生成使其成为将vLLM或SGLang推理服务封装为生产API的理想选择。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。FastAPI 是 AI 推理服务 API 封装的首选 Python Web 框架——原生异步支持 + 自动 OpenAPI 文档生成，使其成为将 vLLM/SGLang 推理服务封装为生产级 API 的理想选择。<br><br><b>核心概念</b><br>FastAPI 的核心特性: ① 异步原生(async/await): AI 推理往往是 I/O 密集型(等待 GPU、等待网络)，Async 模式让服务在等待一个请求的推理结果时能处理其他请求，提升并发能力 ② 自动 OpenAPI/Swagger 文档: 基于 Python type hints + Pydantic，在 /docs 端点自动生成交互式 API 文档(可直接在浏览器中测试 API) ③ Pydantic 数据验证: 请求体自动解析和验证(Typed Python)，防止格式错误的请求进入推理服务 ④ 高性能: 基于 Starlette + Uvicorn，性能接近 Go/Node.js。AI 推理服务的典型架构: FastAPI 应用 → 接收用户请求 → 请求验证 → 转发到 vLLM/SGLang → 流式返回结果。优势: 不直接暴露推理框架给用户(安全性)；可以加认证(API Key/OAuth)、限流、日志；可以聚合多个推理框架(如同时调 vLLM + Embedding 服务)。在 Cursor Rules 中声明\"API 框架使用 FastAPI\"后，AI 会自动生成符合 FastAPI 风格的代码。<br><br><b>关键要点</b><br>① 异步原生(async/await) ② 自动生成 Swagger(/docs) ③ Pydantic 自动数据验证 ④ AI 推理服务 API 封装的最佳选择 ⑤ pip install fastapi uvicorn ⑥ 适合 LLM API 网关层<br><br><b>延伸节点</b><br>§1.2.2 Cursor Rules | §1.3.1 推理框架(vLLM/SGLang) | Django REST Framework | OpenAI API"
+  },
+  {
+    "Word": "SQLAlchemy",
+    "Pronunciation": "/ˌesˌkjuːˈel ˈælkəmi/",
+    "Audio": "",
+    "Definition": "SQLAlchemy——Python ORM框架，AI编程中用于数据库操作，是Cursor Rules中常见的技术栈声明项",
+    "ExampleEN": "SQLAlchemy is the standard Python ORM, allowing AI coding tools to generate database models and queries following established patterns.",
+    "ExampleCN": "SQLAlchemy 是标准的Python ORM，允许AI编程工具按照既定模式生成数据库模型和查询。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。SQLAlchemy 是 Python 生态中标准的 ORM 框架——在 AI 编程中，当 Cursor Rules 声明\"数据库使用 SQLAlchemy ORM\"后，AI 会自动生成正确的 ORM 模型和查询代码。<br><br><b>核心概念</b><br>SQLAlchemy 提供两种使用模式: ① Core 模式: 更底层的 SQL 构造器(SQL Expression Language)，接近手写 SQL 但可编译为不同数据库方言 ② ORM 模式: 对象关系映射，将 Python Class 映射到数据表，将对象操作映射到 SQL 操作。AI 编程中的应用: .cursorrules 中声明\"使用 SQLAlchemy ORM 操作数据库\"后，AI 会: 自动从 Base = declarative_base() 继承定义模型、使用 session.query(Model).filter() 进行查询、使用 with Session() as session 进行事务管理。配合 Alembic 做数据库迁移。为什么需要在 Rules 中声明: Python ORM 生态不止 SQLAlchemy(还有 Django ORM、Peewee、Tortoise ORM 等)，不声明的话 AI 可能会用错。这是 \"Cursor Rules 写 AI 容易猜错的约定\" 的典型示例——ORM 选型不是通用规则，项目特有。<br><br><b>关键要点</b><br>① Python 标准 ORM 框架 ② AI 编程 Rules 中常见的框架声明 ③ AI 可生成正确的模型和查询代码 ④ 配合 Alembic 做数据库迁移 ⑤ 两种模式: Core(SQL构造) + ORM(对象映射) ⑥ 在 Rules 中声明以避免 AI 用错 ORM 框架<br><br><b>延伸节点</b><br>§1.2.2 Cursor Rules | §4.1.1 AI Coding | Alembic | Django REST Framework"
+  },
+  {
+    "Word": "Alembic",
+    "Pronunciation": "/əˈlembɪk/",
+    "Audio": "",
+    "Definition": "Alembic——SQLAlchemy的数据库迁移工具，AI编程Rules中常声明\"禁止直接改表，使用Alembic迁移\"以约束AI行为",
+    "ExampleEN": "Alembic manages database schema changes through version-controlled migration scripts, a constraint often specified in AI coding rules.",
+    "ExampleCN": "Alembic 通过版本控制的迁移脚本管理数据库模式变更，这一约束经常在AI编程规则中被指定。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。Alembic 是 SQLAlchemy 的数据库迁移工具——在 AI 编程中，Cursor Rules 中常声明\"禁止直接改表，数据库迁移使用 Alembic\"，以此约束 AI 不绕开迁移直接修改数据库。<br><br><b>核心概念</b><br>Alembic 解决了\"数据库版本管理\"的问题: 将每一次数据库结构的变更(加表、改字段、加索引等)记录为一个迁移脚本(Revision)，用版本号管理，支持升级(upgrade)和回滚(downgrade)。AI 编程中的关键约束: 如果不声明\"必须用 Alembic\"，AI 可能生成\"直接执行 DDL 语句\"的代码(如直接发 ALTER TABLE 到生产数据库)——生产事故！在 .cursorrules 中声明后，AI 会正确地: ① alembic revision --autogenerate -m \"描述\" 生成迁移脚本 ② 让开发者 review 后再 alembic upgrade head 应用到数据库 ③ 生成回滚代码。这是知识图谱中\"Cursor Rules 写 AI 容易猜错的约定\"的最佳示例——Alembic 不是 AI 的默认行为(不同项目用不同的迁移工具甚至不做迁移)，必须通过 Rules 明确约束。声明示例: \"数据库迁移: 使用 Alembic，禁止直接在代码中修改表结构，所有 DDL 变更必须通过 Migration 管理\"。<br><br><b>关键要点</b><br>① SQLAlchemy 的标准迁移工具 ② Cursor Rules 中约束 AI 行为(\"禁止直接改表\") ③ 版本管理: 每个变更一个 Revision ④ alembic revision --autogenerate 自动检测 ⑤ 面试中能解释为什么要在 Rules 中声明 ⑥ 生产环境防止 AI 误操作的安全机制<br><br><b>延伸节点</b><br>§1.2.2 Cursor Rules 示例 | §4.1.1 AI Coding | SQLAlchemy"
+  },
+  {
+    "Word": "PEP 8",
+    "Pronunciation": "/pep eɪt/",
+    "Audio": "",
+    "Definition": "PEP 8——Python代码风格指南，AI编程中常作为基础代码风格约束，但不需要在Rules中显式声明（AI默认遵循）",
+    "ExampleEN": "PEP 8 is Python's standard style guide; AI coding tools follow it by default, so it usually doesn't need to be specified in Cursor Rules.",
+    "ExampleCN": "PEP 8 是Python的标准风格指南；AI编程工具默认遵循它，因此通常不需要在Cursor Rules中显式声明。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。PEP 8 在 AI 编程的知识图谱中作为\"不需要在 Cursor Rules 中声明的规则\"的典型案例——AI 默认就知道 Python 代码风格规范，再写就是浪费 token 且 AI 可能\"遗忘\"其他更重要的规则。<br><br><b>核心概念</b><br>PEP 8 是 Python 官方的代码风格指南(Python Enhancement Proposal #8)。规定了命名约定(变量用小写下划线、类用驼峰、常量用大写下划线)、缩进(4 空格)、行长度(79 字符建议, 99 最大)、导入顺序(标准库→第三方→本地)、空行规范等。在 Cursor Rules 中的设计原则明确指出: \"不写显而易见的通用规则\"。为什么 PEP 8 不需要声明: ① AI 默认已知(PEP 8 是 Python 编码的事实标准，所有 LLM 训练数据中拥有大量 PEP 8 规范代码) ② 声明浪费 token(Cursor Rules 的 token 预算有限，100-500 行) ③ 过多无关声明会稀释重要规则的权重(因为 \"Lost in the Middle\" 现象)。应该声明什么: 项目特有的约定——如\"数据库名用 project_env 前缀\"、\"API 版本放在 Header 而非 URL\"。这是\"确定性驾驭概率性\"的体现: 用 Rules 给 AI 明确的、项目特有的约束，不浪费 token 在通用知识上。<br><br><b>关键要点</b><br>① Python 官方代码风格指南 ② AI 默认已知，无需在 Rules 中声明 ③ Cursor Rules 设计原则的核心案例: 不写显而易见的通用规则 ④ 节省 Rule token 预算用于项目特有约束 ⑤ 面试中能以此解释\"确定性驾驭概率性\"<br><br><b>延伸节点</b><br>§1.2.2 Cursor Rules 设计原则 | §4.1.1 确定性驾驭概率性 | Cursor | Cursor Rules"
+  },
+  {
+    "Word": "JWT",
+    "Pronunciation": "/ˌdʒeɪˌdʌbəljuːˈtiː/",
+    "Audio": "",
+    "Definition": "JSON Web Token（JSON Web令牌）——基于JSON的开放标准令牌格式，AI编程中常见于用户认证任务的数据结构",
+    "ExampleEN": "AI coding tools can generate JWT-based authentication endpoints when the project's Cursor Rules specify the authentication mechanism.",
+    "ExampleCN": "当项目的Cursor Rules指定了认证机制时，AI编程工具可以生成基于JWT的认证端点。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。JWT(JSON Web Token)在知识图谱的 AI 编程章节中作为\"任务级 AI 编程生成(L2)\"的典型案例——在 Cursor Rules 中声明认证机制后，AI 能自动生成完整的 JWT 认证端点。<br><br><b>核心概念</b><br>JWT 是一种跨域认证的开放标准(RFC 7519)。格式: header.payload.signature 三段，用 . 分隔。Header(算法): {\"alg\": \"HS256\", \"typ\": \"JWT\"}。Payload(数据): 包含 Claims(如 user_id, exp 过期时间, iat 签发时间)。Signature(签名): 对 header+payload 用密钥签名，防止篡改。在 AI 编程中的应用: .cursorrules 中声明\"用户认证: JWT + Bearer Token\"后，AI 会自动: ① 生成 /auth/login 端点(验证密码+签发 JWT) ② 生成中间件/装饰器验证 JWT ③ 在请求头 Authorization: Bearer &lt;token&gt; 中读取 ④ 正确设置过期时间(exp)和刷新机制(refresh token)。token 不应存储在 localStorage(有 XSS 风险)，而应放在 httpOnly Cookie 中。这是 AI 编程 L2(任务级生成)的典型示例——给一个自然语言任务描述(如\"实现用户认证\")，AI 生成正确的完整实现(JWT 签发+验证+中间件)。<br><br><b>关键要点</b><br>① 基于 JSON 的跨域认证令牌 ② 三段式: header.payload.signature ③ Cursor Rules 中声明认证方案后 AI 自动生成实现 ④ L2(任务级生成)的典型案例 ⑤ 安全: 存 httpOnly Cookie 而非 localStorage ⑥ 注意 exp 过期时间和 refresh 机制<br><br><b>延伸节点</b><br>§1.2.2 AI 编程三层境界 | §1.2.2 Cursor Rules | FastAPI | API Key"
+  },
+  {
+    "Word": "Trae",
+    "Pronunciation": "/treɪ/",
+    "Audio": "",
+    "Definition": "Trae——字节跳动推出的免费AI编程IDE，中文优化，适合国内开发者和初学者",
+    "ExampleEN": "Trae is a free AI-powered IDE by ByteDance with native Chinese language optimization, making it accessible for domestic developers.",
+    "ExampleCN": "Trae 是字节跳动推出的免费AI编程IDE，原生中文优化，适合国内开发者使用。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。Trae 是字节跳动推出的免费 AI 编程 IDE——基于自研豆包大模型，原生中文优化，是 Cursor/Claude Code 之外中国开发者最容易上手的 AI 编程工具。<br><br><b>核心概念</b><br>Trae 由字节跳动开发，底层模型基于豆包(Doubao)大模型系列。核心定位: 免费(长期承诺免费)、中文原生优化(界面和 prompt 理解都针对中文)、IDE 模式(类似 Cursor 的独立 IDE 而非编辑器插件)。功能对标: 类似 Cursor 的 Tab 补全(L1) + Ctrl+K 编辑(L2) + Chat 模式，但没有 Agent/L3 级别的自主探索能力。优势群体: ① 刚接触 AI 编程的初学者(免费+中文 ) ② 国内开发者(无需科学上网、无需国外账号) ③ 学生/教育场景(完全免费)。vs Cursor: Cursor 更强大(Rules 系统、Agent 模式、Claude/GPT-4o 后端)、英语/国际化更完善、专业开发者首选。Trae 更入门友好(免费、中文、零门槛)。vs Claude Code: Claude Code 是 L3 Agent 式编程，终端原生，Trae 是 L1+L2 传统 IDE 模式。Trae 的局限性: 模型能力(豆包)在复杂编程任务上不如 GPT-4o/Claude Sonnet，社区和生态不如 Cursor 成熟，目前无 L3 Agent 能力。<br><br><b>关键要点</b><br>① 字节出品，基于豆包模型 ② 免费 + 中文原生 ③ L1+L2 能力(不含 Agent) ④ 适合国内初学者和学生 ⑤ vs Cursor: 更入门友好但专业能力较弱 ⑥ 无需科学上网和国外账号<br><br><b>延伸节点</b><br>§1.2.2 主流 AI 编程工具 | §4.1.1 AI Coding | Cursor | Claude Code | GitHub Copilot"
+  },
+  {
+    "Word": "CodeBuddy",
+    "Pronunciation": "/koʊd ˈbʌdi/",
+    "Audio": "",
+    "Definition": "CodeBuddy——腾讯推出的AI编程工具，内嵌微信开发者工具，专注于小程序开发场景",
+    "ExampleEN": "CodeBuddy is Tencent's AI coding assistant deeply integrated with WeChat Developer Tools, optimized for mini-program development.",
+    "ExampleCN": "CodeBuddy 是腾讯的AI编程助手，深度集成微信开发者工具，针对小程序开发进行优化。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.2。CodeBuddy 是腾讯推出的 AI 编程工具——深度集成微信开发者工具，专门为微信小程序开发优化，是垂直场景 AI 编程工具(非通用编程)的代表。<br><br><b>核心概念</b><br>CodeBuddy 基于腾讯混元大模型，核心差异化在于场景专注度: 不做通用的全栈 AI 编程，只专注于微信小程序开发生态(微信 API、WXML、WXSS、云开发等)。这种\"垂直场景 AI 编程工具\"的策略: ① 模型针对微信小程序的代码风格和 API 调用模式进行了微调和优化 ② 能理解微信特有的开发约定(app.json 配置、页面生命周期、组件化规则) ③ 直接生成可直接在微信开发者工具中运行的代码。vs 通用 AI 编程工具(Cursor/Copilot): 通用工具对所有编程语言/框架都还行，但都不深入——对微信 API 的理解深度不如 CodeBuddy。CodeBuddy 是\"专而精\"vs\"广而全\"的选择。在知识图谱中的定位: 作为 AI 编程工具生态中的垂直细分代表，说明 AI 编程工具的未来不仅是通用型(如 Cursor/Copilot)，也会涌现更多专注特定场景(低代码、金融、游戏)的垂直工具。<br><br><b>关键要点</b><br>① 腾讯出品，基于混元模型 ② 深度集成微信开发者工具 ③ 专注微信小程序开发(垂直场景) ④ vs 通用工具(Cursor/Copilot): 专而精 ⑤ 垂直场景 AI 编程工具的代表 ⑥ 小程序开发者首选<br><br><b>延伸节点</b><br>§1.2.2 主流 AI 编程工具 | §4.1.1 AI Coding | Cursor | Trae | GitHub Copilot"
+  },
+  {
+    "Word": "PCIe",
+    "Pronunciation": "/ˌpiːˌsiːˌaɪˈiː/",
+    "Audio": "",
+    "Definition": "Peripheral Component Interconnect Express（高速外设互连总线）——GPU与CPU之间的数据传输通道，PCIe 4.0 x16是单机推理的标准配置",
+    "ExampleEN": "PCIe 4.0 x16 provides sufficient bandwidth for single-GPU inference, but multi-GPU setups may benefit from NVLink for faster inter-GPU communication.",
+    "ExampleCN": "PCIe 4.0 x16 为单GPU推理提供足够带宽，但多GPU配置可能受益于NVLink以获得更快的GPU间通信。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。PCIe(Peripheral Component Interconnect Express)是 GPU 与 CPU/系统内存之间的数据传输通道——单机推理场景下 PCIe 4.0 x16 即可满足需求，但多 GPU 间高频通信需要 NVLink(更快)而非通过 PCIe 中转。<br><br><b>核心概念</b><br>PCIe 是主板上的插槽标准，GPU 通过它插入主板并与 CPU 和系统内存通信。PCIe 版本和带宽: 3.0 x16: ~16 GB/s、4.0 x16: ~32 GB/s、5.0 x16: ~64 GB/s。LLM 推理中对 PCIe 的需求: ① 模型加载: 将模型权重从系统内存/SSD 通过 PCIe 传输到 GPU 显存。这是通过 PCIe 的一次性操作，对带宽有要求但非持续 ② 数据交换: CPU 做 tokenize 后通过 PCIe 传 token IDs 到 GPU → GPU 返回 logits → CPU 采样。数据量小(几百 bytes)，因此 PCIe 3.0 就够。关键问题: 多 GPU 通信。如果 GPU-to-GPU 通过 PCIe 中转(先到 CPU 内存再到另一张 GPU)，延迟极高。NVLink 是 GPU 间直连(900 GB/s)，比 PCIe(32 GB/s)快 28 倍。因此单机多卡通信首选 NVLink。单机推理网络配比: PCIe 4.0 x16 即可(模型加载时用到)，推理时 PCIe 带宽不是瓶颈。<br><br><b>关键要点</b><br>① GPU 与系统的数据桥梁 ② PCIe 4.0 x16(~32 GB/s)单机推理足够 ③ 多 GPU 间通信首选 NVLink(PCIe 太慢) ④ 模型加载时用到 PCIe(一次性) ⑤ 推理时 PCIe 带宽不是瓶颈<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型 | §1.3.1 网络配比 | NVLink | RDMA | InfiniBand"
+  },
+  {
+    "Word": "NVLink",
+    "Pronunciation": "/ˌenˈviː lɪŋk/",
+    "Audio": "",
+    "Definition": "NVLink——NVIDIA专有的高速GPU互连技术，带宽远超PCIe，是多GPU间张量并行的理想通信方案",
+    "ExampleEN": "NVLink provides GPU-to-GPU bandwidth up to 900 GB/s, dramatically reducing communication overhead in tensor parallelism compared to PCIe.",
+    "ExampleCN": "NVLink 提供高达900 GB/s的GPU间带宽，相比PCIe大幅减少了张量并行中的通信开销。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。NVLink 是 NVIDIA 专有的高速 GPU 互连技术——提供 PCIe 28 倍的 GPU 间带宽(900 GB/s vs 32 GB/s)，是同机多卡张量并行的关键通信基础设施。<br><br><b>核心概念</b><br>NVLink 的核心价值: GPU 间直接通信(不经过 CPU 和 PCIe)。技术演进: 第一代(Pascal 2016): 80 GB/s；第二代(Volta 2018): 150 GB/s；第三代(Ampere A100 2020): 600 GB/s；第四代(Hopper H100 2022): 900 GB/s。NVSwitch: 全互联交换机——在 DGX 系统中，通过 NVSwitch 芯片实现 8 卡全互联(每张 GPU 同时与另外 7 张通信)，而非点对点连接。NVLink Network: 跨节点的 NVLink 扩展(ConnectX-7 网卡 + NVSwitch)，实现 GPU-to-GPU 跨机直连(替代 InfiniBand)。对比 PCIe: PCIe 4.0 x16 ~32 GB/s(通过主板和 CPU 中转)，NVLink 4.0 900 GB/s(GPU 直连)。在张量并行中: 每层计算后需要 all-reduce 同步——NVLink 让通信速度追上计算速度，PCIe 则会严重拖慢并行效率。基础版 NVLink Bridge: 连接 2 张 A100 的小桥接器，在消费级工作站中也很常见。<br><br><b>关键要点</b><br>① NVIDIA 专有 GPU 直连技术 ② H100 NVLink: 900 GB/s(28 倍 PCIe 4.0) ③ 同机多卡张量并行的关键通信设施 ④ NVSwitch 实现 8 卡全互联 ⑤ 高端 GPU(A100/H100)标配 ⑥ NVLink Network 可跨机<br><br><b>延伸节点</b><br>§1.3.1 多机部署 | §1.3.1 GPU 选型 | PCIe | Tensor Parallelism | InfiniBand"
+  },
+  {
+    "Word": "Grafana",
+    "Pronunciation": "/ɡrəˈfɑːnə/",
+    "Audio": "",
+    "Definition": "Grafana——开源监控可视化平台，与Prometheus配合使用，可将GPU利用率、显存占用等指标以仪表盘形式展示",
+    "ExampleEN": "Grafana dashboards visualize GPU metrics collected by Prometheus, providing real-time monitoring of utilization, memory, and temperature across GPU clusters.",
+    "ExampleCN": "Grafana仪表盘将Prometheus采集的GPU指标可视化，提供GPU集群利用率、显存和温度的实时监控。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。Grafana 是 GPU 集群监控的可视化展示层——配合 nvidia-smi(采集)和 Prometheus(汇聚)，将 GPU 利用率、显存、温度等指标以实时仪表盘呈现，是生产环境 GPU 运维的\"驾驶舱\"。<br><br><b>核心概念</b><br>Grafana 是一个开源的数据可视化和监控平台。核心概念: ① Dashboard: 由多个 Panel(面板)组成的可视化页面 ② Panel: 单个图表(折线图、热力图、仪表盘、表格等) ③ Data Source: 从哪些数据源获取数据(如 Prometheus) ④ Alert: 当指标超过阈值时触发告警(如 GPU 温度 > 85°C 发短信/钉钉)。GPU 监控三件套的完整数据流: nvidia-smi --query-gpu(采集每秒 GPU 状态)→ DCGM/NVIDIA Exporter(将数据转为 Prometheus 格式并暴露 HTTP 端点)→ Prometheus(定期抓取并存为时序数据库)→ Grafana(从 Prometheus 查询并可视化)。典型 Dashboard: ① GPU 利用率折线图(看 GPU 是否空转) ② 显存占用率(看是否接近 OOM) ③ 温度热力图(看散热是否异常) ④ QPS 统计(看业务流量) ⑤ 延迟(TTFT/TPOT)分布。Grafana 告警: 如显存占用 > 90% → 邮件/钉钉通知 → 运维人员介入(减少并发、降模型精度、加 GPU)。<br><br><b>关键要点</b><br>① 开源数据可视化平台 ② GPU 监控三件套的展示层 ③ Dashboard + Panel + Data Source + Alert ④ 可配告警(邮件/钉钉/短信) ⑤ 从 Prometheus 查询时序数据 ⑥ 生产环境 GPU 集群的标配<br><br><b>延伸节点</b><br>§1.3.2 GPU 监控 | §1.3.2 性能监控调优 | nvidia-smi | Prometheus"
+  },
+  {
+    "Word": "Prometheus",
+    "Pronunciation": "/prəˈmiːθiəs/",
+    "Audio": "",
+    "Definition": "Prometheus——开源监控和告警系统，采集GPU指标（通过nvidia-smi exporter），配合Grafana实现GPU集群的可视化监控",
+    "ExampleEN": "Prometheus scrapes GPU metrics from nvidia-smi exporters at regular intervals, storing time-series data for trend analysis and alerting.",
+    "ExampleCN": "Prometheus 定期从nvidia-smi导出器抓取GPU指标，存储时序数据用于趋势分析和告警。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.2。Prometheus 是 GPU 监控架构的数据汇聚和存储层——定期从 nvidia-smi 导出器抓取 GPU 指标，按时序存储，提供 PromQL 查询语言，配合 Grafana 实现 GPU 集群的可视化监控和告警。<br><br><b>核心概念</b><br>Prometheus 是一种 Pull 模式的监控系统(主动拉取指标而非被动接收推送)。工作原理: ① 定义 Target(需要监控的目标): 每个 GPU 节点上运行的 NVIDIA DCGM Exporter(默认端口 9400) ② 定期 Scrape(抓取): 每 15-60 秒 HTTP GET /metrics 拉取最新的 GPU 指标 ③ 时序存储: 将指标以(timestamp, value, labels)的格式存入内部 TSDB(Time Series Database) ④ PromQL 查询: 专用的查询语言，如 rate(gpu_utilization[5m]) 计算过去 5 分钟的平均利用率 ⑤ 告警规则: 定义\"显存占用 > 90%\" → 触发 Alert → Alertmanager → 钉钉/短信通知。GPU 部署架构: 每个 GPU 节点安装 nvidia-dcgm-exporter → Prometheus 集中抓取所有节点 → Grafana 统一展示。Prometheus 的优势: 配置简单、查询强大、生态完善(几乎所有基础设施组件都有 Prometheus 导出器)、云原生标配(CNCF 毕业项目)。局限性: 长期大容量存储能力不如 InfluxDB/TimescaleDB，集群化部署不够简便。<br><br><b>关键要点</b><br>① Pull 模式监控系统(主动拉取指标) ② GPU 监控架构的数据汇聚层 ③ PromQL 专有的时序查询语言 ④ 配合 Alertmanager 实现 GPU 故障自动告警 ⑤ 云原生生态标配 ⑥ 部署: 每 GPU 节点跑 nvidia-dcgm-exporter<br><br><b>延伸节点</b><br>§1.3.2 GPU 监控 | §1.3.2 性能监控调优 | nvidia-smi | Grafana"
+  },
+  {
+    "Word": "TDP",
+    "Pronunciation": "/ˌtiːˌdiːˈpiː/",
+    "Audio": "",
+    "Definition": "Thermal Design Power（热设计功耗）——GPU的最大热量产生量，决定散热方案和机房租用成本，GPU选型时需考量的指标",
+    "ExampleEN": "TDP directly impacts data center cooling costs, with H100's 700W TDP requiring liquid cooling in many deployments and affecting per-hour rental pricing.",
+    "ExampleCN": "TDP 直接影响数据中心散热成本，H100的700W TDP在许多部署中需要液冷，并影响每小时的租用定价。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.1。TDP(Thermal Design Power)是 GPU 的最大散热需求——直接影响数据中心冷却成本和每台服务器的功耗上限，是 GPU 选型中容易被忽略但长期运营成本重要的因素。<br><br><b>核心概念</b><br>TDP 表示 GPU 满载时的最大热量输出(单位: 瓦特 W)。实际功耗通常接近 TDP 的 80-95%。各 GPU 的 TDP 参考: RTX 4090: 450W(消费级，风冷可压)；L40S: 350W(无风扇，依赖机箱风冷)；A100: 400W(风冷/液冷可选)；H100: 700W(强烈建议液冷)；H200: 700-1000W(必须液冷)。TDP 的直接成本影响: ① 电费: 700W GPU 满载运行 1 年 = 700W × 24h × 365d = 6132 kWh ≈ 3000-6000 元/年电费(按中国工业电价) ② 散热成本: 700W 需要液冷(散热设备+冷水机组)，IT 机房 PUE(能效比)按 1.4 算，实际消耗 700×1.4=980W ③ 供电限制: 标准机架只能供电 10-15kW，意味着一个机架最多塞 12-15 张 H100。TCO(总拥有成本)计算: 不只是卡的价格，还要算 3-5 年的电费、散热运维费——TDP 高的卡(如 H100)虽然算力更强，但长期运营成本也更高。<br><br><b>关键要点</b><br>① GPU 满载时的最大热量输出(瓦特) ② 高 TDP → 高电费 + 液冷必需 + 机架限制 ③ RTX 4090 450W, H100 700W ④ TCO 考量: 卡价 + 年电费×年限 ⑤ 自建 GPU 集群必须考虑散热方案 ⑥ 面试问\"GPU 选型依据\"时必答 TDP 影响<br><br><b>延伸节点</b><br>§1.3.1 GPU 选型 | §1.3.1 企业级部署 | A100 | H100 | TFLOPS | VRAM"
+  },
+  {
+    "Word": "NLP",
+    "Pronunciation": "/ˌenˌelˈpiː/",
+    "Audio": "",
+    "Definition": "Natural Language Processing（自然语言处理）——AI中处理和理解人类语言的分支，LLM是NLP的最先进技术实现",
+    "ExampleEN": "NLP has been revolutionized by Transformer-based models, with LLMs now handling tasks from translation to summarization with human-like quality.",
+    "ExampleCN": "NLP已被基于Transformer的模型彻底改变，LLM现在能够以接近人类的质量处理从翻译到摘要的各种任务。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。NLP(Natural Language Processing)是 AI 中处理人类语言的分支——LLM 是 NLP 最先进的技术实现，而 RAG 原始论文的标题便是\"Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks\"。<br><br><b>核心概念</b><br>NLP 的演进史: ① 规则时代(1950-1990): 手写语法规则和词典，如 ELIZA 聊天机器人 ② 统计时代(1990-2010): 基于统计模型(N-gram, HMM, CRF)和浅层学习(SVM, LR) ③ 神经网络时代(2013-2018): Word2Vec(词向量)、RNN/LSTM(序列建模)、Seq2Seq+Attention(机器翻译) ④ 预训练时代(2018-2020): BERT(GPT 等预训练模型) → ELMo → BERT 时代 ⑤ 大模型时代(2020-至今): GPT-3/4, Claude, Qwen, Llama。NLP 的主要任务: NLU(Natural Language Understanding, 理解): 分类、NER、情感分析、问答。NLG(Natural Language Generation, 生成): 翻译、摘要、对话生成。LLM 的突破: 统一 NLU 和 NLG 到一个模型，通过 In-Context Learning 完成几乎所有的 NLP 任务。RAG 论文的标题说明了 RAG 的初衷——解决\"Knowledge-Intensive NLP Tasks\"(需要大量知识的 NLP 任务，如法律问答、医学文献检索)。<br><br><b>关键要点</b><br>① AI 的文本处理分支 ② LLM 是 NLP 的最先进实现 ③ 从规则→统计→神经→预训练→大模型五代演进 ④ NLU(理解) + NLG(生成) 两大类任务 ⑤ RAG 论文: Knowledge-Intensive NLP Tasks<br><br><b>延伸节点</b><br>§1.1.1 RAG 论文(Lewis et al. 2020) | §2.3 模型训练 | LLM | Transformer | GPT"
+  },
+  {
+    "Word": "Trie",
+    "Pronunciation": "/traɪ/",
+    "Audio": "",
+    "Definition": "Trie（前缀树/字典树）——用于高效字符串前缀匹配的树形数据结构，Radix Tree是其空间优化版本",
+    "ExampleEN": "A Trie stores strings by sharing common prefixes in a tree structure, making prefix lookup operations O(k) where k is the key length.",
+    "ExampleCN": "前缀树通过在树结构中共享公共前缀来存储字符串，使得前缀查找操作的时间复杂度为O(k)(k为键长度)。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.3。Trie(前缀树/字典树)是 Radix Tree 的祖先数据结构——用于高效字符串前缀匹配的树形结构，O(k) 查找时间(k 为键的长度)，是理解 RadixAttention 底层原理的基础。<br><br><b>核心概念</b><br>Trie(读作 \"try\")是一种多叉树数据结构，每个节点代表一个字符或 token，从根到某节点的路径代表一个键(字符串)。核心特性: ① 公共前缀共享: 所有共享相同前缀的键共用相同路径节点(节省存储) ② 查找效率: O(k) 只与键长有关，与总键数量无关(vs 哈希表最坏 O(1)，但无法做前缀匹配) ③ 前缀查询: \"找出所有以 'app' 开头的单词\"是 Trie 的天然优势(沿着 'app' 路径收集子树所有终端节点)。普通 Trie 的问题: 每个节点只存一个字符→节点太多→存储浪费。例如存储 100 万个单词的词表可能需要数百万个节点。Radix Tree 的改进: 合并只有一个子节点的节点——将单链路径压缩为一个节点，直接存储完整的子串。在 SGLang 中: 用 Radix Tree 的节点存储 token 序列共享前缀的 KV Cache——Trie 提供基础匹配逻辑，Radix Tree 提供空间优化。计算机科学经典(Trie/Radix Tree/Patricia Trie)与前沿 AI(RadixAttention)的交汇。<br><br><b>关键要点</b><br>① 前缀树: 节点代表字符/token，路径代表键 ② 查找 O(k)，与总键数无关 ③ 天然支持前缀查询 ④ 普通 Trie 节点多占用大 ⑤ Radix Tree 是其空间优化变体 ⑥ SGLang 的 RadixAttention 基于 Radix Tree<br><br><b>延伸节点</b><br>§1.3.3 Radix Tree | §1.3.3 RadixAttention | SGLang | 数据结构"
+  },
+  {
+    "Word": "LangChain",
+    "Pronunciation": "/læŋ tʃeɪn/",
+    "Audio": "",
+    "Definition": "LangChain——LLM应用开发框架，提供RAG、Agent、Chain等抽象组件，简化LLM应用构建，有Python和JS两个版本",
+    "ExampleEN": "LangChain provides high-level abstractions for building RAG pipelines and agent workflows, though some developers prefer lighter-weight alternatives.",
+    "ExampleCN": "LangChain 为构建RAG管道和Agent工作流提供高级抽象，不过一些开发者偏好更轻量级的替代方案。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1, §1.1.2。LangChain 是 LLM 应用开发的\"瑞士军刀\"——提供了 Chain、Agent、Retriever、Memory 四大核心抽象组件，让开发者用声明式方式搭建 RAG 管道和 Agent 工作流，是最流行的 LLM 应用开发框架。<br><br><b>核心概念</b><br>LangChain 的两大版本: Python(社区最大)和 JavaScript/TypeScript(前端友好)。四大核心抽象: ① Chains(链): 将 LLM 调用与其他组件(检索器、工具、另一个 LLM)组合成多步骤管道。例如: RetrievalQA Chain = Embedding检索 + LLM生成回答。支持 Sequential chain(顺序执行)和 Router chain(条件分支) ② Agents(智能体): 封装 ReAct 循环等 Agent 行为——Agent 自动决定用哪个工具、何时结束。内置常用 Agent 类型(Zero-shot ReAct, Conversation Agent 等) ③ Retrievers(检索器): 统一接口对接各种向量数据库(Chroma, FAISS, Pinecone)、搜索引擎(Google Search)、文档加载器(各格式的文档读取) ④ Memory(记忆): 管理对话历史——ConversationBufferMemory(全保留)、ConversationSummaryMemory(自动摘要)、VectorStoreRetrieverMemory(长记忆持久化)。LangChain 的争议: 抽象层过多(学习曲线陡)、API 频繁变更、一些开发者觉得\"太复杂不如手写\"。替代方案: LlamaIndex(更擅长数据索引), Haystack(更偏向生产)。与推理框架的关系: LangChain 负责应用逻辑，vLLM/SGLang 负责模型推理——两者互补而非竞争。<br><br><b>关键要点</b><br>① LLM 应用开发最流行的框架 ② 四大核心: Chains, Agents, Retrievers, Memory ③ Python + JS 双版本 ④ 适合快速搭建 RAG/Agent 原型 ⑤ 争议: 抽象层多、API 稳变性 ⑥ 与推理框架(vLLM/SGLang)互补<br><br><b>延伸节点</b><br>§1.1.1 延伸阅读 | §1.1.2 延伸阅读 | LlamaIndex | FAISS | Agent | RAG"
+  },
+  {
+    "Word": "LlamaIndex",
+    "Pronunciation": "/ˈlɑːmə ˈɪndeks/",
+    "Audio": "",
+    "Definition": "LlamaIndex——专注于数据索引和检索的LLM框架，擅长将各种数据源（文档/数据库/API）连接大语言模型",
+    "ExampleEN": "LlamaIndex excels at connecting LLMs to diverse data sources through structured indexing, complementing LangChain's broader agent and chain abstractions.",
+    "ExampleCN": "LlamaIndex 擅长通过结构化索引将LLM连接到各种数据源，与LangChain更广泛的Agent和Chain抽象形成互补。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.3.3。LlamaIndex 是专注于数据索引和检索的 LLM 框架——核心优势是将各种数据源(文档/数据库/API/SaaS)连接大语言模型，与 LangChain 形成\"数据连接\"vs\"通用框架\"的互补关系。<br><br><b>核心概念</b><br>LlamaIndex(原 GPT Index)的核心设计理念: 一切数据都通过 Index 结构化连接 LLM。核心组件: ① Data Connectors(数据连接器): 从各数据源加载数据——本地文件(PDF/Word/Markdown)、数据库(SQL/NoSQL)、SaaS API(Notion/Slack/Salesforce) ② Indexes(索引): 结构化数据的方式——VectorStoreIndex(默认，Embedding→向量数据库)、SummaryIndex(摘要树)、KeywordTableIndex(BM25)、TreeIndex(层次索引树) ③ Query Engines(查询引擎): 接收自然语言问题，决定用哪个索引、如何检索、如何组装答案 ④ Chat Engines(聊天引擎): 多轮对话 + 记忆管理。与 LangChain 的对比: LangChain 是\"LLM 应用框架\"(涵盖 RAG、Agent、Chain 等广泛场景)；LlamaIndex 是\"数据连接框架\"(专门优化 LLM 与数据源的连接和检索)。在实际项目中，经常 LangChain + LlamaIndex 一起用: LlamaIndex 负责数据索引和检索，LangChain 负责 Agent 和 Chain 编排。SGLang 的第三方集成: LlamaIndex 已支持 SGLang 作为推理后端(在 Agent 场景中发挥 SGLang 的结构化生成优势)。<br><br><b>关键要点</b><br>① 专注数据索引和检索的 LLM 框架 ② 核心: Data Connectors + Indexes + Query Engines ③ 与 LangChain 互补(数据连接 vs 通用框架) ④ RAG 场景的常用工具 ⑤ 支持 SGLang 作为推理后端 ⑥ 适合\"把企业数据喂给 LLM\"的场景<br><br><b>延伸节点</b><br>§2.1 RAG 技术详解 | §1.3.3 SGLang 生态 | LangChain | FAISS | Vector Database"
+  },
+  {
+    "Word": "FAISS",
+    "Pronunciation": "/feɪs/",
+    "Audio": "",
+    "Definition": "Facebook AI Similarity Search（FAISS）——Meta开源的高效向量相似度搜索库，支持GPU加速和数十亿级别向量的近似最近邻搜索",
+    "ExampleEN": "FAISS enables billion-scale vector search with GPU acceleration, commonly used as the retrieval backend in production RAG systems.",
+    "ExampleCN": "FAISS 支持GPU加速的十亿级向量搜索，通常作为生产环境RAG系统的检索后端。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.1。FAISS(Facebook AI Similarity Search)是 Meta 开源的高效向量相似度搜索库——底层 C++ 实现，支持 GPU 加速和十亿级向量搜索，是生产环境 RAG 系统的高性能检索后端。<br><br><b>核心概念</b><br>FAISS 是一个向量相似度搜索库(不是完整的向量数据库)。核心能力: ① 向量索引: 提供多种 ANN(近似最近邻)索引——Flat L2(精确搜索，慢)、IVF(Inverted File，聚类加速)、HNSW(图搜索，最快)、PQ(Product Quantization，压缩) ② GPU 加速: 自动将索引转移到 GPU 显存，搜索速度提升 10-100 倍 ③ 多索引组合: IVF+PQ 组合(聚类+压缩)可以在百万级向量上做到毫秒级搜索 ④ batch 搜索: 同时搜索多个查询向量(比逐个搜索快)。FAISS vs 向量数据库(如 ChromaDB): FAISS 是纯搜索库——只管\"怎么最快找到最相似的向量\"，不管存储、增删、元数据、持久化。类似于 SQLite(单文件数据库) vs LevelDB(键值存储库)的关系。在 RAG 管道中: 开发者用 FAISS 做检索的后端引擎，手动管理文档存储和向量索引。ChromaDB 是一站式解决方案(自动管理索引+元数据+持久化)。FAISS 适合有定制需求和追求极致性能的团队；ChromaDB 适合快速迭代和中小项目。<br><br><b>关键要点</b><br>① Meta 开源，底层 C++ ② GPU 加速(搜索速度 10-100 倍) ③ 多个索引算法: Flat/IVF/HNSW/PQ ④ 纯搜索库 vs 完整向量数据库(ChromaDB) ⑤ 十亿级向量搜索能力 ⑥ 适合追求极致性能的生产环境<br><br><b>延伸节点</b><br>§1.1.1 RAG 管道 | §2.1.1 Embeddings 和向量数据库 | ChromaDB | Vector Database | ANN"
+  },
+  {
+    "Word": "GPT-1 to GPT-5 Evolution",
+    "Pronunciation": "/ˌdʒiːˌpiːˈtiː wʌn tuː ˌdʒiːˌpiːˈtiː faɪv ˌevəˈluːʃən/",
+    "Audio": "",
+    "Definition": "GPT系列演进——从GPT-1到GPT-4/GPT-4o再到GPT-5的完整发展脉络，揭示大语言模型的规模化规律: 参数量每代约增10倍，涌现新能力",
+    "ExampleEN": "The GPT evolution from 117M to ~1.8T parameters demonstrates the scaling hypothesis: larger models consistently unlock qualitatively new capabilities.",
+    "ExampleCN": "GPT从1.17亿到约1.8万亿参数的演进验证了规模化假设：更大的模型持续释放质变的新能力。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.2.1。GPT 系列演进(GPT-1 → GPT-4o)是理解 LLM 发展规律的最佳脉络——每代参数约增 10 倍，在临界点涌现新能力，展示了 Scaling Laws 和 涌现现象的一致规律。<br><br><b>核心概念</b><br>GPT 系列六代演进: GPT-1(2018, 1.17 亿参数): 首证 Transformer Decoder + 无监督预训练有效性。仅用 BooksCorpus 训练。GPT-2(2019, 15 亿): 零样本迁移能力初现。OpenAI 最初因安全顾虑拒绝开源。GPT-3(2020, 1750 亿): In-Context Learning 被发现——不需要微调，给几个示例就能完成新任务(Few-shot)。训练数据 570GB。GPT-3.5/ChatGPT(2022, ~1750 亿参数): 加入 Instruction Tuning + RLHF，实现对话式交互。2 个月用户破亿，引爆 AI 应用浪潮。GPT-4(2023, ~1.8T 参数, 推测): 多模态(文本+图像)，法律考试超 90% 考生，Agent 推理能力强。GPT-4o(2024): 原生多模态，速度 2x, 价格 1/4。实时语音对话(232ms)。核心规律: ① 参数量每代约增 10 倍(1.17 亿 → 15 亿 → 1750 亿 → 1.8 万亿) ② 涌现: 大规模后突然出现的新能力(Few-shot、推理、代码生成) ③ 三阶段训练流水线: 预训练 → 指令微调 → RLHF/DPO。<br><br><b>关键要点</b><br>① 2018-2024 六代迭代 ② 参数增长: 100 万 → 万亿(100 万倍) ③ GPT-3 是关键拐点(In-Context Learning) ④ ChatGPT 引爆应用(+RLHF) ⑤ GPT-4 多模态 ⑥ GPT-4o 原生多模态+实时语音 ⑦ 面试高频: 讲清楚每一代的核心突破<br><br><b>延伸节点</b><br>§1.2.1 GPT 进化史表格 | §2.3 模型训练 | GPT | Emergent Ability | Pre-training | RLHF"
+  },
+  {
+    "Word": "Tool White List",
+    "Pronunciation": "/tuːl waɪt lɪst/",
+    "Audio": "",
+    "Definition": "Tool White List（工具白名单）——Agent安全机制，只暴露经过审查的API列表给Agent调用，防止Agent滥用或误用未授权功能",
+    "ExampleEN": "A tool whitelist restricts the agent to only approved APIs, preventing it from accessing dangerous operations like database deletion or external messaging.",
+    "ExampleCN": "工具白名单将Agent限制在已批准的API范围内，防止其访问危险操作如数据库删除或对外消息发送。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.2。Tool White List(工具白名单)是 Agent 安全三要素之一——不在白名单中的 API 一律不可调用，是防止 Agent 滥用未授权功能的防线。<br><br><b>核心概念</b><br>Agent 的工具白名单实现: 在 Agent 的 Function Calling 配置中，只注册经过安全审查的工具定义。Agent 只能看到和调用白名单中的工具——它根本不知道你还有其他(更危险)的 API。工具白名单的核心原则: 最小权限原则。Agent 需要什么就给什么，只能删自己的测试数据不要给删生产表的工具，只需发内部通知不要给发外部邮件的工具。与安全围栏的区别: 安全围栏(规则引擎)是操作级别的控制(金额>1000 元需审批)，工具白名单是工具级别的控制(根本不暴露删除 API)。加入白名单前的审查清单: ① 这个工具是否有权限边界(只能操作自己的数据)？ ② 这个工具的副作用是否可控(最大影响范围)？ ③ 这个工具的操作是否需要审计日志？ ④ 这个工具的失败模式是否安全(出错时不会破坏系统)？Agent 安全三要素: 安全围栏(规则引擎判断\"该不该做\")+ 工具白名单(控制\"能做什么\")+ 速率限制(控制\"做多快\")+ Human-in-the-Loop(控制\"不可逆操作\")。<br><br><b>关键要点</b><br>① 只暴露经过审查的 API ② 最小权限原则 ③ 不在白名单的工具 Agent 完全不知道 ④ 审查清单: 权限边界、副作用、审计、失败模式 ⑤ Agent 安全三要素之一的\"工具级\"防线 ⑥ 与安全围栏、速率限制、HITL 协同<br><br><b>延伸节点</b><br>§1.1.2 Agent 工业界最佳实践 | §2.2.3 Agent 安全 | Human-in-the-Loop | Rate Limiting | Function Calling"
+  },
+  {
+    "Word": "Rate Limiting",
+    "Pronunciation": "/reɪt ˈlɪmɪtɪŋ/",
+    "Audio": "",
+    "Definition": "Rate Limiting（速率限制）——Agent安全机制之一，设定每轮思考和最大循环次数上限，防止无限循环消耗API成本",
+    "ExampleEN": "Rate limiting caps the maximum number of Thought-Action cycles to prevent runaway agent loops from exhausting API budgets.",
+    "ExampleCN": "速率限制设定了最大思考-行动循环次数上限，防止Agent失控循环耗尽API预算。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.2。Rate Limiting(速率限制)是 Agent 安全三要素之一——设定每轮思考的最大循环次数和超时时间，防止 Agent 无限循环消耗 API 预算和系统资源。<br><br><b>核心概念</b><br>Agent 为什么会无限循环: 在 ReAct 循环中，如果 Agent \"找不到答案\"——比如搜索结果不理想、工具调用失败、推理进了死胡同——它可能不断继续\"再试一次\"。如果不设上限，10 轮循环变成 100 轮，API 费用乘以 10。速率限制的两种实现: ① 最大循环次数(max_steps): 每个 ReAct 循环最多执行 N 轮(通常 5-10)，达到后强制输出当前结论或报超时 ② 超时时间(timeout): 整个 Agent 任务的总时间限制(如 60 秒)，超时则返回部分结果。双重保护: max_steps(防止无限循环) + timeout(防止卡死在某个工具调用)。速率限制的另一层含义: API 调用频率控制——如果并发 Agent 太多，需要有全局速率控制(如每秒最多 10 个 API 调用)避免触发 API 提供商的 Rate Limit(429)。Agent 安全三要素: 安全围栏(规则引擎) + 工具白名单 + 速率限制 | 补充: HITL(关键节点人工审批)。<br><br><b>关键要点</b><br>① 防止 Agent 无限循环消耗 API 预算 ② max_steps(5-10 轮上限) ③ timeout(总时间上限) ④ 双重保护防死循环 ⑤ Agent 安全三要素之一 ⑥ 面试问\"Agent 安全设计\"必答速率限制<br><br><b>延伸节点</b><br>§1.1.2 Agent 工业界最佳实践 | §1.1.2 Agent 成本 | Human-in-the-Loop | Tool White List"
+  },
+  {
+    "Word": "ViT",
+    "Pronunciation": "/ˌviːˌaɪˈtiː/",
+    "Audio": "",
+    "Definition": "Vision Transformer（视觉Transformer）——将Transformer架构应用于图像处理的模型，将图像切割为patches作为token序列输入，是多模态AI的基础组件",
+    "ExampleEN": "Vision Transformer treats image patches as tokens, applying the same self-attention mechanism successful in NLP to visual understanding tasks.",
+    "ExampleCN": "视觉Transformer将图像小块作为token，将NLP中成功的自注意力机制应用于视觉理解任务。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §1.1.3。Vision Transformer(ViT)是将 Transformer 架构应用于图像处理的里程碑工作——将图像切为 patches 当 token，证明了\"自注意力不仅在 NLP 有效，在 CV 同样强力\"，是现代多模态 AI 的基础视觉编码器。<br><br><b>核心概念</b><br>ViT 的核心创新: 用 Transformer 替代 CNN 处理图像。流程: ① 将输入图像(如 224×224)切成固定大小的 patches(如 16×16)→ 得到 196 个 patches ② 将每个 patch 做线性投影(Linear Projection)到 d_model 维 → 得到 196 个 token ③ 加上位置编码(告诉 Transformer 第 1 个 patch 是左上角，第 196 个是右下角)④ 送入标准 Transformer Encoder(多头自注意力 + FFN)，没有任何 CNN 组件 ⑤ CLS token 的输出做分类/检测。ViT 的规模化优势: 在足够多的数据(ImageNet-21K, JFT-300M)上训练时，ViT 超越 CNN 的效果；数据少时 CNN 的归纳偏置(局部性+平移不变性)仍然占优。CLIP 的视觉侧: CLIP 使用的图像编码器就是 ViT(L/14@336px 等)或 ResNet。因此 ViT 是多模态 AI 的视觉理解基础模块——GPT-4V、Gemini、Qwen-VL 等所有多模态模型的视觉编码器都基于 ViT 架构。ViT + 文本编码器 = 跨模态对齐(CLIP 对比训练)。<br><br><b>关键要点</b><br>① 图像切 patch→线性投影→Transformer ② 证明了\"Transformer 在 CV 同样强力\" ③ CLIP 的视觉编码器基于 ViT ④ 多模态 AI 的视觉基础模块 ⑤ 大数据下超过 CNN，小数据下不如 CNN ⑥ Google 2020 论文(ViT + JFT-300M)<br><br><b>延伸节点</b><br>§2.3.4 视觉与多模态模型 | §1.1.3 CLIP | §1.1.3 多模态编码器 | Transformer | Self-Attention"
+  }
+]

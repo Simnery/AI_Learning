@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+eggs/
+*.egg
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data & Models (large files)
+data/
+checkpoints/
+models/*.pth
+models/*.pt
+models/*.bin
+models/*.safetensors
+*.ckpt
+*.h5
+*.pb
+*.onnx
+
+# Outputs
+outputs/
+logs/
+wandb/
+runs/
+lightning_logs/
+
+# Environment
+.env
+.env.local
+*.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Misc
+*.tmp
+*.log
+
+# === Directory-specific ignores ===
+
+# Claude Code local settings
+.claude/settings.local.json
+
+# Cursor local files
+.cursor/**/*.local.md
+.cursor/**/.env
+
+# Local task data (private)
+00_local_task/tasks/
+00_local_task/task_index.md
+
+# Sample — directory kept, contents not tracked
+sample/*
+!sample/.gitkeep
+
+# Anki tool exports (large apkg files)
+anki_tool/export/*.apkg

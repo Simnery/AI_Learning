@@ -1,0 +1,18 @@
+# 不纳入 Claude Code 上下文的文件/目录
+00_local_task/
+sample/
+backup/
+data/
+checkpoints/
+outputs/
+logs/
+wandb/
+.venv/
+*.pth
+*.pt
+*.bin
+*.safetensors
+*.ckpt
+*.h5
+*.pb
+*.onnx

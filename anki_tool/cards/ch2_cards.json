@@ -1,0 +1,407 @@
+[
+  {
+    "Word": "Matryoshka Embedding",
+    "Pronunciation": "/məˈtrjɒʃkə ɪmˈbedɪŋ/",
+    "Audio": "",
+    "Definition": "Matryoshka Embedding（俄罗斯套娃嵌入）——一种特殊的Embedding表示方法，3072维向量可直接截断到256维而保持语义，无需重新训练",
+    "ExampleEN": "OpenAI's text-embedding-3 uses Matryoshka embeddings, allowing us to truncate from 3072 to 256 dimensions with only a 2% accuracy drop.",
+    "ExampleCN": "OpenAI的text-embedding-3使用俄罗斯套娃嵌入，允许我们从3072维截断到256维而精度仅下降约2%。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.1 Embeddings和向量数据库<br><br><b>核心要点</b><br>原理: 训练时使用特殊损失函数，让模型学会将\"最重要的语义信息排在前面的维度\"。就像俄罗斯套娃——最外层包含全部信息，内层包含核心信息。优势: 一次生成向量，按需选择维度（高精度用1536维，低成本用256维），存储和速度提升10倍+。<br><br><b>实践建议</b><br>如需降维优先选择原生支持Matryoshka的模型（如text-embedding-3系列），简单PCA降维非Matryoshka模型精度损失会显著增加（5-15%）。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库"
+  },
+  {
+    "Word": "Query Rewriting",
+    "Pronunciation": "/ˈkwɪəri rɪˈraɪtɪŋ/",
+    "Audio": "",
+    "Definition": "Query Rewriting（查询改写）——使用LLM将用户的模糊、口语化查询改写为精确的检索语句，补全代词、扩展同义词、消除歧义，在Advanced RAG中是提升检索质量最关键的预处理步骤",
+    "ExampleEN": "Query rewriting transformed the vague 'v3 vs r1' into 'DeepSeek V3 and DeepSeek R1 performance architecture comparison'.",
+    "ExampleCN": "查询改写将模糊的'v3 vs r1'转换为'DeepSeek V3与DeepSeek R1在性能、架构、应用场景上的对比'。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.2 RAG技术与应用 - Advanced RAG检索前优化<br><br><b>核心要点</b><br>用户输入三大问题: ①口语化不完整（\"咋部署\"）；②缺少关键词和同义词（\"那它的价格呢\"）；③依赖上下文（省略主语）。改写规则: 补全代词/扩展缩写/增加同义词覆盖。每个原始查询生成2个改写版本同时检索，提升召回率。<br><br><b>工程实践</b><br>改写本身调用一次轻量LLM（本地小模型即可），但检索质量提升是决定性的。改写后的query应更像\"搜索引擎友好\"的精确表达。<br><br><b>延伸节点</b><br>§2.1.2 RAG技术与应用 | §2.1.4 RAG调优"
+  },
+  {
+    "Word": "Rerank",
+    "Pronunciation": "/riːˈræŋk/",
+    "Audio": "",
+    "Definition": "Rerank（重排序）——使用比Embedding更强的模型对向量检索返回的Top-K候选文档进行二次精细化评分排序，常见方案可将RAG精度提升10-20%",
+    "ExampleEN": "After vector retrieval returned top-10 candidates, we applied a cross-encoder reranker to pick the 3 most relevant documents.",
+    "ExampleCN": "向量检索返回10个候选文档后，我们使用交叉编码器重排序模型从中选出最相关的3篇。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.2 RAG技术与应用 + §2.1.4 RAG调优<br><br><b>核心要点</b><br>Rerank用更强的Cross-Encoder模型对候选(query, doc)逐一精细打分，常见模型: BGE-Reranker-v2-m3（智源，多语言开源，中文首选）、Cohere Rerank（商用API，最高精度）、BGE-Reranker-v2-minicpm（轻量0.5B，延迟敏感场景）。<br><br><b>实践要点</b><br>Rerank后只取Top-3~5条，丢弃低分文档；减少噪音比增加信息更重要。仅Rerank这一步通常就能将RAG精度提升10-20%。<br><br><b>延伸节点</b><br>§2.1.2 RAG技术与应用 | §2.1.4 RAG调优"
+  },
+  {
+    "Word": "RRF",
+    "Pronunciation": "/ɑːr ɑːr ef/",
+    "Audio": "",
+    "Definition": "RRF（Reciprocal Rank Fusion，倒数排名融合）——混合检索中无需手动设置权重的融合算法，score = 1/(k+rank)求和，k通常取60",
+    "ExampleEN": "We merged BM25 and vector search results using RRF with k=60, which worked as well as manually tuned weights.",
+    "ExampleCN": "我们使用k=60的RRF融合了BM25和向量检索的结果，效果与手动调权相当。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.4 RAG调优 - 混合检索结果融合<br><br><b>核心概念</b><br>RRF（Reciprocal Rank Fusion，倒数排名融合）是混合检索中最省心的结果融合算法。公式: score(d) = sum(1/(k + rank_i(d)))，其中k通常取60（经验最优值），rank_i(d)是文档d在第i个检索源的排名。<br><br><b>关键要点</b><br>相比于加权求和融合（需要调试w1*vec_score + w2*bm25_score的权重比例，且不同检索器的score分布不同难以直接比较），RRF无需权重、无需训练、无需归一化不同检索器的分数分布——直接融合排名位置信息。实践效果通常不输手调权重，是混合检索结果融合的首选方案。RRF的核心洞察：排名信息比原始分数更稳定、更可比。<br><br><b>延伸节点</b><br>§2.1.4 RAG调优 | BM25 | 混合检索"
+  },
+  {
+    "Word": "RAGAS",
+    "Pronunciation": "/ˈræɡəs/",
+    "Audio": "",
+    "Definition": "RAGAS（RAG Assessment）——RAG效果评估的行业标准框架，包含忠实度(Faithfulness)、答案相关性(Answer Relevancy)、上下文精度(Context Precision)、上下文召回(Context Recall)四大核心指标",
+    "ExampleEN": "After each RAG optimization iteration, we ran RAGAS evaluation to confirm that faithfulness improved without sacrificing answer relevancy.",
+    "ExampleCN": "每次RAG优化迭代后，我们运行RAGAS评估来确认忠实度是否提升且没有牺牲答案相关性。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.2 RAG技术与应用 + §2.1.4 RAG调优<br><br><b>核心要点</b><br>四大指标: ①Faithfulness（忠实度）—回答是否基于检索文档而非编造（最重要）；②Answer Relevancy—回答是否切题；③Context Precision—检索到的文档中相关文档的排名位置（信号/噪音比）；④Context Recall—回答所需信息是否被检索到（全覆盖）。<br><br><b>调优映射</b><br>Faithfulness低→检查Prompt加强\"基于文档\"约束；Context Precision低→提高相似度阈值或加Rerank；Context Recall低→增加Top-K或Query改写。<br><br><b>延伸节点</b><br>§2.1.4 RAG调优 | §2.2.3 Agent能力优化与效果评估"
+  },
+  {
+    "Word": "CORS",
+    "Pronunciation": "/kɔːz/",
+    "Audio": "",
+    "Definition": "CORS（Cross-Origin Resource Sharing，跨域资源共享）——Web安全机制，控制网页从不同源加载资源的能力",
+    "ExampleEN": "When deploying the RAG API, we had to configure CORS properly to allow the frontend to call our backend endpoints.",
+    "ExampleCN": "部署RAG API时，我们需要正确配置CORS以允许前端调用后端接口。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.3 RAG多模态数据处理 - 网页数据解析<br><br><b>核心概念</b><br>CORS（Cross-Origin Resource Sharing，跨域资源共享）是Web浏览器的同源安全策略——默认禁止网页从不同源（域名/端口/协议任一不同）加载资源。当RAG爬取网页内容时可能遇到CORS限制。<br><br><b>关键要点</b><br>网页数据解析中的CORS解决方案：①使用服务端抓取库（Python trafilatura/jina reader）而非浏览器端JavaScript——服务端不受同源策略限制；②配置反向代理（Nginx/Traefik）统一域名；③使用Jina AI Reader API等免CORS方案的第三方服务。最佳实践：优先用trafilatura自动提取正文+去噪（去除nav/footer/script/广告），再用Markdown格式输出干净内容。<br><br><b>延伸节点</b><br>§2.1.3 RAG多模态数据处理 | 网页数据解析"
+  },
+  {
+    "Word": "GraphRAG",
+    "Pronunciation": "/græf ræɡ/",
+    "Audio": "",
+    "Definition": "GraphRAG（基于知识图谱的RAG）——用知识图谱代替文档片段作为检索对象，支持实体间的多跳推理和全局摘要，弥补传统RAG无法跨文档综合理解的缺陷",
+    "ExampleEN": "GraphRAG helped us answer 'which AI project had the highest ROI in 2024' by traversing the entity graph, whereas traditional RAG only returned fragmented project descriptions.",
+    "ExampleCN": "GraphRAG通过遍历实体关系图帮我们回答了'2024年哪个AI项目ROI最高'，而传统RAG只能返回碎片化的项目描述。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.3 RAG多模态数据处理 + §2.1.5 部分场景中可以取代RAG的技术<br><br><b>核心要点</b><br>传统RAG做不了的事: 多跳推理（需要综合多个文档片段推理）和全局理解（需要跨文档宏观分析）。GraphRAG两种搜索模式: 局部搜索（从某个实体出发探索其邻居节点，适合具体问题）、全局搜索（在整个图上找跨社区的模式和主题，适合趋势分析对比总结）。构建流程: 文档→LLM提取实体和关系→构建知识图谱→Leiden算法社区检测→为每个社区生成摘要。<br><br><b>工业实践</b><br>微软GraphRAG（完整方案）vs LightRAG（港大开源轻量版，构建速度快100倍）。GraphRAG构建成本高：每个文档都要走一遍LLM提取实体关系。<br><br><b>延伸节点</b><br>§2.1.3 RAG多模态数据处理 | §2.1.5 部分场景中可以取代RAG的技术"
+  },
+  {
+    "Word": "MCP",
+    "Pronunciation": "/em siː piː/",
+    "Audio": "",
+    "Definition": "MCP（Model Context Protocol，模型上下文协议）——Anthropic开源的标准化工具调用协议，采用Server-Client架构，让任何AI应用通过统一接口发现和使用外部工具",
+    "ExampleEN": "Instead of hardcoding every tool integration, we adopted the MCP protocol so any MCP-compatible server can be plugged into our agent.",
+    "ExampleCN": "不再为每个工具硬编码集成代码，我们采用MCP协议，让任何兼容MCP的服务器都能插入到我们的Agent中。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.1 Function Calling与MCP<br><br><b>核心要点</b><br>MCP是Function Calling的\"标准化版本\"——Function Calling是LLM的内置能力，MCP是让这个能力跨平台、跨模型复用的协议。三层角色: MCP Host（用户应用，如Claude Desktop）、MCP Client（协议层通信）、MCP Server（实际干活的服务）。每个Server暴露三种能力: Resources（数据文件）、Tools（可调用函数）、Prompts（预定义模板）。<br><br><b>类比</b><br>做\"AI工具的USB-C接口\"——一个标准连接一切，任何MCP Client可以和任何MCP Server通信，即插即用。<br><br><b>延伸节点</b><br>§2.2.1 Function Calling与MCP | §2.2.2 Agent自主规划与工具开发"
+  },
+  {
+    "Word": "A2A",
+    "Pronunciation": "/eɪ tuː eɪ/",
+    "Audio": "",
+    "Definition": "Agent-to-Agent Protocol（Agent-to-Agent Protocol，智能体到智能体协议）——多个AI Agent之间互相通信、委托任务和传递成果的标准化协议",
+    "ExampleEN": "With A2A, the research agent could delegate data collection to the analysis agent and receive structured results automatically.",
+    "ExampleCN": "有了A2A协议，研究Agent可以委托分析Agent收集数据，并自动接收结构化结果。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.1 Function Calling与MCP<br><br><b>核心要点</b><br>四个核心概念: Agent Card（\"名片\"，我能做什么）、Task（委托任务对象，唯一ID+状态）、Message（Agent间通信格式）、Artifact（任务产出物）。MCP vs A2A: MCP管\"工具层\"（模型用工具），A2A管\"协作层\"（Agent间通信）。互补关系。典型场景: Coordinator Agent拆解任务→研究Agent搜数据→分析Agent出洞察→写作Agent出报告。<br><br><b>延伸节点</b><br>§2.2.1 Function Calling与MCP | §2.2.2 Agent的自主规划与工具开发"
+  },
+  {
+    "Word": "Code Interpreter",
+    "Pronunciation": "/kəʊd ɪnˈtɜːrprɪtər/",
+    "Audio": "",
+    "Definition": "Code Interpreter（代码解释器）——Agent最强大的工具之一，让Agent能自主编写并执行Python代码来处理没有预置工具支持的灵活任务",
+    "ExampleEN": "When the user uploaded a CSV file with no predefined analysis tool available, the code interpreter agent wrote a custom Python script to process it.",
+    "ExampleCN": "当用户上传了CSV文件但没有预置分析工具时，代码解释器Agent编写了一段自定义Python脚本来处理它。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.2 Agent的自主规划与工具开发<br><br><b>核心要点</b><br>工作原理: LLM生成代码→沙盒执行→捕获输出/错误→传回LLM→LLM解读结果。能力范围: 读取用户上传的文件、数据清洗/统计分析/可视化、运行算法验证假设、甚至写代码调用其他API。<br><br><b>安全实践</b><br>多层防线: 沙盒执行（Docker/虚拟机）、网络隔离、资源限制（CPU/内存/磁盘/时间）、系统调用白名单、敏感信息过滤。最低要求: subprocess timeout 30秒+禁止os.system+临时文件自动清理。<br><br><b>延伸节点</b><br>§2.2.2 Agent的自主规划与工具开发 | §2.2.4 Harness Engineering"
+  },
+  {
+    "Word": "Text-to-SQL",
+    "Pronunciation": "/tekst tuː es kjuː el/",
+    "Audio": "",
+    "Definition": "Text-to-SQL（自然语言转SQL查询）——将用户的自然语言问题自动转化为SQL查询语句，是Agent自主规划的经典用例",
+    "ExampleEN": "The Text-to-SQL copilot translated 'who earns the most in the tech department' into SELECT name, salary FROM employees WHERE dept='技术部' ORDER BY salary DESC.",
+    "ExampleCN": "Text-to-SQL助手将'技术部谁工资最高'翻译为SELECT name, salary FROM employees WHERE dept='技术部' ORDER BY salary DESC。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.2 Agent的自主规划与工具开发<br><br><b>核心要点</b><br>工作流: 用户自然语言→Agent理解意图→规划查询步骤→生成SQL→执行→解读结果。Agent规划示例: ①查表结构→②筛选部门→③按工资排序→④取前N条。关键安全原则: 必须使用只读数据库账户（SELECT only），+SQL关键词检测（拦截INSERT/UPDATE/DELETE/DROP）双重保护，绝不能只依赖Prompt约束。<br><br><b>延伸节点</b><br>§2.2.2 Agent的自主规划与工具开发 | §2.2.4 Harness Engineering"
+  },
+  {
+    "Word": "Plan-and-Solve",
+    "Pronunciation": "/plæn ænd sɒlv/",
+    "Audio": "",
+    "Definition": "Plan-and-Solve（先计划后执行）——Agent规划架构之一，先将复杂问题拆解为完整步骤链，再逐步执行，适合目标明确的多步任务",
+    "ExampleEN": "The Plan-and-Solve approach broke the complex comparison task into clear steps: list vendors, query pricing, normalize specifications, generate comparison table.",
+    "ExampleCN": "Plan-and-Solve方法将复杂的对比任务拆解为清晰步骤：列出厂商、查询价格、归一化规格、生成对比表。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.5 部分场景中可以取代RAG的技术 + §2.2.2 Agent的自主规划与工具开发<br><br><b>核心概念</b><br>Plan-and-Solve（先计划后执行）是一种Agent规划架构：先将复杂问题拆解为完整步骤链，再逐步执行每一步，每步验证结果。与ReAct的核心区别：ReAct是\"走一步看一步\"——灵活但可能缺乏全局规划（每步思考后再决定下一步）；Plan-and-Solve是\"先做计划再执行\"——适合目标明确的多步任务，但遇到计划外情况调整不如ReAct灵活。<br><br><b>关键要点</b><br>Agent三种范式速览：①反应式(Reactive)——感知→直接行动，极快但只适合简单任务（如简单聊天）；②深思熟虑式(Deliberative/Plan-and-Solve)——感知→规划→行动，能处理复杂任务但可能过度思考；③混合式(Hybrid)——紧急情况反应式+复杂情况深思熟虑式，既快又强，大多数实际应用推荐。Plan-and-Solve最适合：对比分析、多数据源调研、复杂报告生成等目标结构明确的任务。<br><br><b>延伸节点</b><br>§2.1.5 部分场景中可以取代RAG的技术 | §2.2.2 Agent自主规划与工具开发 | ReAct"
+  },
+  {
+    "Word": "LLM Wiki",
+    "Pronunciation": "/el el em ˈwɪki/",
+    "Audio": "",
+    "Definition": "LLM Wiki（LLM维基）——让LLM自动从对话和文档中提取、更新和维护知识库的范式，知识库不再由人工维护而是自动进化",
+    "ExampleEN": "With LLM Wiki, the knowledge base continuously absorbs new information from conversations and automatically detects and resolves contradictions.",
+    "ExampleCN": "有了LLM Wiki，知识库从对话中持续吸收新信息，并自动检测和解决矛盾。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.5 部分场景中可以取代RAG的技术<br><br><b>核心概念</b><br>LLM Wiki是让知识库从\"死\"到\"活\"的范式变革——不再由人维护，而是LLM自动从对话和文档中吸收、检测矛盾、自我进化。四步自进化机制：①吸收——从对话和文档中提取结构化知识；②检测——发现新旧矛盾（结论冲突）、碎片化（相关知识分散多处）；③进化——合并冲突、链接碎片、标记置信度（低于阈值不进知识库）；④反哺——进化后的知识反哺给下一次对话。<br><br><b>关键要点</b><br>传统RAG的致命缺陷：知识库是\"死\"的——人写人维护→新知识来了手动更新→旧知识过期没人删→矛盾知识没人修正→知识库越来越\"脏\"→回答越来越差。LLM Wiki核心洞察：所有自动提取的知识都必须标记置信度并设置阈值；低于阈值的内容不进知识库，需人工审核后再入库。对比Agentic Search（每次搜）和Long-Context（全量注入），LLM Wiki最适合需要持续积累和进化的知识管理场景。<br><br><b>延伸节点</b><br>§2.1.5 部分场景中可以取代RAG的技术 | §2.2.3 Agent能力优化与效果评估"
+  },
+  {
+    "Word": "Needle in a Haystack",
+    "Pronunciation": "/ˈniːdəl ɪn ə ˈheɪstæk/",
+    "Audio": "",
+    "Definition": "Needle in a Haystack（大海捞针测试）——评估RAG/Agent在大量无关信息中精确定位关键信息能力的基准测试，同时检测长上下文的\"迷失中间\"效应",
+    "ExampleEN": "The needle-in-a-haystack test placed a single key fact among 99 irrelevant documents to measure whether our RAG system could find it.",
+    "ExampleCN": "大海捞针测试将一条关键信息放置在99篇无关文档中，以衡量RAG系统是否能找到它。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.3 Agent的能力优化与效果评估<br><br><b>核心概念</b><br>Needle in a Haystack（大海捞针测试）是评估RAG/Agent在大量无关信息中精准定位关键信息能力的经典基准测试。测试方法：在N篇文档（通常100篇）中插入1条关键信息（\"针\"），分别放在0%/10%/25%/50%/75%/90%/100%位置，评估各位置的检索召回率和答案准确度。<br><br><b>关键要点</b><br>核心发现——\"迷失中间\"(Lost in the Middle)效应：上下文窗口中间位置（约50%处）的信息更容易被模型忽略或遗漏，而开头（0%）和结尾（100%）的信息更受关注。这对应U型注意力曲线，意味着即使RAG系统检索到了关键文档，如果它恰好被放在Prompt中间位置，Agent可能漏掉它。应对策略：①最重要的信息放开头或结尾；②对检索到的文档按相关性排序而非自然顺序；③不要以为\"全量注入\"就万事大吉。<br><br><b>延伸节点</b><br>§2.2.3 Agent能力优化与效果评估 | §2.1.5 部分场景中可以取代RAG的技术 | 迷失中间效应"
+  },
+  {
+    "Word": "Multi-Hop Reasoning",
+    "Pronunciation": "/ˈmʌlti hɒp ˈriːzənɪŋ/",
+    "Audio": "",
+    "Definition": "Multi-Hop Reasoning（多跳推理）——需要综合多条分散在不同文档中的信息进行链式推理的能力，是从第一步推理结果推导第二步搜索依据的核心评估维度",
+    "ExampleEN": "Multi-hop reasoning required the agent to first find the most senior employee, then use that employee's ID to find their project budget.",
+    "ExampleCN": "多跳推理要求Agent先找到最资深的员工，然后用该员工的ID查找其项目预算。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.5 部分场景中可以取代RAG的技术 + §2.2.3 Agent能力优化与效果评估<br><br><b>核心概念</b><br>Multi-Hop Reasoning（多跳推理）是指需要综合多条分散在不同文档中的信息进行链式推理的能力。例如\"谁是公司资历最深的员工？他负责的项目预算总额是多少？\"——Hop 1: 查employees表找最早join_date的人→钱七；Hop 2: 用钱七的ID查projects表→预算800,000。<br><br><b>关键要点</b><br>多跳推理评估与普通RAG评估的本质区别：普通RAG只需判断\"检索到了→回答了\"（单步），多跳评估需要验证整个推理链条——①能否分解多跳问题（识别需要两步搜索）；②能否从第一跳结果正确推导第二跳搜索依据；③中间步骤是否可追溯（调试友好）。核心考核的是推理链路是否完整可追溯，而非仅看最终答案是否正确（Agent可能跳过第一步直接猜了答案，即使碰巧对也不算通过）。GraphRAG（知识图谱检索）天然适合多跳推理场景。<br><br><b>延伸节点</b><br>§2.1.5 部分场景中可以取代RAG的技术 | §2.2.3 Agent能力优化与效果评估 | GraphRAG"
+  },
+  {
+    "Word": "Harness Engineering",
+    "Pronunciation": "/ˈhɑːrnɪs ˌendʒɪˈnɪərɪŋ/",
+    "Audio": "",
+    "Definition": "Harness Engineering（驾驭工程）——给Agent搭建完整的\"操作系统\"式基础设施，包含记忆、执行、编排、反馈四层架构，让Agent从单次对话进化为持久化智能系统",
+    "ExampleEN": "Harness engineering built a four-layer system around the agent: memory for continuity, execution for safety, orchestration for multi-tasking, and feedback for self-improvement.",
+    "ExampleCN": "驾驭工程围绕Agent构建了四层系统：记忆层保证连续性、执行层保证安全性、编排层处理多任务、反馈层实现自我改进。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.4 Harness Engineering<br><br><b>核心要点</b><br>四层架构: ①记忆层—四层记忆粒度（L0即时上下文、L1短期SQLite对话历史、L2中期每日摘要、L3长期向量知识库）；②执行层—工具集+代码执行器+沙箱环境管理，五原则: 单一职责、自描述、幂等性、失败明确、安全优先；③编排层—任务拆解+调度+并行执行；④反馈层—自动纠错闭环，Agent自检+自动修正。<br><br><b>安全实践</b><br>四层防护: 文件系统隔离（Git Worktree）→网络隔离→系统调用限制（seccomp/AppArmor）→权限精细化控制。<br><br><b>延伸节点</b><br>§2.2.1 Function Calling与MCP | §2.2.2 Agent自主规划 | §2.2.3 Agent能力优化"
+  },
+  {
+    "Word": "QLoRA",
+    "Pronunciation": "/kjuː ˈləʊrə/",
+    "Audio": "",
+    "Definition": "QLoRA（Quantized Low-Rank Adaptation，量化低秩适应）——LoRA + 4-bit量化，将模型以4-bit精度加载后用LoRA微调，显存需求降低到原来的1/4，效果仅略低于LoRA",
+    "ExampleEN": "QLoRA enabled us to fine-tune a 7B model on a consumer-grade RTX 4090 with only 24GB VRAM.",
+    "ExampleCN": "QLoRA使我们能在仅有24GB显存的消费级RTX 4090上微调7B模型。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.1 LLM微调原理<br><br><b>核心要点</b><br>核心技术: ①NF4数据格式—不是均匀量化而是根据神经网络权重的正态分布优化量化区间，在参数的\"高密度区域\"分得更细；②反量化时先把4-bit恢复为16-bit再计算，前向传播精度几乎无损；③双重量化—对量化常数再做一次量化进一步节省显存。<br><br><b>显存对比</b><br>7B全量微调~100GB（4×A100），LoRA~25GB（1×A100），QLoRA~8GB（1×4090）。消费级GPU首选方案。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §2.3.3 LLM模型蒸馏与微调实操"
+  },
+  {
+    "Word": "SVD",
+    "Pronunciation": "/es viː diː/",
+    "Audio": "",
+    "Definition": "SVD（Singular Value Decomposition，奇异值分解）——将任意矩阵分解为M=UΣV^T的线性代数运算，奇异值快速衰减的特性是LoRA低秩假设的数学基础",
+    "ExampleEN": "SVD shows that the first 8-64 singular values capture over 95% of the matrix information, which justifies LoRA's low-rank assumption.",
+    "ExampleCN": "SVD表明前8-64个奇异值就已捕获了矩阵95%以上的信息，这验证了LoRA低秩假设的合理性。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.1 LLM微调原理<br><br><b>核心要点</b><br>数学直觉: 任意m×n矩阵M可分解为U(m×m正交矩阵) × Σ(m×n对角矩阵，奇异值从大到小排列) × V^T(n×n正交矩阵)。Σ中奇异值衰减极快→前8-64个奇异值已捕获>95%信息→LoRA用r=8~64的秩就足够表达微调所需的变化。<br><br><b>类比</b><br>Netflix的用户-电影矩阵也是万亿级别，但真正决定用户喜好的「隐藏因素」只有很少几个（喜欢动作/科幻/剧情），这就是低秩的现实含义。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理"
+  },
+  {
+    "Word": "Knowledge Distillation",
+    "Pronunciation": "/ˈnɒlɪdʒ ˌdɪstɪˈleɪʃən/",
+    "Audio": "",
+    "Definition": "Knowledge Distillation（知识蒸馏）——让大模型（教师）把自己的能力教给小模型（学生），目标是让小模型用更少的参数达到接近大模型的效果",
+    "ExampleEN": "We used knowledge distillation to transfer the DeepSeek-V3 teacher model's abilities to a Qwen2.5-7B student model, preserving 85% of performance at 10x lower cost.",
+    "ExampleCN": "我们使用知识蒸馏将DeepSeek-V3教师模型的能力迁移到Qwen2.5-7B学生模型，保留了85%的效果但成本降低了10倍。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.3 LLM模型蒸馏与微调实操<br><br><b>核心要点</b><br>三种蒸馏方法: ①Logits蒸馏—学生模仿教师的输出概率分布（软标签含\"暗知识\"：告诉学生不仅\"什么对\"还知道\"错有多错\"）；②特征蒸馏—学生模仿教师中间层隐藏状态（更深层知识迁移但需架构对齐）；③数据蒸馏—教师生成高质量训练数据，学生用这些数据做SFT（最简单、最推荐，无需同时加载教师和学生，支持不同架构）。<br><br><b>软标签价值</b><br>传统训练只学标准答案（硬标签），蒸馏学的是\"2\":99.9%+\"3\":0.05%+\"1\":0.03%——3比1更接近正确答案。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §2.3.3 LLM模型蒸馏与微调实操"
+  },
+  {
+    "Word": "Unsloth",
+    "Pronunciation": "/ʌnˈslɒθ/",
+    "Audio": "",
+    "Definition": "Unsloth——当前最快的LLM微调框架之一，通过手写CUDA内核优化实现2-5倍训练加速和50%显存节省",
+    "ExampleEN": "Using Unsloth, we fine-tuned a 7B model in half the time and with half the VRAM compared to the standard HuggingFace Trainer.",
+    "ExampleCN": "使用Unsloth，我们微调7B模型的时间比标准HuggingFace Trainer减少了一半，显存也节省了一半。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.3 LLM模型蒸馏与微调实操<br><br><b>核心概念</b><br>Unsloth是当前最快的LLM微调框架之一，通过手写CUDA内核优化实现2-5倍训练加速和50%显存节省。四大核心优化：①重写注意力计算内核（Flash Attention风格，减少显存IO）；②在线反量化（计算时即时转换而非先全部加载到显存）；③算子融合（将多个小CUDA算子合并为一个，减少kernel launch开销）；④针对LoRA的特定优化（只计算LoRA层梯度，跳过冻结参数）。<br><br><b>关键要点</b><br>硬件需求极低：7B模型LoRA微调仅需8-10GB显存（单张4060/4070/4090即可），对比标准HuggingFace Trainer需要16GB+。配合QLoRA（4-bit量化）可将显存进一步压缩。使用方式：from unsloth import FastLanguageModel; model, tokenizer = FastLanguageModel.from_pretrained(\"unsloth/Qwen2.5-7B\", load_in_4bit=True); model = FastLanguageModel.get_peft_model(model, r=16, target_modules=[\"q_proj\",\"k_proj\",\"v_proj\",\"o_proj\",\"gate_proj\",\"up_proj\",\"down_proj\"], use_gradient_checkpointing=\"unsloth\")。<br><br><b>延伸节点</b><br>§2.3.3 LLM模型蒸馏与微调实操 | §2.3.1 LLM微调原理 | LoRA | QLoRA"
+  },
+  {
+    "Word": "SFT",
+    "Pronunciation": "/es ef tiː/",
+    "Audio": "",
+    "Definition": "SFT（Supervised Fine-Tuning，监督微调）——用高质量的\"标准答案\"数据训练模型，教会模型\"怎么回答\"，属于指令跟随训练",
+    "ExampleEN": "We first performed SFT with 5000 high-quality instruction-response pairs, then applied DPO to align the model with human preferences.",
+    "ExampleCN": "我们先用5000条高质量指令-响应对做SFT，然后使用DPO将模型与人类偏好对齐。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.2 高质量微调数据工程与评估<br><br><b>核心要点</b><br>SFT vs RLHF/DPO: SFT数据是\"标准答案\"（这个问题应该这样答），格式为{instruction, output}；RLHF/DPO数据是\"偏好比较\"（这个回答比那个好），格式为{instruction, chosen, rejected}。SFT教会\"怎么做\"，DPO教会\"什么更好\"。数据量: SFT需1000-50000条，DPO需500-10000对。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §2.3.2 高质量微调数据工程"
+  },
+  {
+    "Word": "DPO",
+    "Pronunciation": "/diː piː əʊ/",
+    "Audio": "",
+    "Definition": "DPO（Direct Preference Optimization，直接偏好优化）——不需要单独训练奖励模型的偏好对齐方法，直接比较\"好答案vs坏答案\"对进行训练，实现更简单效果接近RLHF",
+    "ExampleEN": "DPO simplified our alignment pipeline by eliminating the need for a separate reward model, using only the chosen and rejected answer pairs.",
+    "ExampleCN": "DPO通过消除单独奖励模型的需求简化了我们的对齐管线，仅使用选中的和被拒绝的回答对即可。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.2 高质量微调数据工程与评估<br><br><b>核心概念</b><br>DPO（Direct Preference Optimization，直接偏好优化）是不需要单独训练奖励模型（Reward Model）的偏好对齐方法。与RLHF的三阶段流程（SFT→训练奖励模型→PPO强化学习）不同，DPO直接将偏好比较对作为训练目标，一步到位。<br><br><b>关键要点</b><br>DPO数据格式：{instruction, chosen, rejected}——同一问题生成2-4个答案→人工排序（最好vs最差）→形成chosen/rejected对。DPO学的是\"相对偏好\"而非\"绝对标准\"——很多问题没有唯一正确答案，但有\"更好\"和\"更差\"之分。数据量需求：SFT需1000-50000条（标准答案），DPO需500-10000对（偏好比较对）。DPO vs RLHF决策：DPO实现更简单、训练更稳定、不需要维护奖励模型，效果接近RLHF，是当前推荐的主流偏好对齐方案。<br><br><b>延伸节点</b><br>§2.3.2 高质量微调数据工程与评估 | §2.3.1 LLM微调原理 | RLHF | SFT"
+  },
+  {
+    "Word": "LLM-as-Judge",
+    "Pronunciation": "/el el em æz dʒʌdʒ/",
+    "Audio": "",
+    "Definition": "LLM-as-Judge（LLM作为评判者）——使用另一个LLM（通常比被评估模型更强）自动评估模型输出的方法，比BLEU/ROUGE更能理解语义，成本约0.01元/次",
+    "ExampleEN": "We used GPT-4 as the judge to compare the fine-tuned model's outputs against the base model across four dimensions: accuracy, completeness, fluency, and format.",
+    "ExampleCN": "我们使用GPT-4作为评判者在四个维度上比较微调模型和基座模型的输出：准确性、完整性、流畅性和格式。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.1 LLM微调原理 + §2.3.2 高质量微调数据工程与评估<br><br><b>核心概念</b><br>LLM-as-Judge（LLM作为评判者）是一种使用另一个更强的LLM自动评估模型输出的方法，比传统BLEU/ROUGE等n-gram匹配指标更能理解语义，成本约0.01元/次评分。标准评分维度（1-5分量表）：①准确性（事实是否正确）；②完整性（是否覆盖所有方面）；③流畅性（语言是否自然）；④格式（结构化程度和可读性）。<br><br><b>关键要点</b><br>LLM-as-Judge最佳实践：①用不同的LLM做评估（避免自己评自己的\"分数膨胀\"——LLM评估LLM容易放水）；②多次评估取平均（单次有随机性）；③人工抽查10-20%结果校准评分标准；④不是所有情况都适合LLM评估——创意性任务、主观判断场景仍需人工。LLM-as-Judge在SFT数据质量评分中特别有用：自动给微调数据打分（1-5分），过滤<3分的低质量样本，大幅提升数据清洗效率。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | §2.3.2 高质量微调数据工程 | RAGAS"
+  },
+  {
+    "Word": "VLM",
+    "Pronunciation": "/viː el em/",
+    "Audio": "",
+    "Definition": "VLM（Vision-Language Model，视觉语言模型）——能同时理解图片和文字的多模态AI模型，架构通常为\"视觉编码器+连接器+LLM\"",
+    "ExampleEN": "Qwen-VL, a leading VLM, uses a ViT visual encoder connected to the Qwen LLM through a projection layer to understand both images and text.",
+    "ExampleCN": "Qwen-VL作为领先的VLM，使用ViT视觉编码器通过投影层连接到Qwen LLM，以同时理解图像和文本。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.4 视觉与多模态模型<br><br><b>核心要点</b><br>核心架构: 图片→视觉编码器（CLIP ViT）→图像Token→连接器（MLP/Cross-Attention，\"翻译\"图像特征到LLM的文本空间）→LLM→回答。主流VLM对比: GPT-4o（原生多模态不公开）、Qwen-VL（中文多模态首选ViT-G+Qwen）、LLaVA（开源标杆CLIP ViT-L+Llama）、InternVL2（动态分辨率ViT，高分辨率文档理解）。<br><br><b>延伸节点</b><br>§2.3.4 视觉与多模态模型 | §2.1.3 RAG多模态数据处理"
+  },
+  {
+    "Word": "YOLO",
+    "Pronunciation": "/ˈjəʊləʊ/",
+    "Audio": "",
+    "Definition": "YOLO（You Only Look Once）——单阶段目标检测算法，整张图一次前向传播同时输出边界框、类别和置信度，以实时检测速度著称",
+    "ExampleEN": "YOLOv8 achieved real-time defect detection at 30 FPS by processing the entire image in a single forward pass.",
+    "ExampleCN": "YOLOv8通过在单次前向传播中处理整张图像，实现了30FPS的实时缺陷检测。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.4 视觉与多模态模型<br><br><b>核心要点</b><br>工作原理: ①将图片划分为S×S网格→②每个网格预测B个边界框+C个类别概率→③过滤低置信度框+非极大值抑制(NMS)去重→④输出最终检测结果。YOLO vs 两阶段检测器（如Faster R-CNN）: 两阶段先找候选区域再分类（慢但准），YOLO合并为端到端（快但需更多数据）。关键指标: mAP50（IoU>0.5时的平均精度，最常用）、mAP50-95（更严格）。模型梯度: nano(最轻)→small→medium→large→xlarge(最重)。<br><br><b>延伸节点</b><br>§2.3.4 视觉与多模态模型"
+  },
+  {
+    "Word": "NMS",
+    "Pronunciation": "/en em es/",
+    "Audio": "",
+    "Definition": "NMS（Non-Maximum Suppression，非极大值抑制）——目标检测后处理算法，用于去除对同一物体的重复检测框，保留置信度最高的框并抑制高度重叠的低分框",
+    "ExampleEN": "After the model detected five overlapping bounding boxes for the same cat, NMS suppressed four of them and kept only the one with the highest confidence score.",
+    "ExampleCN": "模型为同一只猫检测出五个重叠的边界框后，NMS抑制了其中四个，只保留置信度最高的那个。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.4 视觉与多模态模型<br><br><b>核心概念</b><br>NMS（Non-Maximum Suppression，非极大值抑制）是目标检测（YOLO等）的后处理标配算法——模型可能对同一物体产生多个重叠的检测框，NMS抑制冗余框，只保留置信度最高的那个。核心流程：①按置信度降序排列所有检测框→②取最高分框作为基准→③计算其余框与它的IoU→④移除IoU超过阈值（通常0.5）的框→⑤重复步骤②~④直到处理完所有框。<br><br><b>关键要点</b><br>无NMS的后果：同一物体（如一只猫）被框了5次——用户会看到5个重叠的框标注同一物体，体验极差。IoU阈值是关键超参数：阈值太高（如0.9）→去重不彻底仍有多余框；阈值太低（如0.3）→可能把相邻的不同物体误删。YOLO训练时高IoU预测框贡献更多正面信号，NMS去重也依赖IoU计算。<br><br><b>延伸节点</b><br>§2.3.4 视觉与多模态模型 | YOLO | IoU | mAP"
+  },
+  {
+    "Word": "Word2Vec",
+    "Pronunciation": "/wɜːrd tuː vek/",
+    "Audio": "",
+    "Definition": "Word2Vec——Google 2013年提出的词向量模型，核心思想是\"一个词的含义由它周围的词决定\"，通过上下文预测目标词，开创了从One-Hot编码到语义向量的革命",
+    "ExampleEN": "Word2Vec revolutionized NLP by showing that 'king - man + woman = queen' could be expressed through simple vector arithmetic.",
+    "ExampleCN": "Word2Vec展示了'king - man + woman = queen'可以通过简单的向量运算表示，这革新了自然语言处理领域。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.1 Embeddings和向量数据库<br><br><b>核心概念</b><br>Word2Vec（Google 2013）是NLP从符号主义到分布式表示的关键革命。核心思想来自分布假说：\"一个词的含义由它周围的词决定\"。训练方式：用上下文预测目标词（CBOW）或用目标词预测上下文（Skip-Gram），模型从海量文本中自动学习语义关系——训练结果中\"猫\"和\"狗\"的向量很接近，\"猫\"和\"汽车\"的向量很远。<br><br><b>关键要点</b><br>One-Hot vs Word2Vec的本质对比：One-Hot编码下所有词距离都一样（\"猫\"和\"狗\"的距离= \"猫\"和\"汽车\"的距离），完全无法表达语义相似性；Word2Vec用稠密低维向量（通常100-300维）表达每个词的语义，向量空间中的算术运算能表达语义关系——经典示例：king-man+woman≈queen。Word2Vec的向量算术能力是后来所有Embedding模型的基础思想，现代Embedding模型（BGE/M3E/text-embedding-3）本质上是大规模、上下文感知的进化版。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库 | Embedding | One-Hot Encoding | Cosine Similarity"
+  },
+  {
+    "Word": "Soft Labels",
+    "Pronunciation": "/sɒft ˈleɪbəlz/",
+    "Audio": "",
+    "Definition": "Soft Labels（软标签）——知识蒸馏中教师模型输出的概率分布（vs硬标签的标准答案），包含丰富的\"暗知识\"：不仅告诉学生\"什么是对的\"，还告诉\"错有多错\"",
+    "ExampleEN": "Soft labels from the teacher model showed that answer '3' has 0.05% probability while '99' has near 0%, teaching the student nuanced relationships beyond just the correct answer.",
+    "ExampleCN": "教师模型的软标签显示答案'3'有0.05%的概率而'99'接近0%，教会学生比单纯正确答案更细致的相对关系。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.3 LLM模型蒸馏与微调实操<br><br><b>核心概念</b><br>Soft Labels（软标签）是知识蒸馏中的核心概念——教师模型输出的概率分布（vs硬标签的标准答案one-hot形式）。软标签包含丰富的\"暗知识\"：不仅告诉学生\"什么是对的\"，还告诉\"错有多错\"和答案之间的相对关系。<br><br><b>关键要点</b><br>硬标签vs软标签的质的差异：硬标签只说\"答案是2\"（一个信息点）；软标签说\"2:99.9%, 3:0.05%, 1:0.03%, 0:0.02%\"——学生不仅知道正确答案是2，还学习到\"3比0更接近正确答案\"、\"1和3的接近程度接近\"等相对关系。这些相对关系是传统硬标签训练完全丢失的\"暗知识\"。为什么叫\"蒸馏\"——就像蒸馏水提取了水最纯净的部分，知识蒸馏提取了教师模型最核心的概率分布信息。温度参数（temperature）控制软标签的\"软度\"——温度越高概率分布越平滑，更多暗知识被传递。<br><br><b>延伸节点</b><br>§2.3.3 LLM模型蒸馏与微调实操 | Knowledge Distillation | Logits蒸馏"
+  },
+  {
+    "Word": "Explicit Feedback",
+    "Pronunciation": "/ɪkˈsplɪsɪt ˈfiːdbæk/",
+    "Audio": "",
+    "Definition": "Explicit Feedback（显式反馈）——用户主动表达的满意/不满意信号，信号强但数据量少（通常<5%用户会主动反馈），是Agent优化的\"黄金训练数据\"",
+    "ExampleEN": "Explicit feedback like thumbs up/down provides high-quality training signals, but less than 5% of users actively provide it.",
+    "ExampleCN": "像点赞/点踩这样的显式反馈提供了高质量的训练信号，但只有不到5%的用户会主动提供。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.3 Agent的能力优化与效果评估<br><br><b>核心概念</b><br>Explicit Feedback（显式反馈）是用户主动表达的满意/不满意信号（如点赞/点踩/评分/纠错），信号强度高、质优，但数据量极少——通常<5%用户会主动反馈。<br><br><b>关键要点</b><br>显式反馈vs隐式反馈的关系：显式反馈是\"黄金训练数据\"（质高量少，用户明确说好/坏），隐式反馈是\"大数据趋势信号\"（质低量大，100%用户都有行为信号）。必须结合使用——显式做精确标签训练，隐式做趋势分析和自动发现。常见实践：每天从隐式反馈筛选最可能的Bad Case（信号交叉验证：复制+立刻重新提问=高置信度部分有用但不完整），再人工确认后转为显式标注。显式反馈的转化率低是重大瓶颈——设计好\"低摩擦反馈入口\"（一键点赞/语义点踩自动分类）能显著提升数据积累速度。<br><br><b>延伸节点</b><br>§2.2.3 Agent能力优化与效果评估 | Implicit Feedback"
+  },
+  {
+    "Word": "Implicit Feedback",
+    "Pronunciation": "/ɪmˈplɪsɪt ˈfiːdbæk/",
+    "Audio": "",
+    "Definition": "Implicit Feedback（隐式反馈）——从用户行为中推断的满意度信号（复制/重新提问/停留时长），信号弱但数据量大（所有用户都有），是Agent优化的\"大数据趋势信号\"",
+    "ExampleEN": "Implicit feedback signals like copied responses and re-asked questions provided 20x more data than explicit ratings.",
+    "ExampleCN": "隐式反馈信号如复制回答和重复提问，提供了比显式评分多20倍的数据量。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.3 Agent的能力优化与效果评估<br><br><b>核心概念</b><br>Implicit Feedback（隐式反馈）是从用户行为中推断的满意度信号（复制回答/删除/重新提问/停留时长/追问），信号强度弱需推断，但数据量极大——所有用户都有行为信号。<br><br><b>关键要点</b><br>常见隐式信号解读（按置信度排序）：①复制回答→可能有用（置信度中）②立刻重新提问改措辞→首次回答不满足需求（置信度高）③快速关闭对话→回答无用/错误（置信度中）④追问\"你确定吗？\"→用户怀疑答案可信度（置信度高，负面）⑤长时间停留后无操作→可能在阅读也可能在疑惑（置信度低）。核心原则：单一隐式信号不可靠，必须多维交叉验证。例如复制+点赞=高置信度有用；复制+立刻重新提问=回答部分有用但不完整。隐式反馈数据量是显式的约20倍，适合趋势分析。<br><br><b>延伸节点</b><br>§2.2.3 Agent能力优化与效果评估 | Explicit Feedback"
+  },
+  {
+    "Word": "Gradient Checkpointing",
+    "Pronunciation": "/ˈɡreɪdiənt ˈtʃekpɔɪntɪŋ/",
+    "Audio": "",
+    "Definition": "Gradient Checkpointing（梯度检查点）——用计算换显存的技术，训练时不存储所有中间激活值，反向传播时重新计算，可将显存占用降低30-40%",
+    "ExampleEN": "We enabled gradient checkpointing to fit the 7B model training into a single A100 by trading a 20% slowdown for a 40% memory reduction.",
+    "ExampleCN": "我们启用梯度检查点技术，用20%的训练速度下降换来了40%的显存节省，使得7B模型能在单张A100上训练。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.1 LLM微调原理<br><br><b>核心概念</b><br>Gradient Checkpointing（梯度检查点）是用计算换显存的经典技术——训练时不存储所有中间激活值，反向传播时重新计算被标记为检查点的层，可将显存占用降低30-40%，代价是多花15-25%训练时间。<br><br><b>关键要点</b><br>显存不够时的优化顺序（由易到难）：①梯度检查点（用计算换显存，最基础）→②QLoRA（4-bit量化，显存减到1/4）→③减小batch_size+梯度累积（牺牲训练稳定性换显存）。原理详解：前向传播时正常计算但不存储指定层的中间激活值→反向传播到该层时重新跑一遍前向→多花约20%时间但节省大量显存。Unsloth框架做了针对LoRA的梯度检查点特定优化，效果比标准实现更好。7B模型全量微调：不用≈100GB显存（需4×A100），用梯度检查点≈80GB（3×A100），梯度检查点+QLoRA≈8GB（1×4090）。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | Unsloth | QLoRA | LoRA"
+  },
+  {
+    "Word": "NF4",
+    "Pronunciation": "/en ef fɔːr/",
+    "Audio": "",
+    "Definition": "Normal Float 4-bit（NormalFloat 4-bit）——QLoRA使用的4-bit量化数据格式，根据神经网络权重的正态分布优化量化区间而非均匀量化，在参数\"高密度区域\"分得更细",
+    "ExampleEN": "NF4 quantization outperformed standard 4-bit quantization because it allocated more precision to the high-density regions of the normal distribution of neural network weights.",
+    "ExampleCN": "NF4量化优于标准4-bit量化，因为它在神经网络权重正态分布的高密度区域分配了更多精度。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.1 LLM微调原理<br><br><b>核心概念</b><br>NF4（NormalFloat 4-bit）是QLoRA使用的4-bit量化数据格式，核心创新是不均匀量化——根据神经网络权重的正态分布优化量化区间，在参数的\"高密度区域\"（均值附近）分得更细，在远端的\"稀疏区域\"分得更粗。4-bit意味着每个参数只用4个bit（16个可能值）表示。<br><br><b>关键要点</b><br>NF4 vs 均匀4-bit量化：均匀量化把值域均匀分成16个区间——不管参数实际分布如何；NF4根据神经网络权重天然接近正态分布的特点（大多集中在均值附近），在均值附近的\"高密度\"区域分配更多区间（更精细），在远端的\"低密度\"区域分配更少区间（更粗糙）。为什么有效：主体权重的量化精度得到保证，而只有少量异常值（outlier）会损失精度。QLoRA的另一核心技术：双重量化——对量化常数再做一个8-bit量化，进一步节省显存（约0.5GB per 7B模型）。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | QLoRA | LoRA | Gradient Checkpointing"
+  },
+  {
+    "Word": "Agentic Search",
+    "Pronunciation": "/eɪˈdʒentɪk sɜːrtʃ/",
+    "Audio": "",
+    "Definition": "Agentic Search（自主搜索）——Agent自主决定\"什么时候搜索、搜索什么、如何验证\"的智能检索范式，从\"每次必搜(Just-In-Case)\"进化到\"需要时才搜(Just-In-Time)\"",
+    "ExampleEN": "With agentic search, the AI first asked itself 'do I know the answer?' and only searched the web when it needed external data.",
+    "ExampleCN": "有了自主搜索能力，AI先问自己'我知道答案吗？'，只在需要外部数据时才去搜索。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.5 部分场景中可以取代RAG的技术<br><br><b>核心概念</b><br>Agentic Search（自主搜索）是从\"每次必搜(Just-In-Case)\"进化到\"需要时才搜(Just-In-Time)\"的智能检索范式。核心工作流：AI先思考\"我知道答案吗？\"→知道就直接回答（零检索开销）→不知道才自动搜索→不确定就搜一下确认再回答。<br><br><b>关键要点</b><br>传统RAG vs Agentic Search的核心差异：传统RAG是不管什么问题都先检索一遍（Just-In-Case，浪费：简单问题白搜了），Agentic Search是AI自主决策。ReAct循环是Agentic Search的核心引擎：思考(我需要什么信息？)→行动(搜索关键词X)→观察(搜索结果)→再思考(信息够了吗？还需要搜什么？)→循环→最终回答。安全实践：①设置max_steps（通常5-8步）防止死循环②每次搜索前让Agent自问\"这个搜索是必需的吗？\"③Plan-and-Solve架构适合目标明确的多步调研（先定完整计划再逐步搜索验证）。<br><br><b>延伸节点</b><br>§2.1.5 部分场景中可以取代RAG的技术 | §2.2.2 Agent的自主规划与工具开发 | ReAct | Plan-and-Solve"
+  },
+  {
+    "Word": "Catastrophic Forgetting",
+    "Pronunciation": "/ˌkætəˈstrɒfɪk fəˈɡetɪŋ/",
+    "Audio": "",
+    "Definition": "Catastrophic Forgetting（灾难性遗忘）——模型在微调/蒸馏后在新任务上表现提升，但原本擅长的通用任务能力大幅下降的现象",
+    "ExampleEN": "After fine-tuning on legal documents, the model suffered catastrophic forgetting, dropping 30% on general reasoning benchmarks while gaining 40% on legal tasks.",
+    "ExampleCN": "在法律文档上微调后，模型遭受了灾难性遗忘，法律任务准确率提升40%但通用推理基准下降了30%。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.2 高质量微调数据工程与评估 + §2.3.3 LLM模型蒸馏与微调实操<br><br><b>核心概念</b><br>Catastrophic Forgetting（灾难性遗忘）是微调/蒸馏中最危险的副作用——模型在新任务上表现提升，但原本擅长的通用任务能力大幅下降。典型表现：法律文档微调后法律任务准确率+40%，但通用推理（如MMLU/GSM8K）下降30%。<br><br><b>关键要点</b><br>检测与缓解方案：①微调后必须同时评估通用能力（MMLU/GSM8K等标准测试）+ 领域任务，确保差距可控；②数据中混入5-10%通用任务样本（不要让模型\"忘记\"通用场景）；③使用较小学习率（1/3-1/5标准学习率）；④LoRA的r值不宜过大（r=8-16通常足够，过大容易过拟合导致遗忘）；⑤多任务训练（交替训练领域数据+通用数据）+每N步检测通用能力退化。灾难性遗忘的根因：模型在微调时将权重过度调整到适配新数据分布，丢失了预训练阶段学到的重要通用特征。<br><br><b>延伸节点</b><br>§2.3.2 高质量微调数据工程 | §2.3.3 LLM模型蒸馏与微调实操 | §2.3.1 LLM微调原理 | LoRA"
+  },
+  {
+    "Word": "One-Hot Encoding",
+    "Pronunciation": "/wʌn hɒt ɪnˈkəʊdɪŋ/",
+    "Audio": "",
+    "Definition": "One-Hot Encoding（独热编码）——传统的词表示方法，每个词用一个长度为词汇表大小的向量表示，只有对应位置为1其余为0，缺点是无法表达词与词之间的语义关系",
+    "ExampleEN": "One-hot encoding represents 'cat' as [1,0,0,0] and 'dog' as [0,1,0,0], making them appear equally distant from each other despite their semantic similarity.",
+    "ExampleCN": "独热编码将'猫'表示为[1,0,0,0]，'狗'表示为[0,1,0,0]，尽管两者语义相似但向量距离完全相同。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.1 Embeddings和向量数据库<br><br><b>核心概念</b><br>One-Hot Encoding（独热编码）是传统的词表示方法——词汇表中每个词用一个长度为|V|（词汇表大小）的稀疏向量表示，只有对应位置为1其余为0。核心问题：所有词距离都一样（向量之间的余弦相似度=0），完全无法表达\"猫\"和\"狗\"之间的语义相似性。<br><br><b>关键要点</b><br>One-Hot → Embedding是NLP从符号主义到分布式表示的关键范式转变。One-Hot编码的三个致命缺陷：①维度灾难：词汇表10万个词则需要10万维向量，极度稀疏（99.99%为0）；②语义丢失：\"猫\"和\"狗\"的向量距离= \"猫\"和\"汽车\"的向量距离，无法进行语义计算；③无法泛化：没见过\"小猫咪\"就无法和\"猫\"关联。Word2Vec（2013）首次解决了这三个问题，用稠密低维向量（100-300维）表达语义关系，是现代Embedding模型的思想源头。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库 | Word2Vec | Embedding | Cosine Similarity"
+  },
+  {
+    "Word": "Long-Context LLM",
+    "Pronunciation": "/lɒŋ ˈkɒntekst el el em/",
+    "Audio": "",
+    "Definition": "Long-Context LLM（长上下文大模型）——支持超长上下文窗口的模型（如Gemini 1.5 Pro 1M token），当知识总量小于context窗口时可直接跳过检索步骤全量注入",
+    "ExampleEN": "With Gemini 1.5 Pro's 1M token context window, we simply fed all documents directly to the model, eliminating the need for retrieval entirely.",
+    "ExampleCN": "凭借Gemini 1.5 Pro的1M token上下文窗口，我们只需将所有文档直接输入模型，完全消除了检索需求。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.5 部分场景中可以取代RAG的技术<br><br><b>核心要点</b><br>RAG vs Long-Context决策: 知识总量<100K token→直接Long-Context不需要RAG；>1M token→RAG为主特定分析用Long-Context。核心权衡: RAG(token消耗低、延迟快、适合海量文档)vs Long-Context(不会遗漏信息、多跳推理强、适合大小<窗口70%的深度分析)。注意\"迷失中间\"效应: 长文本中间部分信息最容易被模型忽略。<br><br><b>延伸节点</b><br>§2.1.5 部分场景中可以取代RAG的技术"
+  },
+  {
+    "Word": "ANN",
+    "Pronunciation": "/eɪ en en/",
+    "Audio": "",
+    "Definition": "ANN（Approximate Nearest Neighbor，近似最近邻搜索）——在可接受的精度损失下大幅加速向量相似度检索的算法族，向量数据库的核心技术",
+    "ExampleEN": "FAISS uses ANN algorithms like IVF and HNSW to search through billions of vectors in milliseconds with over 99% recall.",
+    "ExampleCN": "FAISS使用IVF和HNSW等ANN算法在毫秒级搜索数十亿向量，召回率超过99%。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.1 Embeddings和向量数据库<br><br><b>核心概念</b><br>ANN（Approximate Nearest Neighbor，近似最近邻搜索）是向量数据库的核心技术——在可接受的精度损失下大幅加速高维向量相似度检索。传统数据库做精确匹配（100%精确但无法做语义搜索），向量数据库做ANN（近似但可做语义搜索，精度/速度可调）。<br><br><b>关键要点</b><br>FAISS中三种ANN索引方案对比：①Flat（暴力精确搜索，适合<10万数据，100%精确但O(N×d)复杂度）；②IVF（Inverted File，倒排索引，先聚类找邻近中心再搜索，适合百万级，nlist≈sqrt(数据量)，需先.train()，nprobe控制搜索精度/速度平衡）；③HNSW（Hierarchical Navigable Small World，分层图索引，精度最高适合读多写少场景）。为什么需要ANN：高维向量精确搜索面临\"维度灾难\"——随着维度增加，暴力搜索时间线性增长到不可接受的程度，ANN通过牺牲2-5%精度换取100倍以上速度提升。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库 | FAISS | 向量数据库 | Cosine Similarity"
+  },
+  {
+    "Word": "mAP",
+    "Pronunciation": "/em eɪ piː/",
+    "Audio": "",
+    "Definition": "mAP（mean Average Precision，平均精度均值）——目标检测的核心评估指标，mAP50指IoU阈值0.5时的平均精度，mAP50-95是多个IoU阈值的综合指标",
+    "ExampleEN": "After training YOLOv8 for 100 epochs, we achieved a mAP50 of 0.92 for defect detection, meaning the model reliably identified 92% of defects.",
+    "ExampleCN": "训练YOLOv8 100个epoch后，我们在缺陷检测上达到了0.92的mAP50，意味着模型可靠地识别出了92%的缺陷。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.4 视觉与多模态模型<br><br><b>核心概念</b><br>mAP（mean Average Precision，平均精度均值）是目标检测的核心评估指标。mAP50指IoU阈值0.5时的平均精度（最常用指标——预测框与真实框重叠>50%算正确）；mAP50-95是更严格指标——计算IoU从0.5到0.95（步长0.05）的所有阈值下的平均精度均值。<br><br><b>关键要点</b><br>mAP的计算逻辑：①对每个类别分别计算Average Precision（AP=Precision-Recall曲线下面积）；②对所有类别的AP求平均得mAP。YOLO训练时同时输出Precision（精确率，预测正确的占比）和Recall（召回率，真实目标被检出的占比）——二者通常成反比。mAP50=0.92的直观含义：模型在IoU>0.5的宽松标准下可靠识别出92%的目标。模型选择时注意：mAP50反映宽松标准下的检测能力，mAP50-95反映严格标准下的定位精度。<br><br><b>延伸节点</b><br>§2.3.4 视觉与多模态模型 | YOLO | IoU | NMS"
+  },
+  {
+    "Word": "IoU",
+    "Pronunciation": "/aɪ əʊ juː/",
+    "Audio": "",
+    "Definition": "IoU（Intersection over Union，交并比）——目标检测中衡量预测框与真实框重叠度的指标，值域[0,1]，值越大重合越好",
+    "ExampleEN": "A predicted bounding box with an IoU of 0.85 against the ground truth is considered a good detection at the mAP50 threshold.",
+    "ExampleCN": "预测框与真实框的IoU为0.85，在mAP50阈值下被视为一次良好的检测。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.4 视觉与多模态模型<br><br><b>核心概念</b><br>IoU（Intersection over Union，交并比）是目标检测中衡量预测框与真实框重叠度的核心指标。计算方式：IoU = 交集面积/并集面积，值域[0, 1]，0=完全不重叠，1=完美重叠。<br><br><b>关键要点</b><br>IoU在YOLO训练和推理中的三重角色：①损失函数——YOLO用IoU作为边界框回归的损失，高IoU的预测贡献更多正面训练信号；②mAP阈值——mAP50中的\"50\"即IoU阈值=0.5，IoU>0.5的预测算正确检测；③NMS去重——用IoU判断两个检测框是否指向同一物体（通常阈值0.5，IoU超过此值的重复框被抑制）。IoU阈值选择的权衡：阈值太低会把相邻不同物体误删，阈值太高则去重不彻底。<br><br><b>延伸节点</b><br>§2.3.4 视觉与多模态模型 | YOLO | NMS | mAP"
+  },
+  {
+    "Word": "Sandbox",
+    "Pronunciation": "/ˈsændbɒks/",
+    "Audio": "",
+    "Definition": "Sandbox（沙箱）——隔离的代码执行环境，Agent在沙箱中执行生成的代码而不影响宿主机，是Agent安全性的核心基础设施",
+    "ExampleEN": "Agent-generated code is always executed inside a sandbox with restricted filesystem access, network isolation, and a 30-second timeout.",
+    "ExampleCN": "Agent生成的代码始终在沙箱中执行，具有受限的文件系统访问、网络隔离和30秒超时。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.4 Harness Engineering + §2.2.2 Agent的自主规划与工具开发<br><br><b>核心要点</b><br>四层防护: ①文件系统隔离（Git Worktree→Agent独立工作目录不影响原始代码）；②网络隔离（限制可访问域名/IP）；③系统调用限制（seccomp/AppArmor）；④权限精细化（读/写/执行分别控制）。执行环境层级: Process级（最快最不安全）→Container级（Docker隔离好）→VM级（最安全）。<br><br><b>实践</b><br>最低要求: subprocess timeout 30秒 + 禁止os.system/shell=True + 临时文件自动清理。<br><br><b>延伸节点</b><br>§2.2.4 Harness Engineering | §2.2.2 Agent自主规划与工具开发"
+  },
+  {
+    "Word": "Tool Calling",
+    "Pronunciation": "/tuːl ˈkɔːlɪŋ/",
+    "Audio": "",
+    "Definition": "Tool Calling（工具调用）——LLM输出结构化的函数调用指令而非自然语言响应的能力，使得模型能\"使用工具\"如查询数据库、搜索网络、执行计算",
+    "ExampleEN": "Tool calling enables the LLM to output 'call get_weather(city=\"Beijing\")' instead of a generic response, connecting the model to real-world data.",
+    "ExampleCN": "工具调用使LLM能输出'调用get_weather(city=\"北京\")'而非通用响应，将模型连接到真实世界数据。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.1 Function Calling与MCP<br><br><b>核心要点</b><br>底层原理: ①Prompt中注入函数定义（名称/描述/参数schema）→②LLM输出特殊token标记的tool_call JSON→③系统拦截并执行实际函数→④函数结果注入对话→⑤LLM基于结果生成最终回答。关键点: LLM本身不执行函数——它只输出JSON指令，由开发者代码去实际调用。tool_choice参数: auto=模型自己决定/required=强制调用/none=禁止调用。<br><br><b>延伸节点</b><br>§2.2.1 Function Calling与MCP | §2.2.2 Agent自主规划与工具开发"
+  },
+  {
+    "Word": "Dimension",
+    "Pronunciation": "/daɪˈmenʃən/",
+    "Audio": "",
+    "Definition": "Dimension / Embedding Dimension（向量维度）——Embedding向量的长度，决定语义表示的精细程度和存储/检索成本。768维是大多数RAG场景的性价比最优选择",
+    "ExampleEN": "We chose a 768-dimensional embedding model for our RAG system, balancing semantic expressiveness with retrieval speed and storage costs.",
+    "ExampleCN": "我们为RAG系统选择768维的Embedding模型，在语义表达能力与检索速度和存储成本之间取得平衡。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.1 Embeddings和向量数据库<br><br><b>核心要点</b><br>维度等级: 低维256-384（存储小检索快但语义弱）、中维768-1024（性价比最优，大部分场景够用）、高维1536-4096（精度最高但存储大检索慢成本高）。实用建议: 一般RAG用768维（BGE-Large/OpenAI text-embedding-3-small），追求极致精度再上高维。Matryoshka Embedding可直接截断到更低维度无需重训练。<br><br><b>延伸节点</b><br>§2.1.1 Embeddings和向量数据库"
+  },
+  {
+    "Word": "Lossy Middle Effect",
+    "Pronunciation": "/ˈlɒsti ˈmɪdəl ɪˈfekt/",
+    "Audio": "",
+    "Definition": "Lost in the Middle（迷失中间效应）——长上下文模型中处于上下文窗口中部的信息被模型忽略或遗漏的心理物理学现象，开头和结尾的信息更受关注",
+    "ExampleEN": "Due to the 'lost in the middle' effect, our critical document placed at position 50% in the context window was overlooked, while documents at the beginning and end were properly referenced.",
+    "ExampleCN": "由于'迷失中间'效应，我们放在上下文窗口50%位置的关键文档被忽略了，而开头和结尾的文档被正确引用。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.1.5 部分场景中可以取代RAG的技术 + §2.2.3 Agent的能力优化与效果评估<br><br><b>核心概念</b><br>Lost in the Middle（迷失中间效应）是长上下文模型的认知心理学现象——处于上下文窗口中部的信息更容易被模型忽略或遗漏，而开头（primacy effect）和结尾（recency effect）的信息更受关注。这是大海捞针测试（Needle in a Haystack）的核心发现之一。<br><br><b>关键要点</b><br>应对策略三原则：①最重要的信息（答案依赖的关键文档）必须放在Prompt的开头或结尾——不要按自然顺序排列；②对检索到的多篇文档按相关性排序而非自然顺序（最相关的放最前/最后）；③不要以为\"全量注入\"就万事大吉——即使所有文档都在Context Window视野内，中间位置的文档检索效果仍可能很差。这个效应揭示了人类注意力的U型曲线也适用于LLM——LLM在长文本理解上的注意力分布与人类阅读行为高度相似。<br><br><b>延伸节点</b><br>§2.1.5 部分场景中可以取代RAG的技术 | §2.2.3 Agent能力优化与效果评估 | Needle in a Haystack | Context Window"
+  },
+  {
+    "Word": "Deliberative Agent",
+    "Pronunciation": "/dɪˈlɪbərətɪv ˈeɪdʒənt/",
+    "Audio": "",
+    "Definition": "Deliberative Agent（深思熟虑式Agent）——先感知环境、制定计划、再逐步执行的Agent范式，能处理复杂任务但速度比Reactive Agent慢，适合旅行规划、代码生成等场景",
+    "ExampleEN": "The deliberative agent carefully planned the trip itinerary: first check visa requirements, then compare flight prices, and finally book the optimal route.",
+    "ExampleCN": "深思熟虑式Agent仔细规划了旅行行程：先检查签证要求，再比较航班价格，最后预订最佳路线。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.2.2 Agent的自主规划与工具开发<br><br><b>核心概念</b><br>Deliberative Agent（深思熟虑式Agent）是三种Agent范式之一——先感知环境、制定完整计划、再逐步执行。能处理复杂任务但速度比反应式Agent慢，适合旅行规划、代码生成、多步调研等场景。<br><br><b>关键要点</b><br>Agent三种范式的完整对比与选择决策：①反应式(Reactive)——感知→直接行动不思考，极快但只能处理简单任务（如简单问答机器人）；②深思熟虑式(Deliberative/Plan-and-Solve)——感知→规划完整步骤链→逐步执行，能处理复杂任务但可能\"过度思考\"（简单问题也要走完规划流程）；③混合式(Hybrid)——紧急情况/简单问题用反应式快速响应，复杂任务转入深思熟虑式规划执行，既快又强，是大多数实际应用推荐的方案。判断标准：问题是否需要多步推理或外部信息——事实性问答用反应式，多步操作/多源调研用深思熟虑式。<br><br><b>延伸节点</b><br>§2.2.2 Agent的自主规划与工具开发 | Plan-and-Solve | ReAct"
+  },
+  {
+    "Word": "tokenizer",
+    "Pronunciation": "/ˈtəʊkənaɪzər/",
+    "Audio": "",
+    "Definition": "Tokenizer（分词器/标记器）——将原始文本转换为LLM可理解的token序列的工具，不同的模型有不同的分词器和词汇表",
+    "ExampleEN": "Always save the tokenizer together with the LoRA adapter to avoid the common pitfall of mismatched tokenization during inference.",
+    "ExampleCN": "始终将分词器与LoRA适配器一同保存，避免推理时出现分词不匹配的常见陷阱。",
+    "Notes": "<b>学习路径</b><br>知识图谱定位: §2.3.1 LLM微调原理<br><br><b>核心概念</b><br>Tokenizer（分词器/标记器）是将原始文本转换为LLM可理解的token序列的工具。不同模型有不同的分词器（tokenizer）和词汇表（vocabulary）——即使是同一系列的模型（如Qwen-7B vs Qwen-72B）分词器也可能不同。<br><br><b>关键要点</b><br>微调中最常见的坑——分词器不匹配。三项铁律：①LoRA适配器保存时必须同时调用model.save_pretrained()和tokenizer.save_pretrained()保存到同一目录；②推理加载时从同一目录加载模型和分词器；③不同模型的tokenizer词汇表不同，混用会导致输出乱码（如Qwen的tokenizer处理Llama的token输出完全不可读）。分词器的选择对中英文效率影响巨大：同一段中文，BPE分词器（GPT系列）和SentencePiece分词器（Llama系列）的token数量可能差20-30%，直接影响API成本和上下文利用率。<br><br><b>延伸节点</b><br>§2.3.1 LLM微调原理 | Token | LoRA | Pre-training"
+  }
+]

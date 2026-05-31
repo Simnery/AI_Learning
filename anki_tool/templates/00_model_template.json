@@ -1,0 +1,19 @@
+{
+  "modelName": "English Word",
+  "fields": [
+    "Word",
+    "Pronunciation",
+    "Audio",
+    "Definition",
+    "ExampleEN",
+    "ExampleCN",
+    "Notes"
+  ],
+  "css": ".card { text-align: center; padding: 12px 0; } .card-box { background: #f8f9fa; border-radius: 10px; padding: 14px 18px; margin: 8px 12px; text-align: center; } .box-label { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; } .word-big { font-size: 30px; font-weight: bold; color: #1a1a2e; } .ipa { font-size: 17px; color: #888; margin-top: 4px; } .audio-btn { margin-top: 8px; } .box-text { font-size: 16px; color: #333; line-height: 1.7; text-align: left; } .notes { font-size: 14px; color: #aaa; text-align: left; padding: 0 12px; } .notes b { color: #666; }",
+  "templates": {
+    "English Card": {
+      "Front": "<div class=\"card-box\">\n<div class=\"box-label\">word</div>\n<div class=\"word-big\">{{Word}}</div>\n{{#Pronunciation}}<div class=\"ipa\">{{Pronunciation}}</div>{{/Pronunciation}}\n{{#Audio}}<div class=\"audio-btn\">{{Audio}}</div>{{/Audio}}\n</div>",
+      "Back": "<div class=\"card-box\">\n<div class=\"box-label\">word</div>\n<div class=\"word-big\">{{Word}}</div>\n{{#Pronunciation}}<div class=\"ipa\">{{Pronunciation}}</div>{{/Pronunciation}}\n{{#Audio}}<div class=\"audio-btn\">{{Audio}}</div>{{/Audio}}\n</div>\n\n<div class=\"card-box\">\n<div class=\"box-label\">definition</div>\n<div class=\"box-text\">{{Definition}}</div>\n</div>\n\n{{#ExampleEN}}<div class=\"card-box\">\n<div class=\"box-label\">example sentence</div>\n<div class=\"box-text\">{{ExampleEN}}</div>\n</div>\n{{/ExampleEN}}\n\n{{#ExampleCN}}<div class=\"card-box\">\n<div class=\"box-label\">chinese translation</div>\n<div class=\"box-text\">{{ExampleCN}}</div>\n</div>\n{{/ExampleCN}}\n\n{{#Notes}}<hr><div class=\"notes\">{{Notes}}</div>{{/Notes}}"
+    }
+  }
+}
