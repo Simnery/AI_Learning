@@ -61,7 +61,12 @@ python anki_tool/scripts/anki_sync.py anki_tool/cards/ch1_cards.json Notes
 ## 开始使用
 
 ```bash
-git clone https://gitee.com/Learning-Lab/AI_Learning.git
+# Gitee (主仓库)
+git clone https://gitee.com/Simnery/AI_Learning.git
+
+# GitHub (镜像)
+git clone https://github.com/Simnery/AI_Learning.git
+
 cd AI_Learning
 
 # 学习资料入口

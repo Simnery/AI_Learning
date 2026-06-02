@@ -57,6 +57,7 @@ Thumbs.db
 
 # Claude Code local settings
 .claude/settings.local.json
+.claude/config/config.local.json
 
 # Cursor local files
 .cursor/**/*.local.md
