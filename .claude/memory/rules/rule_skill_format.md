@@ -10,10 +10,10 @@
 
 | 规则 | 说明 |
 |------|------|
-| **禁止具体 ID** | 不能出现 `20260530_xxx`、`alvin-yang951` 等 |
+| **禁止具体 ID** | 不能出现 `20260530_xxx`、`your-username` 等 |
 | **禁止具体路径** | 不能用 `/home/user/xxx` 或 `.claude/memory/local/`（已废弃） |
 | **禁止具体数值** | 不能用 `8/66`、`12%`，改用 `{已完成}/{总计}`、`{X}%` |
-| **禁止硬编码 URL** | 不能用 `https://gitee.com/alvin-yang951/xxx`，改用 `{远程URL}` |
+| **禁止硬编码 URL** | 不能用 `https://gitee.com/your-username/xxx`，改用 `{远程URL}` |
 
 ## 占位符规范
 

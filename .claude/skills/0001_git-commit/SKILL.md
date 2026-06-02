@@ -93,6 +93,22 @@ allowed-tools: Bash Read Edit
 
 > **注意**：Gitee 通常接受 `--force-with-lease`，GitHub 在跨 remote 场景可能需 `--force`。amend 后务必确认两侧都推送成功。
 
+## 网络优化（国内访问 GitHub 慢/超时）
+
+**克隆策略**：
+- **首选 Gitee**（国内快）：`git clone https://gitee.com/Simnery/AI_Learning.git`
+- **备选 GitHub 浅克隆**（只拉最新，跳过历史）：
+  ```bash
+  git clone --depth 1 https://github.com/Simnery/AI_Learning.git
+  ```
+- **已有 Gitee 再补 GitHub**：
+  ```bash
+  git remote add github https://github.com/Simnery/AI_Learning.git
+  git fetch github --depth 1
+  ```
+
+**验证克隆完整性**：克隆超过 30s 无进展即超时，改用 Gitee 或 `--depth 1`。
+
 ## 冲突处理
 
 1. `git stash` 暂存
