@@ -67,10 +67,76 @@ AI 模型、算法、技术应用的系统学习工程。
 | Git 提交/推送 | 0001_git-commit |
 | 创建长任务记录 | 0002_task-create |
 | 创建 Anki 英语卡片 | 0003_anki-english |
+| 新任务开发工作流 | 0004_superpowers |
+| CowAgent 远程接入管理 | 0005_cowagent |
+
+**新任务默认工作流 — Superpowers**：
+
+> 后续所有新任务（项目实战、动手实验等需要多步骤执行的开发任务）**统一采用 Superpowers 工作流**：
+> ```
+> 0002_task-create → 0004_superpowers/001_brainstorming → 002_writing-plans
+>   → 003_using-git-worktrees → 004_TDD → {执行Skill}
+>   → 009_debugging → 010+011_review → 005_verification → 012_finishing
+> ```
+> 简单操作（单文件修复、配置修改）不受此限制。
 
 **Skill 命名规则**：`NNNN_功能名`，4 位数字前缀控制排序，如 `0000_hello`、`0001_git-commit`、`0002_task-create`。新建 skill 时按功能分组递增编号。
 
 **Skill 编写规范**：所有 Skill 必须用占位符（`{任务ID}` `{远程URL}`），禁止硬编码具体值。详见 `.claude/memory/rules/rule_skill_format.md`。
+
+### 1.1 Superpowers 开发工作流 Skills (`0004_superpowers`)
+
+来自 [obra/superpowers](https://github.com/obra/superpowers) (Jesse Vincent, MIT)，通用软件开发方法论。以 `0004_superpowers` 为父 Skill，14 个子 Skill 按工作流顺序编号。
+
+| 编号 | Skill | 阶段 | 说明 |
+|------|-------|------|------|
+| 001 | `0004_superpowers/001_brainstorming` | 设计 | Socratic 设计，写代码前先想清楚 |
+| 002 | `0004_superpowers/002_writing-plans` | 计划 | 将设计拆解为 2-5 分钟小任务 |
+| 003 | `0004_superpowers/003_using-git-worktrees` | 隔离 | 创建隔离 worktree，保护主分支 |
+| 004 | `0004_superpowers/004_test-driven-development` | 实现 | 强制 RED-GREEN-REFACTOR 循环 |
+| 005 | `0004_superpowers/005_verification-before-completion` | 验证 | 完成前强制验证，证据先于断言 |
+| 006 | `0004_superpowers/006_executing-plans` | 执行 | 按计划逐步执行 + review checkpoints |
+| 007 | `0004_superpowers/007_subagent-driven-development` | 执行 | 每 task 独立 subagent + 两阶段 review |
+| 008 | `0004_superpowers/008_dispatching-parallel-agents` | 执行 | 无依赖 task 并行派发，最多 4 并发 |
+| 009 | `0004_superpowers/009_systematic-debugging` | 调试 | 四阶段系统化调试，禁止猜测式修复 |
+| 010 | `0004_superpowers/010_requesting-code-review` | 审查 | 任务完成/合并前的代码审查 |
+| 011 | `0004_superpowers/011_receiving-code-review` | 审查 | 接收审查反馈，技术求真 |
+| 012 | `0004_superpowers/012_finishing-a-development-branch` | 收尾 | 合并/PR/清理，与 0001_git-commit 协同 |
+| 013 | `0004_superpowers/013_using-superpowers` | 诊断 | 运行时环境自检 |
+| 014 | `0004_superpowers/014_writing-skills` | 元技能 | Skill 编写规范（融合上游+项目标准） |
+
+**工作流链**：`001_brainstorming → 002_writing-plans → 003_worktrees → 004_TDD → 007_subagent | 008_parallel | 006_executing → 009_debugging → 010+011_review → 005_verification → 012_finishing`
+
+**与项目 Skills 的关系**：Superpowers Skills 是通用开发方法论，项目 Skills 是项目特定操作规范。两者互不干扰，按场景独立调用。
+
+**文件位置**：`.claude/skills/0004_superpowers/`，详细说明见该目录下 `README.md`。
+
+**Superpowers 与 Task Skill 桥接规则**：
+
+> **1. 任务绑定（前置）**: 调用任何 Superpowers 工作流 Skill 之前，**必须先确认当前存在 active 状态的任务**。
+> - 有活跃任务 → 直接继续
+> - 无活跃任务 → 先调用 `0002_task-create` 创建任务，再启动 Superpowers 工作流
+>
+> **2. 路径映射**: Superpowers Skill 中引用的逻辑路径与任务目录的映射关系：
+>
+> | Superpowers 逻辑路径 | 实际写入路径 |
+> |---------------------|-------------|
+> | `docs/superpowers/specs/YYYY-MM-DD-<topic>.md` | `00_local_task/tasks/{任务ID}/specs/YYYY-MM-DD-<topic>.md` |
+> | `docs/superpowers/plans/YYYY-MM-DD-<feature>.md` | `00_local_task/tasks/{任务ID}/plans/YYYY-MM-DD-<feature>.md` |
+>
+> Skill 正文中保留逻辑路径格式（便于与上游同步），实际写入时映射到任务目录。
+>
+> **3. 任务文档同步（后置）**: Superpowers 工作流每完成一个阶段，**必须同步更新任务文档的 6 处**（见 `0002_task-create` 第 4 节）：
+>
+> | Superpowers 阶段 | 任务文档更新 |
+> |-----------------|------------|
+> | brainstorming 完成 | 更新「关键洞察与决策」— 记录设计决策 |
+> | writing-plans 完成 | 更新「实验/学习进度表」— 方案各 task 对应进度行 |
+> | 执行完成 (TDD/executing-plans) | 更新进度表 + 进度日志 — 每完成一个 task |
+> | verification 完成 | 更新 TL;DR — 验证结果 |
+> | finishing 完成 | 任务状态 → done，索引迁移 |
+>
+> **4. 语言**: Skill 本体 (SKILL.md) 和所有生成文档**一律使用中文**。
 
 ### 2. 权限配置规则
 

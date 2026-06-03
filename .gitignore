@@ -73,3 +73,5 @@ sample/*
 
 # Anki tool exports (large apkg files)
 anki_tool/export/*.apkg
+
+# CowAgent workspace — runtime files governed by cowagent_workspace/.gitignore

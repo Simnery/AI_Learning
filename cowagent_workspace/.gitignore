@@ -1,0 +1,13 @@
+# CowAgent workspace — ignore everything by default
+/*
+/*/
+
+# Then whitelist core files
+!/.gitignore
+!/AGENT.md
+!/MEMORY.md
+!/RULE.md
+!/skills/
+!/skills/bridge-relay/
+!/skills/bridge-relay/SKILL.md
+!/skills/skills_config.json

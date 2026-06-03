@@ -1,0 +1,9 @@
+{
+    "bridge-relay": {
+        "name": "bridge-relay",
+        "description": "AI Learning 项目远程代理。每次新会话先读 CLAUDE.md，主动使用工具，中文回复。通过企业微信等 IM 渠道执行项目操作。",
+        "source": "custom",
+        "enabled": true,
+        "category": "skill"
+    }
+}

@@ -18,5 +18,21 @@
     "username": "your_github_username",
     "password": "your_github_token",
     "remote_url": "https://github.com/Simnery/AI_Learning.git"
+  },
+
+  "cowagent": {
+    "_comment": "CowAgent 远程接入平台配置 — https://github.com/zhayujie/cowagent",
+    "_setup_help": "1) DeepSeek API Key: https://platform.deepseek.com/api_keys  2) 飞书: https://open.feishu.cn → 创建应用 → 凭证与基础信息",
+    "_api_help": "启动后 API 地址 http://localhost:9899 | 发送消息: POST /message {'message':'你好'} | 查模型: GET /api/models | 查渠道: GET /api/channels | 查 Skill: GET /api/skills",
+    "deepseek_api_key": "sk-your-deepseek-api-key",
+    "deepseek_api_base": "https://api.deepseek.com/v1",
+    "feishu_app_id": "",
+    "feishu_app_secret": "",
+    "dingtalk_client_id": "",
+    "dingtalk_client_secret": "",
+    "wecom_bot_id": "",
+    "wecom_bot_secret": "",
+    "web_password": "",
+    "agent_workspace": "{项目根目录}/cowagent_workspace"
   }
 }
