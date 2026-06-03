@@ -1,0 +1,18 @@
+# External tools managed as git submodules
+# Update: git submodule update --remote <path>
+#
+# tools/cowagent — zhayujie/cowagent (MIT, 34.4K stars)
+#   Integrated: 2026-06-03, commit 79323358e59bf31eb8197714402c4343d47ef304
+#   Purpose: Multi-channel IM → AI remote access platform
+#
+# tools/superpowers — obra/superpowers (MIT, 93K+ stars)
+#   Integrated: 2026-06-03, commit 6fd4507659784c351abbd2bc264c7162cfd386dc
+#   Purpose: Upstream reference for 0004_superpowers skill sync
+
+[submodule "tools/cowagent"]
+	path = tools/cowagent
+	url = https://github.com/zhayujie/cowagent.git
+
+[submodule "tools/superpowers"]
+	path = tools/superpowers
+	url = https://github.com/obra/superpowers.git
